@@ -17,10 +17,25 @@
 		principal: number;
 		annualInterestRate: number;
 		durationYears: number;
-		buyingAlone: boolean;
+		buyingAlone: boolean | null;
 	}) {
+		console.log('Form submitted with data:', data);
 		try {
-			const { principal, annualInterestRate, durationYears } = data;
+			const { principal, annualInterestRate, durationYears, buyingAlone } = data;
+
+			// Ensure we have valid data
+			if (buyingAlone === null) {
+				console.error('Buying type not selected');
+				return;
+			}
+
+			console.log('Processing calculation with:', {
+				principal,
+				annualInterestRate,
+				durationYears,
+				buyingAlone
+			});
+
 			const annualRate = annualInterestRate / 100; // Convert percentage to decimal
 			const numberOfPayments = durationYears * 12; // Convert years to months
 
@@ -31,6 +46,8 @@
 			// Calculate monthly payment for the maximum loan amount
 			monthlyPayment = calculateMonthlyPayment(maxLoanAmount, annualRate, numberOfPayments);
 			calculationData = { principal, annualInterestRate, durationYears };
+
+			console.log('Calculation results:', { maxLoanAmount, monthlyPayment });
 		} catch (error) {
 			console.error('Error in calculation:', error);
 			monthlyPayment = 0;
@@ -151,15 +168,22 @@
 		color: var(--color-text-secondary);
 		font-size: var(--font-size-body);
 		line-height: var(--line-height-relaxed);
-		margin-bottom: var(--spacing-xl);
+		margin-bottom: calc(var(--spacing-xl) * 1.5);
 		max-width: 600px;
 	}
 
 	.calculator-container {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-xl);
+		gap: calc(var(--spacing-xl) * 2);
 		align-items: start;
+		margin-top: var(--spacing-xl);
+	}
+
+	.calculator-form,
+	.calculator-results {
+		/* Ensure consistent spacing */
+		margin: 0;
 	}
 
 	/* Responsive Design */
@@ -185,7 +209,8 @@
 
 		.calculator-container {
 			grid-template-columns: 1fr;
-			gap: var(--spacing-lg);
+			gap: calc(var(--spacing-lg) * 1.5);
+			margin-top: var(--spacing-lg);
 		}
 	}
 
