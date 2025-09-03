@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { validateFormInputs } from './validation.js';
+
 	// Props for event callbacks
 	interface Props {
 		onsubmit?: (data: {
@@ -17,14 +19,30 @@
 	let durationYears = $state(30); // Default duration in years
 	let buyingAlone = $state(true); // Whether buying alone or with partner
 
+	// Validation state
+	let hasInteracted = $state(false); // Track if user has interacted with form
+	let showErrors = $state(false); // Control when to show error messages
+
 	// Form validation derived state
+	let validationResults = $derived(() => {
+		return validateFormInputs(principal, annualInterestRate, durationYears);
+	});
+
 	let isFormValid = $derived(() => {
-		return principal > 0 && annualInterestRate >= 0 && durationYears > 0;
+		return validationResults().isValid;
+	});
+
+	// Show errors when user tries to submit invalid form or after interaction
+	let shouldShowErrors = $derived(() => {
+		return showErrors || (hasInteracted && !isFormValid());
 	});
 
 	// Handle form submission
 	function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
+		hasInteracted = true;
+		showErrors = true;
+		
 		if (isFormValid()) {
 			onsubmit?.({
 				principal,
@@ -42,6 +60,13 @@
 			// Create a synthetic SubmitEvent for consistency
 			const submitEvent = new SubmitEvent('submit', { cancelable: true });
 			handleSubmit(submitEvent);
+		}
+	}
+
+	// Handle input interaction
+	function handleInputInteraction() {
+		if (!hasInteracted) {
+			hasInteracted = true;
 		}
 	}
 </script>
@@ -78,10 +103,18 @@
 				step="1000"
 				placeholder="40,000"
 				onkeydown={handleKeyDown}
+				oninput={handleInputInteraction}
+				onblur={handleInputInteraction}
+				class:error={shouldShowErrors() && validationResults()?.errors?.principal}
 				required
 			/>
 			<span class="input-suffix">EUR</span>
 		</div>
+		{#if shouldShowErrors() && validationResults()?.errors?.principal}
+			<div class="error-message" role="alert">
+				{validationResults().errors.principal}
+			</div>
+		{/if}
 	</div>
 
 	<div class="form-group">
@@ -96,10 +129,18 @@
 				step="0.01"
 				placeholder="3.5"
 				onkeydown={handleKeyDown}
+				oninput={handleInputInteraction}
+				onblur={handleInputInteraction}
+				class:error={shouldShowErrors() && validationResults()?.errors?.interestRate}
 				required
 			/>
 			<span class="input-suffix">%</span>
 		</div>
+		{#if shouldShowErrors() && validationResults()?.errors?.interestRate}
+			<div class="error-message" role="alert">
+				{validationResults().errors.interestRate}
+			</div>
+		{/if}
 	</div>
 
 	<div class="form-group">
@@ -114,13 +155,27 @@
 				step="1"
 				placeholder="30"
 				onkeydown={handleKeyDown}
+				oninput={handleInputInteraction}
+				onblur={handleInputInteraction}
+				class:error={shouldShowErrors() && validationResults()?.errors?.duration}
 				required
 			/>
 			<span class="input-suffix">years</span>
 		</div>
+		{#if shouldShowErrors() && validationResults()?.errors?.duration}
+			<div class="error-message" role="alert">
+				{validationResults().errors.duration}
+			</div>
+		{/if}
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()}> Calculate </button>
+	<button type="submit" class="submit-button" disabled={!isFormValid()}> 
+		{#if isFormValid()}
+			Calculate
+		{:else}
+			Please fix errors above
+		{/if}
+	</button>
 </form>
 
 <style>
@@ -270,6 +325,34 @@
 	input:invalid:focus {
 		border-color: #cc0000;
 		box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+	}
+
+	/* Error state styling */
+	input.error {
+		border-color: #cc0000;
+		background-color: #fff5f5;
+	}
+
+	input.error:focus {
+		border-color: #cc0000;
+		box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+		background-color: #fff5f5;
+	}
+
+	.error-message {
+		margin-top: var(--spacing-xs);
+		color: #cc0000;
+		font-size: var(--font-size-small);
+		font-weight: var(--font-weight-medium);
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		line-height: var(--line-height-normal);
+	}
+
+	.error-message::before {
+		content: '⚠️';
+		font-size: 0.9em;
 	}
 
 	.submit-button {
