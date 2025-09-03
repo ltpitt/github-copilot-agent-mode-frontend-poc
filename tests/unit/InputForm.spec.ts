@@ -99,7 +99,8 @@ describe('InputForm Component Logic', () => {
 			];
 
 			testCases.forEach((testCase) => {
-				const isValid = testCase.principal > 0 && testCase.annualInterestRate >= 0 && testCase.durationYears > 0;
+				const isValid =
+					testCase.principal > 0 && testCase.annualInterestRate >= 0 && testCase.durationYears > 0;
 				expect(isValid).toBe(true);
 
 				// Verify the structure matches expected event data
@@ -116,7 +117,8 @@ describe('InputForm Component Logic', () => {
 			];
 
 			edgeCases.forEach((testCase) => {
-				const isValid = testCase.principal > 0 && testCase.annualInterestRate >= 0 && testCase.durationYears > 0;
+				const isValid =
+					testCase.principal > 0 && testCase.annualInterestRate >= 0 && testCase.durationYears > 0;
 				expect(isValid).toBe(true);
 			});
 		});
@@ -131,7 +133,8 @@ describe('InputForm Component Logic', () => {
 			};
 
 			// Verify defaults are valid
-			const isValid = defaults.principal > 0 && defaults.annualInterestRate >= 0 && defaults.durationYears > 0;
+			const isValid =
+				defaults.principal > 0 && defaults.annualInterestRate >= 0 && defaults.durationYears > 0;
 			expect(isValid).toBe(true);
 
 			// Verify defaults are reasonable for European mortgage market

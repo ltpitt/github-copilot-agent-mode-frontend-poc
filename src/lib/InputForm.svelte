@@ -17,11 +17,7 @@
 
 	// Form validation derived state
 	let isFormValid = $derived(() => {
-		return (
-			principal > 0 &&
-			annualInterestRate >= 0 &&
-			durationYears > 0
-		);
+		return principal > 0 && annualInterestRate >= 0 && durationYears > 0;
 	});
 
 	// Handle form submission
@@ -142,7 +138,9 @@
 		border: 2px solid #ddd;
 		border-radius: 4px;
 		font-size: 1rem;
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 		box-sizing: border-box;
 	}
 
@@ -166,7 +164,9 @@
 		font-size: 1rem;
 		font-weight: 600;
 		cursor: pointer;
-		transition: background-color 0.2s, opacity 0.2s;
+		transition:
+			background-color 0.2s,
+			opacity 0.2s;
 		margin-top: 1rem;
 	}
 
