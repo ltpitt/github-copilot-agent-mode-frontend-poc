@@ -1,10 +1,19 @@
-# ING Mortgage Calculator Frontend POC - GitHub Copilot Instructions
+# GitHub Copilot Agent Mode Frontend POC
 
 Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
 
-## Project Overview
+This repository is a **Proof of Concept (POC)** for testing techniques to use GitHub Copilot Agent Mode at its best. The codebase is a **mortgage calculator** built with SvelteKit and TypeScript, designed to showcase rapid development with modern web technologies.
 
-This is a SvelteKit TypeScript application serving as a proof-of-concept for an ING mortgage calculator frontend. The project uses modern web development practices with comprehensive testing and follows ING's design patterns.
+## Tech Stack
+
+- **Svelte 5** - Modern reactive framework (with runes system)
+- **SvelteKit** - Full-stack Svelte framework
+- **Vite** - Fast build tool and development server
+- **TypeScript** - Type safety and enhanced developer experience
+- **Vitest** - Unit testing framework
+- **Playwright** - Browser testing (optional)
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
 
 ## Working Effectively
 
@@ -123,10 +132,11 @@ npm run test
 
 **ALWAYS perform these validation steps after making changes:**
 
-1. **Basic Application Functionality**
+1. **Mortgage Calculator Testing**
    - Start dev server: `npm run dev`
    - Navigate to http://localhost:5173
-   - Verify "Welcome to SvelteKit" page loads
+   - Verify mortgage calculator loads with default values
+   - Test calculation updates when changing loan amount, rate, or term
    - Check browser console for errors
    - Test responsive design (mobile/desktop views)
 
@@ -142,61 +152,39 @@ npm run test
    - Run: `npm run check` (TypeScript validation)
    - All must complete successfully before committing
 
-## Key Projects and Code Structure
+## Code Structure
 
-### Repository Structure
+### Key Directories
 
-```
-├── .github/
-│   ├── copilot.yml          # Legacy Copilot config (use this file instead)
-│   └── copilot-instructions.md  # This file
-├── docs/                    # Design references and documentation
-│   ├── README.md           # Design system overview
-│   ├── accessibility.md    # WCAG compliance guidelines
-│   ├── design-system.md    # ING design patterns
-│   └── ux-patterns.md      # User experience guidelines
-├── src/
-│   ├── lib/
-│   │   ├── assets/         # Static assets
-│   │   └── index.ts        # Library exports
-│   ├── routes/
-│   │   ├── +layout.svelte  # App layout component
-│   │   ├── +page.svelte    # Home page (basic SvelteKit welcome)
-│   │   └── page.svelte.spec.ts  # Page component tests (browser)
-│   ├── app.d.ts           # TypeScript app definitions
-│   ├── app.html           # HTML template
-│   ├── demo.spec.ts       # Demo unit tests (server)
-│   └── example.spec.ts    # Example utility tests (server)
-├── static/                # Static files served at root
-├── package.json           # Dependencies and scripts
-├── vite.config.ts         # Vite configuration with Vitest
-├── svelte.config.js       # SvelteKit configuration
-├── tsconfig.json          # TypeScript configuration
-├── eslint.config.js       # ESLint configuration
-└── README.md              # Project documentation
-```
+- `src/routes/` - SvelteKit pages and layouts
+- `src/lib/` - Reusable components and utilities
+- `src/lib/assets/` - Static assets (favicon, images)
+- `static/` - Public static files
+- `tests/` - Test files (unit, integration)
+- `docs/` - Design references and documentation
 
-### Important Configuration Files
+### Important Files
 
-**vite.config.ts:** Configures both Vite build and Vitest testing with dual projects:
+- `src/routes/+page.svelte` - Main mortgage calculator page
+- `src/lib/mortgageCalculator.ts` - Core calculation logic
+- `src/routes/+layout.svelte` - Application layout with favicon
+- `package.json` - Dependencies and scripts
+- `svelte.config.js` - SvelteKit configuration
+- `vite.config.ts` - Vite build configuration with Vitest
+- `tsconfig.json` - TypeScript configuration
 
-- `client` project: Browser tests using Playwright
-- `server` project: Node.js unit tests
+### Component Architecture
 
-**package.json Scripts:**
+The mortgage calculator uses modern patterns:
 
-- `dev` - Development server
-- `build` - Production build
-- `preview` - Preview production build
-- `test` - Run all tests
-- `test:unit` - Run tests in watch mode
-- `lint` - Check code formatting and linting
-- `format` - Auto-fix code formatting
-- `check` - TypeScript validation
+- Utility functions for business logic (`src/lib/mortgageCalculator.ts`)
+- Svelte 5 runes system: `$state()`, `$derived()` for reactive variables
+- TypeScript for type safety throughout
+- Component-based architecture with clear separation of concerns
 
-## Design Alignment Requirements
+## Design and Accessibility
 
-### ING Visual Reference
+### Visual Reference
 
 - **Primary Reference:** https://www.ing.nl/en/personal/mortgage/mortgage-calculator
 - **Color Scheme:** ING Orange (#FF6200) primary, complementary blues/grays
@@ -212,22 +200,29 @@ npm run test
 - Minimum 44px touch targets for mobile
 - High contrast color ratios
 
+## Common Development Tasks
+
+### Adding New Components
+
+1. Create component in `src/lib/` or `src/lib/components/`
+2. Export from `src/lib/index.ts` if needed
+3. Write tests alongside component files
+4. Follow Svelte best practices and TypeScript typing
+5. Always run `npm run check` to verify TypeScript
+
+### Styling Guidelines
+
+- Component-scoped CSS using `<style>` blocks
+- Uses CSS custom properties and modern CSS features
+- Primary brand color: `#FF6200` (ING Orange)
+- Follow ING design system patterns
+
 ### Testing Strategy
 
 - **Unit Tests:** Business logic and utility functions (working)
 - **Component Tests:** Svelte component behavior (requires Playwright)
 - **Integration Tests:** User workflows and data flow
-- **Accessibility Tests:** Automated a11y validation
-- **Visual Regression:** Screenshot comparisons (future)
-
-## Common Development Tasks
-
-### Adding New Components
-
-1. Create in `src/lib/components/`
-2. Export from `src/lib/index.ts`
-3. Write tests alongside component files
-4. Follow Svelte best practices and TypeScript typing
+- **Server Tests:** Run with `npx vitest run --project server`
 
 ### Development Workflow
 
@@ -236,13 +231,49 @@ npm run test
 3. **Always verify** production build with `npm run build && npm run preview`
 4. **Run server tests** with `npx vitest run --project server`
 
-### Svelte-Specific Guidelines
+## Project Structure Reference
 
-- Use reactive statements (`$:`) for computed values
-- Leverage Svelte stores for shared state management
-- Keep components small and focused
-- Use proper lifecycle methods (onMount, onDestroy)
-- Follow PascalCase for components, camelCase for variables
+```
+Repository root:
+├── .github/
+│   ├── copilot.yml          # Legacy Copilot config
+│   └── copilot-instructions.md  # This file
+├── docs/                    # Design references and documentation
+│   ├── README.md           # Design system overview
+│   ├── accessibility.md    # WCAG compliance guidelines
+│   ├── design-system.md    # ING design patterns
+│   └── ux-patterns.md      # User experience guidelines
+├── src/
+│   ├── lib/
+│   │   ├── assets/         # Static assets (favicon, images)
+│   │   ├── mortgageCalculator.ts  # Core calculation logic
+│   │   └── index.ts        # Library exports
+│   ├── routes/
+│   │   ├── +layout.svelte  # App layout component
+│   │   ├── +page.svelte    # Main mortgage calculator page
+│   │   └── page.svelte.spec.ts  # Page component tests (browser)
+│   ├── components/         # Reusable components
+│   ├── app.d.ts           # TypeScript app definitions
+│   ├── app.html           # HTML template
+│   ├── demo.spec.ts       # Demo unit tests (server)
+│   └── example.spec.ts    # Example utility tests (server)
+├── static/                # Static files served at root
+│   └── robots.txt
+├── tests/                 # Test files
+│   ├── mortgageCalculator.spec.ts  # Unit tests for calculator
+│   ├── unit/              # Unit test directory
+│   ├── integration/       # Integration test directory
+│   └── fixtures/          # Test fixtures
+├── package.json           # Dependencies and scripts
+├── svelte.config.js       # SvelteKit configuration
+├── vite.config.ts         # Vite configuration with Vitest
+├── tsconfig.json          # TypeScript configuration
+├── eslint.config.js       # ESLint configuration
+├── .prettierrc            # Prettier configuration
+├── .prettierignore        # Prettier ignore patterns
+├── .gitignore             # Git ignore patterns
+└── README.md              # Project documentation
+```
 
 ## Troubleshooting
 
@@ -252,6 +283,8 @@ npm run test
 - **Type errors:** Run `npm run check` for detailed TypeScript diagnostics
 - **Build failures:** Check for ESLint/Prettier issues with `npm run lint`
 - **Tests failing:** Verify Playwright installation and browser availability
+- **Build fails with missing favicon**: Ensure `src/lib/assets/favicon.svg` exists
+- **Dev server port conflict**: Change port with `npm run dev -- --port 3000`
 
 ### Performance Considerations
 
@@ -268,7 +301,7 @@ npm run test
 - [ ] `npm run check` passes
 - [ ] `npm run build` succeeds
 - [ ] Manual validation completed
-- [ ] Server tests pass
+- [ ] Server tests pass (`npx vitest run --project server`)
 
 **Expected CI Pipeline:**
 
