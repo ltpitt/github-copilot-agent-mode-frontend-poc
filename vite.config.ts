@@ -72,7 +72,7 @@ if (browserTestsAvailable) {
 			browser: {
 				enabled: true,
 				provider: 'playwright',
-				instances: [{ browser: 'chromium' }],
+				instances: [{ browser: 'chromium', headless: true }],
 				// Add better error handling and cleanup
 				api: {
 					port: 63315

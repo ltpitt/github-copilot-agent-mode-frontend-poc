@@ -45,7 +45,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Install Playwright browsers (for full test suite)
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
         continue-on-error: true
         timeout-minutes: 10
 
