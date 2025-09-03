@@ -157,10 +157,9 @@ npm run test
 ### Key Directories
 
 - `src/routes/` - SvelteKit pages and layouts
-- `src/lib/` - Reusable components and utilities
+- `src/lib/` - Reusable components and utilities (with colocated tests)
 - `src/lib/assets/` - Static assets (favicon, images)
 - `static/` - Public static files
-- `tests/` - Test files (unit, integration)
 - `docs/` - Design references and documentation
 
 ### Important Files
@@ -219,10 +218,11 @@ The mortgage calculator uses modern patterns:
 
 ### Testing Strategy
 
-- **Unit Tests:** Business logic and utility functions (working)
-- **Component Tests:** Svelte component behavior (requires Playwright)
-- **Integration Tests:** User workflows and data flow
+- **Unit Tests:** Business logic and utility functions (colocated in src/lib/)
+- **Component Tests:** Svelte component behavior (colocated with components, requires Playwright)
+- **Integration Tests:** User workflows and data flow (as needed)
 - **Server Tests:** Run with `npx vitest run --project server`
+- **Test Colocation:** All tests are placed next to their corresponding source files
 
 ### Development Workflow
 
@@ -246,24 +246,27 @@ Repository root:
 ├── src/
 │   ├── lib/
 │   │   ├── assets/         # Static assets (favicon, images)
-│   │   ├── mortgageCalculator.ts  # Core calculation logic
+│   │   ├── InputForm.svelte # Input form component
+│   │   ├── InputForm.spec.ts # Tests for InputForm component
+│   │   ├── ResultDisplay.svelte # Result display component
+│   │   ├── ResultDisplay.spec.ts # Tests for ResultDisplay component
+│   │   ├── MortgageCalculator.svelte # Main calculator component
+│   │   ├── NumberInput.svelte # Number input component
+│   │   ├── mortgageCalculator.ts # Core calculation logic
+│   │   ├── mortgageCalculator.spec.ts # Tests for calculator logic
+│   │   ├── validation.ts   # Validation utilities
+│   │   ├── validation.spec.ts # Tests for validation logic
 │   │   └── index.ts        # Library exports
 │   ├── routes/
 │   │   ├── +layout.svelte  # App layout component
 │   │   ├── +page.svelte    # Main mortgage calculator page
-│   │   └── page.svelte.spec.ts  # Page component tests (browser)
-│   ├── components/         # Reusable components
+│   │   ├── page.svelte.spec.ts  # Page component tests (browser)
+│   │   └── demo/           # Demo pages
+│   ├── components/         # Additional reusable components
 │   ├── app.d.ts           # TypeScript app definitions
-│   ├── app.html           # HTML template
-│   ├── demo.spec.ts       # Demo unit tests (server)
-│   └── example.spec.ts    # Example utility tests (server)
+│   └── app.html           # HTML template
 ├── static/                # Static files served at root
 │   └── robots.txt
-├── tests/                 # Test files
-│   ├── mortgageCalculator.spec.ts  # Unit tests for calculator
-│   ├── unit/              # Unit test directory
-│   ├── integration/       # Integration test directory
-│   └── fixtures/          # Test fixtures
 ├── package.json           # Dependencies and scripts
 ├── svelte.config.js       # SvelteKit configuration
 ├── vite.config.ts         # Vite configuration with Vitest
