@@ -3,7 +3,8 @@ import {
 	validateFormInputs,
 	validatePrincipal,
 	validateInterestRate,
-	validateDuration
+	validateDuration,
+	validateBuyingType
 } from '../src/lib/validation';
 
 describe('Validation Functions', () => {
@@ -109,31 +110,81 @@ describe('Validation Functions', () => {
 		});
 	});
 
+	describe('validateBuyingType', () => {
+		it('should validate when buying alone (true)', () => {
+			const result = validateBuyingType(true);
+			expect(result.isValid).toBe(true);
+			expect(result.message).toBeUndefined();
+		});
+
+		it('should validate when buying together (false)', () => {
+			const result = validateBuyingType(false);
+			expect(result.isValid).toBe(true);
+			expect(result.message).toBeUndefined();
+		});
+
+		it('should reject when value is null', () => {
+			const result = validateBuyingType(null);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('You have not answered the question. This is mandatory.');
+		});
+
+		it('should reject when value is undefined', () => {
+			const result = validateBuyingType(undefined);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('You have not answered the question. This is mandatory.');
+		});
+	});
+
 	describe('validateFormInputs', () => {
-		it('should validate all valid inputs', () => {
-			const result = validateFormInputs(300000, 3.5, 30);
+		it('should validate all valid inputs including buying type', () => {
+			const result = validateFormInputs(300000, 3.5, 30, true);
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
 		});
 
+		it('should validate with buying alone false', () => {
+			const result = validateFormInputs(300000, 3.5, 30, false);
+			expect(result.isValid).toBe(true);
+			expect(result.errors).toEqual({});
+		});
+
+		it('should fail validation when buying type is not provided', () => {
+			const result = validateFormInputs(300000, 3.5, 30);
+			expect(result.isValid).toBe(false);
+			expect(result.errors.buyingType).toBe(
+				'You have not answered the question. This is mandatory.'
+			);
+		});
+
+		it('should fail validation when buying type is explicitly null', () => {
+			const result = validateFormInputs(300000, 3.5, 30, null);
+			expect(result.isValid).toBe(false);
+			expect(result.errors.buyingType).toBe(
+				'You have not answered the question. This is mandatory.'
+			);
+		});
+
 		it('should return multiple errors for invalid inputs', () => {
-			const result = validateFormInputs(-1000, -1, 0);
+			const result = validateFormInputs(-1000, -1, 0, true);
 			expect(result.isValid).toBe(false);
 			expect(result.errors.principal).toBe('Income must be greater than 0');
 			expect(result.errors.interestRate).toBe('Interest rate cannot be negative');
 			expect(result.errors.duration).toBe('Duration must be greater than 0 years');
+			expect(result.errors.buyingType).toBeUndefined();
 		});
 
 		it('should return single error when only one field is invalid', () => {
-			const result = validateFormInputs(-5000, 4.5, 25);
+			const result = validateFormInputs(-5000, 4.5, 25, false);
 			expect(result.isValid).toBe(false);
 			expect(result.errors.principal).toBe('Income must be greater than 0');
 			expect(result.errors.interestRate).toBeUndefined();
 			expect(result.errors.duration).toBeUndefined();
+			expect(result.errors.buyingType).toBeUndefined();
 		});
 
-		it('should handle edge case values', () => {
-			const result = validateFormInputs(1, 0, 1);
+		it('should handle edge case values with valid buying type', () => {
+			const result = validateFormInputs(1, 0, 1, true);
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
 		});
