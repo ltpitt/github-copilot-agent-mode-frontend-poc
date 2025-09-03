@@ -119,8 +119,9 @@
 			aria-label="Decrease {label}"
 			tabindex="-1"
 		>
-			<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-				<path d="M4 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+			<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+				<rect x="2" y="2" width="12" height="12" stroke="currentColor" stroke-width="1.5" rx="2" />
+				<path d="M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
 			</svg>
 		</button>
 
@@ -150,8 +151,9 @@
 			aria-label="Increase {label}"
 			tabindex="-1"
 		>
-			<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-				<path d="M8 4v8M4 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+			<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+				<rect x="2" y="2" width="12" height="12" stroke="currentColor" stroke-width="1.5" rx="2" />
+				<path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
 			</svg>
 		</button>
 
@@ -194,7 +196,7 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		border: 2px solid var(--color-border);
+		border: 1px solid var(--color-border);
 		border-radius: var(--border-radius-sm);
 		background: var(--color-background);
 		transition: border-color var(--transition-normal);
@@ -202,12 +204,12 @@
 	}
 
 	.number-input-container:focus-within {
-		border-color: var(--color-blue);
-		box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 2px rgba(255, 98, 0, 0.2);
 	}
 
 	.number-input-container:hover:not(.disabled):not(:focus-within) {
-		border-color: var(--color-text-secondary);
+		border-color: var(--color-primary);
 	}
 
 	.number-input-container.error {
@@ -263,20 +265,22 @@
 		width: 48px;
 		height: 48px;
 		border: none;
-		background: var(--color-background-light);
-		color: var(--color-text-secondary);
+		background: var(--color-background);
+		color: var(--color-primary);
 		cursor: pointer;
 		transition: all var(--transition-normal);
 		flex-shrink: 0;
+		border-radius: var(--border-radius-sm);
 	}
 
 	.stepper-button:hover:not(:disabled) {
-		background: var(--color-primary);
-		color: white;
+		background: var(--color-background-light);
+		color: var(--color-primary-dark);
 	}
 
 	.stepper-button:active:not(:disabled) {
-		background: var(--color-primary-dark);
+		background: var(--color-primary);
+		color: white;
 	}
 
 	.stepper-button:disabled {

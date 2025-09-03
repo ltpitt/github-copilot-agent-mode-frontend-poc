@@ -8,7 +8,7 @@
 			principal: number;
 			annualInterestRate: number;
 			durationYears: number;
-			buyingAlone: boolean;
+			buyingAlone: boolean | null;
 		}) => void;
 	}
 
@@ -18,7 +18,7 @@
 	let principal = $state(300000); // Default loan amount in Euros
 	let annualInterestRate = $state(3.5); // Default annual interest rate in percentage
 	let durationYears = $state(30); // Default duration in years
-	let buyingAlone = $state(true); // Whether buying alone or with partner
+	let buyingAlone = $state<boolean | null>(null); // Whether buying alone or with partner - starts as null to require selection
 
 	// Validation state
 	let hasInteracted = $state(false); // Track if user has interacted with form
@@ -26,7 +26,7 @@
 
 	// Form validation derived state
 	let validationResults = $derived(() => {
-		return validateFormInputs(principal, annualInterestRate, durationYears);
+		return validateFormInputs(principal, annualInterestRate, durationYears, buyingAlone);
 	});
 
 	let isFormValid = $derived(() => {
@@ -44,6 +44,12 @@
 		hasInteracted = true;
 		showErrors = true;
 
+		console.log('Form submitted, validation state:', {
+			isFormValid: isFormValid(),
+			buyingAlone,
+			validationResults: validationResults()
+		});
+
 		if (isFormValid()) {
 			onsubmit?.({
 				principal,
@@ -51,6 +57,8 @@
 				durationYears,
 				buyingAlone
 			});
+		} else {
+			console.log('Form validation failed');
 		}
 	}
 
@@ -76,20 +84,42 @@
 	<h2>What maximum amount can I borrow?</h2>
 
 	<div class="form-group">
-		<fieldset>
+		<fieldset class:error={shouldShowErrors() && !!validationResults()?.errors?.buyingType}>
 			<legend class="question-label">Do you buy alone or together?</legend>
 			<div class="radio-group">
 				<label class="radio-option">
-					<input type="radio" bind:group={buyingAlone} value={true} name="buying-type" />
+					<input
+						type="radio"
+						bind:group={buyingAlone}
+						value={true}
+						name="buying-type"
+						oninput={handleInputInteraction}
+					/>
 					<span class="radio-icon">👤</span>
 					Alone
 				</label>
 				<label class="radio-option">
-					<input type="radio" bind:group={buyingAlone} value={false} name="buying-type" />
+					<input
+						type="radio"
+						bind:group={buyingAlone}
+						value={false}
+						name="buying-type"
+						oninput={handleInputInteraction}
+					/>
 					<span class="radio-icon">👥</span>
 					Together
 				</label>
 			</div>
+			{#if shouldShowErrors() && validationResults()?.errors?.buyingType}
+				<div class="error-message" role="alert">
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="error-icon">
+						<path
+							d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11.5c-.4 0-.8-.3-.8-.8s.3-.8.8-.8.8.3.8.8-.4.8-.8.8zm.8-3.2h-1.6V5.2h1.6v4.6z"
+						/>
+					</svg>
+					{validationResults()?.errors?.buyingType}
+				</div>
+			{/if}
 		</fieldset>
 	</div>
 
@@ -199,6 +229,30 @@
 		border: none;
 		margin: 0;
 		padding: 0;
+	}
+
+	fieldset.error {
+		border: 2px solid #cc0000;
+		border-radius: var(--border-radius-sm);
+		padding: var(--spacing-md);
+		background-color: #fff5f5;
+	}
+
+	.error-message {
+		margin-top: var(--spacing-xs);
+		color: #cc0000;
+		font-size: var(--font-size-small);
+		font-weight: var(--font-weight-medium);
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		line-height: var(--line-height-normal);
+	}
+
+	.error-icon {
+		flex-shrink: 0;
+		width: 16px;
+		height: 16px;
 	}
 
 	label {

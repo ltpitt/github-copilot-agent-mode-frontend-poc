@@ -17,10 +17,25 @@
 		principal: number;
 		annualInterestRate: number;
 		durationYears: number;
-		buyingAlone: boolean;
+		buyingAlone: boolean | null;
 	}) {
+		console.log('Form submitted with data:', data);
 		try {
-			const { principal, annualInterestRate, durationYears } = data;
+			const { principal, annualInterestRate, durationYears, buyingAlone } = data;
+
+			// Ensure we have valid data
+			if (buyingAlone === null) {
+				console.error('Buying type not selected');
+				return;
+			}
+
+			console.log('Processing calculation with:', {
+				principal,
+				annualInterestRate,
+				durationYears,
+				buyingAlone
+			});
+
 			const annualRate = annualInterestRate / 100; // Convert percentage to decimal
 			const numberOfPayments = durationYears * 12; // Convert years to months
 
@@ -31,6 +46,8 @@
 			// Calculate monthly payment for the maximum loan amount
 			monthlyPayment = calculateMonthlyPayment(maxLoanAmount, annualRate, numberOfPayments);
 			calculationData = { principal, annualInterestRate, durationYears };
+
+			console.log('Calculation results:', { maxLoanAmount, monthlyPayment });
 		} catch (error) {
 			console.error('Error in calculation:', error);
 			monthlyPayment = 0;
