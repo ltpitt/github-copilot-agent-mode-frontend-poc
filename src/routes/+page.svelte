@@ -3,33 +3,57 @@
 	import InputForm from '$lib/InputForm.svelte';
 	import ResultDisplay from '$lib/ResultDisplay.svelte';
 
-	// State for storing the calculation result
+	// State for storing the calculation result and form data
 	let monthlyPayment = $state(0);
+	let maximumMortgage = $state(0);
+	let calculationData = $state({
+		principal: 0,
+		annualInterestRate: 0,
+		durationYears: 0
+	});
 
 	// Handle form submission from InputForm component
 	function handleFormSubmit(data: {
 		principal: number;
 		annualInterestRate: number;
 		durationYears: number;
+		buyingAlone: boolean;
 	}) {
 		try {
 			const { principal, annualInterestRate, durationYears } = data;
 			const annualRate = annualInterestRate / 100; // Convert percentage to decimal
 			const numberOfPayments = durationYears * 12; // Convert years to months
 
-			monthlyPayment = calculateMonthlyPayment(principal, annualRate, numberOfPayments);
-		} catch {
+			// Calculate maximum loan amount based on income (4.5x annual income)
+			const maxLoanAmount = principal * 4.5;
+			maximumMortgage = maxLoanAmount;
+
+			// Calculate monthly payment for the maximum loan amount
+			monthlyPayment = calculateMonthlyPayment(maxLoanAmount, annualRate, numberOfPayments);
+			calculationData = { principal, annualInterestRate, durationYears };
+		} catch (error) {
+			console.error('Error in calculation:', error);
 			monthlyPayment = 0;
+			maximumMortgage = 0;
+			calculationData = { principal: 0, annualInterestRate: 0, durationYears: 0 };
 		}
 	}
 </script>
 
 <main>
-	<h1>Mortgage Calculator POC</h1>
+	<h1>Mortgage Calculator</h1>
+	<p class="subtitle">
+		Calculate your maximum mortgage quickly and easily. This is useful if you are looking to buy a
+		house, or if you are just curious.
+	</p>
 
-	<div class="calculator">
-		<InputForm onsubmit={handleFormSubmit} />
-		<ResultDisplay {monthlyPayment} />
+	<div class="calculator-container">
+		<div class="calculator-form">
+			<InputForm onsubmit={handleFormSubmit} />
+		</div>
+		<div class="calculator-results">
+			<ResultDisplay {monthlyPayment} {maximumMortgage} {calculationData} />
+		</div>
 	</div>
 </main>
 
@@ -111,28 +135,36 @@
 		padding: var(--spacing-lg) var(--spacing-sm);
 		max-width: 1200px;
 		margin: 0 auto;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
 	}
 
 	h1 {
-		color: var(--color-primary);
-		text-align: center;
-		margin-bottom: var(--spacing-xl);
+		color: var(--color-text-primary);
+		text-align: left;
+		margin-bottom: var(--spacing-sm);
 		font-size: var(--font-size-h1);
 		font-weight: var(--font-weight-bold);
 		line-height: var(--line-height-tight);
 		letter-spacing: -0.02em;
 	}
 
-	.calculator {
-		width: 100%;
+	.subtitle {
+		color: var(--color-text-secondary);
+		font-size: var(--font-size-body);
+		line-height: var(--line-height-relaxed);
+		margin-bottom: var(--spacing-xl);
 		max-width: 600px;
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-lg);
+	}
+
+	.calculator-container {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--spacing-xl);
+		align-items: start;
+	}
+
+	.calculator-form,
+	.calculator-results {
+		/* Styling handled by child components */
 	}
 
 	/* Responsive Design */
@@ -144,22 +176,31 @@
 
 		main {
 			padding: var(--spacing-md) var(--spacing-sm);
-			justify-content: flex-start;
-			padding-top: var(--spacing-lg);
 		}
 
 		h1 {
+			margin-bottom: var(--spacing-sm);
+			text-align: center;
+		}
+
+		.subtitle {
+			text-align: center;
 			margin-bottom: var(--spacing-lg);
 		}
 
-		.calculator {
-			gap: var(--spacing-md);
+		.calculator-container {
+			grid-template-columns: 1fr;
+			gap: var(--spacing-lg);
 		}
 	}
 
 	@media (max-width: 480px) {
 		main {
 			padding: var(--spacing-sm);
+		}
+
+		.calculator-container {
+			gap: var(--spacing-md);
 		}
 	}
 

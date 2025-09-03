@@ -5,6 +5,7 @@
 			principal: number;
 			annualInterestRate: number;
 			durationYears: number;
+			buyingAlone: boolean;
 		}) => void;
 	}
 
@@ -14,6 +15,7 @@
 	let principal = $state(300000); // Default loan amount in Euros
 	let annualInterestRate = $state(3.5); // Default annual interest rate in percentage
 	let durationYears = $state(30); // Default duration in years
+	let buyingAlone = $state(true); // Whether buying alone or with partner
 
 	// Form validation derived state
 	let isFormValid = $derived(() => {
@@ -27,7 +29,8 @@
 			onsubmit?.({
 				principal,
 				annualInterestRate,
-				durationYears
+				durationYears,
+				buyingAlone
 			});
 		}
 	}
@@ -44,56 +47,80 @@
 </script>
 
 <form class="input-form" onsubmit={handleSubmit}>
-	<h2>Mortgage Calculator</h2>
-	<p class="description">Enter your loan details to calculate monthly payments in Euros</p>
+	<h2>What maximum amount can I borrow?</h2>
 
 	<div class="form-group">
-		<label for="principal">Principal Amount (€)</label>
-		<input
-			id="principal"
-			type="number"
-			bind:value={principal}
-			min="1"
-			step="1000"
-			placeholder="300000"
-			onkeydown={handleKeyDown}
-			required
-		/>
+		<fieldset>
+			<legend class="question-label">Do you buy alone or together?</legend>
+			<div class="radio-group">
+				<label class="radio-option">
+					<input type="radio" bind:group={buyingAlone} value={true} name="buying-type" />
+					<span class="radio-icon">👤</span>
+					Alone
+				</label>
+				<label class="radio-option">
+					<input type="radio" bind:group={buyingAlone} value={false} name="buying-type" />
+					<span class="radio-icon">👥</span>
+					Together
+				</label>
+			</div>
+		</fieldset>
+	</div>
+
+	<div class="form-group">
+		<label for="principal">Your gross annual income</label>
+		<div class="input-with-suffix">
+			<input
+				id="principal"
+				type="number"
+				bind:value={principal}
+				min="1"
+				step="1000"
+				placeholder="40,000"
+				onkeydown={handleKeyDown}
+				required
+			/>
+			<span class="input-suffix">EUR</span>
+		</div>
 	</div>
 
 	<div class="form-group">
 		<label for="interest-rate">Annual Interest Rate (%)</label>
-		<input
-			id="interest-rate"
-			type="number"
-			bind:value={annualInterestRate}
-			min="0"
-			max="50"
-			step="0.01"
-			placeholder="3.5"
-			onkeydown={handleKeyDown}
-			required
-		/>
+		<div class="input-with-suffix">
+			<input
+				id="interest-rate"
+				type="number"
+				bind:value={annualInterestRate}
+				min="0"
+				max="50"
+				step="0.01"
+				placeholder="3.5"
+				onkeydown={handleKeyDown}
+				required
+			/>
+			<span class="input-suffix">%</span>
+		</div>
 	</div>
 
 	<div class="form-group">
 		<label for="duration">Duration (years)</label>
-		<input
-			id="duration"
-			type="number"
-			bind:value={durationYears}
-			min="1"
-			max="50"
-			step="1"
-			placeholder="30"
-			onkeydown={handleKeyDown}
-			required
-		/>
+		<div class="input-with-suffix">
+			<input
+				id="duration"
+				type="number"
+				bind:value={durationYears}
+				min="1"
+				max="50"
+				step="1"
+				placeholder="30"
+				onkeydown={handleKeyDown}
+				required
+			/>
+			<span class="input-suffix">years</span>
+		</div>
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()}>
-		Calculate Monthly Payment
-	</button>
+	<button type="submit" class="submit-button" disabled={!isFormValid()}> Calculate </button>
 </form>
 
 <style>
@@ -104,30 +131,36 @@
 		box-shadow: var(--shadow-medium);
 		border: 1px solid var(--color-border-light);
 		width: 100%;
-		max-width: 500px;
-		margin: 0 auto;
+		margin: 0;
 	}
 
 	h2 {
-		color: var(--color-text-primary);
-		text-align: center;
-		margin-bottom: var(--spacing-xs);
-		font-size: var(--font-size-h2);
+		color: var(--color-primary);
+		margin-bottom: var(--spacing-xl);
+		font-size: var(--font-size-h3);
 		font-weight: var(--font-weight-bold);
 		line-height: var(--line-height-tight);
 	}
 
-	.description {
-		text-align: center;
-		color: var(--color-text-secondary);
+	.form-group {
 		margin-bottom: var(--spacing-xl);
-		font-size: var(--font-size-small);
-		line-height: var(--line-height-relaxed);
+		position: relative;
 	}
 
-	.form-group {
-		margin-bottom: var(--spacing-lg);
-		position: relative;
+	.question-label {
+		display: block;
+		margin-bottom: var(--spacing-md);
+		font-weight: var(--font-weight-semibold);
+		color: var(--color-text-primary);
+		font-size: var(--font-size-body);
+		border: none;
+		padding: 0;
+	}
+
+	fieldset {
+		border: none;
+		margin: 0;
+		padding: 0;
 	}
 
 	label {
@@ -136,6 +169,53 @@
 		font-weight: var(--font-weight-semibold);
 		color: var(--color-text-primary);
 		font-size: var(--font-size-body);
+	}
+
+	.radio-group {
+		display: flex;
+		gap: var(--spacing-lg);
+	}
+
+	.radio-option {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		padding: var(--spacing-md);
+		border: 2px solid var(--color-border);
+		border-radius: var(--border-radius-sm);
+		cursor: pointer;
+		transition: all var(--transition-normal);
+		flex: 1;
+		justify-content: center;
+		background: var(--color-background);
+		font-weight: var(--font-weight-medium);
+	}
+
+	.radio-option:hover {
+		border-color: var(--color-primary);
+		background: var(--color-background-light);
+	}
+
+	.radio-option input[type='radio'] {
+		margin: 0;
+		width: auto;
+		min-height: auto;
+	}
+
+	.radio-option:has(input:checked) {
+		border-color: var(--color-primary);
+		background: var(--color-primary);
+		color: white;
+	}
+
+	.radio-icon {
+		font-size: 1.2em;
+	}
+
+	.input-with-suffix {
+		position: relative;
+		display: flex;
+		align-items: center;
 	}
 
 	input {
@@ -153,6 +233,23 @@
 			background-color var(--transition-normal);
 		box-sizing: border-box;
 		min-height: 48px; /* Minimum touch target size */
+	}
+
+	.input-with-suffix input {
+		padding-right: 4rem;
+	}
+
+	.input-suffix {
+		position: absolute;
+		right: var(--spacing-md);
+		color: var(--color-text-secondary);
+		font-weight: var(--font-weight-medium);
+		font-size: var(--font-size-small);
+		background: var(--color-background-light);
+		padding: 0.25rem 0.5rem;
+		border-radius: var(--border-radius-sm);
+		border: 1px solid var(--color-border-light);
+		pointer-events: none;
 	}
 
 	input:focus {
@@ -190,7 +287,7 @@
 			background-color var(--transition-normal),
 			transform var(--transition-fast),
 			box-shadow var(--transition-normal);
-		margin-top: var(--spacing-md);
+		margin-top: var(--spacing-lg);
 		min-height: 48px; /* Minimum touch target size */
 		position: relative;
 		overflow: hidden;
@@ -220,33 +317,14 @@
 		outline-offset: 2px;
 	}
 
-	/* Loading state for button */
-	.submit-button:active:not(:disabled)::after {
-		content: '';
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: 20px;
-		height: 20px;
-		margin: -10px 0 0 -10px;
-		border: 2px solid transparent;
-		border-top: 2px solid rgba(255, 255, 255, 0.6);
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
-		100% {
-			transform: rotate(360deg);
-		}
-	}
-
 	/* Enhanced focus indicators for accessibility */
 	input:focus,
 	.submit-button:focus {
+		outline: 2px solid var(--color-blue);
+		outline-offset: 2px;
+	}
+
+	.radio-option:focus-within {
 		outline: 2px solid var(--color-blue);
 		outline-offset: 2px;
 	}
@@ -257,11 +335,13 @@
 			border: 2px solid var(--color-text-primary);
 		}
 
-		input {
+		input,
+		.radio-option {
 			border-width: 2px;
 		}
 
-		input:focus {
+		input:focus,
+		.radio-option:focus-within {
 			border-color: var(--color-blue);
 			outline: 3px solid var(--color-blue);
 		}
@@ -274,21 +354,13 @@
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		input,
-		.submit-button {
+		.submit-button,
+		.radio-option {
 			transition: none;
 		}
 
 		.submit-button:hover:not(:disabled) {
 			transform: none;
-		}
-
-		@keyframes spin {
-			0% {
-				transform: rotate(0deg);
-			}
-			100% {
-				transform: rotate(0deg);
-			}
 		}
 	}
 
@@ -296,7 +368,6 @@
 	@media (max-width: 768px) {
 		.input-form {
 			padding: var(--spacing-lg);
-			margin: var(--spacing-sm);
 			border-radius: var(--border-radius-md);
 		}
 
@@ -305,14 +376,22 @@
 		}
 
 		.form-group {
-			margin-bottom: var(--spacing-md);
+			margin-bottom: var(--spacing-lg);
+		}
+
+		.radio-group {
+			flex-direction: column;
+			gap: var(--spacing-sm);
+		}
+
+		.radio-option {
+			justify-content: flex-start;
 		}
 	}
 
 	@media (max-width: 480px) {
 		.input-form {
 			padding: var(--spacing-md);
-			margin: var(--spacing-xs);
 		}
 
 		input,

@@ -2,94 +2,109 @@
 	// Props interface for the ResultDisplay component
 	interface Props {
 		monthlyPayment: number;
+		maximumMortgage?: number;
+		calculationData?: {
+			principal: number;
+			annualInterestRate: number;
+			durationYears: number;
+		};
 		label?: string;
 	}
 
-	let { monthlyPayment, label = 'Monthly Payment' }: Props = $props();
+	let {
+		monthlyPayment,
+		maximumMortgage = 0,
+		calculationData = { principal: 0, annualInterestRate: 0, durationYears: 0 },
+		label = 'Maximum mortgage'
+	}: Props = $props();
 
 	// Format currency using EUR formatting for European markets
-	let formattedPayment = $derived(() => {
-		if (monthlyPayment == null || isNaN(monthlyPayment) || monthlyPayment < 0) {
-			return '€0.00';
+	let formattedMaxMortgage = $derived(() => {
+		if (maximumMortgage == null || isNaN(maximumMortgage) || maximumMortgage <= 0) {
+			return '€0';
 		}
 
-		return new Intl.NumberFormat('de-DE', {
+		return new Intl.NumberFormat('en-NL', {
 			style: 'currency',
 			currency: 'EUR',
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(maximumMortgage);
+	});
+
+	let formattedMonthlyPayment = $derived(() => {
+		if (monthlyPayment == null || isNaN(monthlyPayment) || monthlyPayment < 0) {
+			return '€0';
+		}
+
+		return new Intl.NumberFormat('en-NL', {
+			style: 'currency',
+			currency: 'EUR',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
 		}).format(monthlyPayment);
 	});
 
 	// Determine if the payment amount is valid for styling purposes
-	let isValidPayment = $derived(() => {
+	let isValidCalculation = $derived(() => {
 		return monthlyPayment != null && !isNaN(monthlyPayment) && monthlyPayment > 0;
 	});
 
-	// Calculate additional information for display
-	let yearlyPaymentValue = $derived(() => {
-		if (!isValidPayment()) return 0;
-		return monthlyPayment * 12;
-	});
-
-	let totalAmountValue = $derived(() => {
-		if (!isValidPayment()) return 0;
-		return monthlyPayment * 30 * 12; // Assuming 30 years
-	});
-
-	let yearlyPaymentFormatted = $derived(() => {
-		return new Intl.NumberFormat('de-DE', {
-			style: 'currency',
-			currency: 'EUR',
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
-		}).format(yearlyPaymentValue());
-	});
-
-	let totalAmountFormatted = $derived(() => {
-		return new Intl.NumberFormat('de-DE', {
-			style: 'currency',
-			currency: 'EUR',
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
-		}).format(totalAmountValue());
+	let interestDescription = $derived(() => {
+		if (!isValidCalculation()) return '';
+		return `Annuity, ${calculationData.durationYears} year fixed ${calculationData.annualInterestRate}%`;
 	});
 </script>
 
-<div class="result-display" class:invalid={!isValidPayment()}>
-	<div class="result-content">
-		<span class="result-label">{label}:</span>
-		<span class="result-value" class:valid={isValidPayment()}>
-			{formattedPayment()}
-		</span>
+<div class="result-container">
+	<div class="result-display" class:invalid={!isValidCalculation()}>
+		<div class="result-header">
+			<div class="house-icon">🏠</div>
+			<div class="result-main">
+				<h3 class="result-title">{label}</h3>
+				<div class="result-value" class:valid={isValidCalculation()}>
+					{formattedMaxMortgage()}
+				</div>
+			</div>
+		</div>
+
+		{#if isValidCalculation()}
+			<div class="result-details">
+				<div class="detail-item">
+					<span class="detail-label">Gross monthly costs</span>
+					<span class="detail-value">{formattedMonthlyPayment()}</span>
+				</div>
+
+				<div class="interest-info">
+					{interestDescription()}
+				</div>
+			</div>
+		{/if}
 	</div>
 
-	{#if isValidPayment()}
-		<div class="calculation-details">
-			<div class="calculation-item">
-				<span class="calculation-label">Yearly payment:</span>
-				<span class="calculation-value">{yearlyPaymentFormatted()}</span>
-			</div>
-			<div class="calculation-item">
-				<span class="calculation-label">Total amount:</span>
-				<span class="calculation-value">{totalAmountFormatted()}</span>
-			</div>
-		</div>
-	{/if}
+	{#if isValidCalculation()}
+		<div class="action-section">
+			<button class="action-button"> Further calculations </button>
 
-	{#if isValidPayment()}
-		<div class="result-info">
-			This calculation is an estimate. Actual rates and conditions may vary.
-			<br />Contact ING for personalized mortgage advice.
+			<div class="disclaimer">
+				This is an estimation. Make further calculations for more certainty.
+			</div>
 		</div>
 	{:else}
-		<div class="result-info">
-			Enter your loan details above to see your monthly payment estimate.
+		<div class="placeholder-info">
+			<div class="placeholder-icon">💡</div>
+			<p>Enter your details on the left to see your maximum mortgage amount.</p>
 		</div>
 	{/if}
 </div>
 
 <style>
+	.result-container {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-lg);
+	}
+
 	.result-display {
 		background: var(--color-background);
 		padding: var(--spacing-xl);
@@ -97,19 +112,7 @@
 		border: 1px solid var(--color-border-light);
 		box-shadow: var(--shadow-medium);
 		transition: all var(--transition-normal);
-		margin: 0;
 		position: relative;
-		overflow: hidden;
-	}
-
-	.result-display::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 4px;
-		background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
 	}
 
 	.result-display.invalid {
@@ -117,92 +120,143 @@
 		border-color: #fed7d7;
 	}
 
-	.result-display.invalid::before {
-		background: linear-gradient(90deg, #cc0000, #ff4444);
-	}
-
-	.result-content {
+	.result-header {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		gap: var(--spacing-lg);
-		position: relative;
+		margin-bottom: var(--spacing-lg);
 	}
 
-	.result-label {
-		font-weight: var(--font-weight-semibold);
+	.house-icon {
+		font-size: 3rem;
+		color: var(--color-primary);
+		flex-shrink: 0;
+	}
+
+	.result-main {
+		flex: 1;
+	}
+
+	.result-title {
 		color: var(--color-text-primary);
 		font-size: var(--font-size-body);
-		flex: 1;
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-xs);
-	}
-
-	.result-label::before {
-		content: '💰';
-		font-size: 1.2em;
-		opacity: 0.8;
+		font-weight: var(--font-weight-semibold);
+		margin: 0 0 var(--spacing-xs) 0;
+		line-height: var(--line-height-normal);
 	}
 
 	.result-value {
 		font-weight: var(--font-weight-bold);
-		font-size: 2rem;
+		font-size: 2.5rem;
 		color: var(--color-text-secondary);
-		text-align: right;
 		transition: color var(--transition-normal);
-		min-width: 140px;
 		font-family: var(--font-family);
 		letter-spacing: -0.02em;
+		line-height: var(--line-height-tight);
+		margin: 0;
 	}
 
 	.result-value.valid {
-		color: var(--color-primary);
-		text-shadow: 0 1px 2px rgba(255, 98, 0, 0.1);
+		color: var(--color-text-primary);
 	}
 
-	.result-info {
-		margin-top: var(--spacing-md);
-		padding-top: var(--spacing-md);
+	.result-details {
 		border-top: 1px solid var(--color-border-light);
-		font-size: var(--font-size-small);
-		color: var(--color-text-secondary);
-		text-align: center;
-		line-height: var(--line-height-relaxed);
+		padding-top: var(--spacing-lg);
 	}
 
-	.calculation-details {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-md);
-		margin-top: var(--spacing-md);
-		padding: var(--spacing-md);
-		background: var(--color-background-light);
-		border-radius: var(--border-radius-sm);
-		font-size: var(--font-size-small);
-	}
-
-	.calculation-item {
+	.detail-item {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-bottom: var(--spacing-md);
 	}
 
-	.calculation-label {
+	.detail-label {
 		color: var(--color-text-secondary);
 		font-weight: var(--font-weight-medium);
+		font-size: var(--font-size-body);
 	}
 
-	.calculation-value {
+	.detail-value {
 		color: var(--color-text-primary);
+		font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-h3);
+	}
+
+	.interest-info {
+		color: var(--color-text-secondary);
+		font-size: var(--font-size-small);
+		font-weight: var(--font-weight-medium);
+		margin-top: var(--spacing-sm);
+	}
+
+	.action-section {
+		text-align: center;
+	}
+
+	.action-button {
+		background-color: var(--color-primary);
+		color: var(--color-background);
+		border: none;
+		border-radius: var(--border-radius-sm);
+		padding: var(--spacing-md) var(--spacing-xl);
+		font-size: var(--font-size-body);
 		font-weight: var(--font-weight-semibold);
+		font-family: var(--font-family);
+		cursor: pointer;
+		transition: all var(--transition-normal);
+		margin-bottom: var(--spacing-md);
+	}
+
+	.action-button:hover {
+		background-color: var(--color-primary-dark);
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-light);
+	}
+
+	.action-button:focus {
+		outline: 2px solid var(--color-blue);
+		outline-offset: 2px;
+	}
+
+	.disclaimer {
+		color: var(--color-text-secondary);
+		font-size: var(--font-size-small);
+		line-height: var(--line-height-relaxed);
+	}
+
+	.placeholder-info {
+		text-align: center;
+		padding: var(--spacing-xl);
+		color: var(--color-text-secondary);
+		background: var(--color-background-light);
+		border-radius: var(--border-radius-lg);
+		border: 1px solid var(--color-border-light);
+	}
+
+	.placeholder-icon {
+		font-size: 3rem;
+		margin-bottom: var(--spacing-md);
+		opacity: 0.7;
+	}
+
+	.placeholder-info p {
+		margin: 0;
+		font-size: var(--font-size-body);
+		line-height: var(--line-height-relaxed);
 	}
 
 	/* Accessibility improvements */
 	@media (prefers-reduced-motion: reduce) {
 		.result-display,
-		.result-value {
+		.result-value,
+		.action-button {
 			transition: none;
+		}
+
+		.action-button:hover {
+			transform: none;
 		}
 	}
 
@@ -213,12 +267,11 @@
 		}
 
 		.result-value.valid {
-			color: #cc4e00;
-			text-shadow: none;
+			color: var(--color-text-primary);
 		}
 
-		.result-display::before {
-			background: var(--color-text-primary);
+		.action-button {
+			border: 2px solid var(--color-text-primary);
 		}
 	}
 
@@ -228,27 +281,26 @@
 			padding: var(--spacing-lg);
 		}
 
-		.result-content {
+		.result-header {
 			flex-direction: column;
-			align-items: stretch;
-			gap: var(--spacing-md);
+			align-items: center;
 			text-align: center;
+			gap: var(--spacing-md);
 		}
 
 		.result-value {
+			font-size: 2rem;
+		}
+
+		.detail-item {
+			flex-direction: column;
+			align-items: stretch;
 			text-align: center;
-			font-size: 1.75rem;
-			min-width: auto;
-		}
-
-		.result-label {
-			justify-content: center;
-			font-size: var(--font-size-small);
-		}
-
-		.calculation-details {
-			grid-template-columns: 1fr;
 			gap: var(--spacing-xs);
+		}
+
+		.detail-value {
+			font-size: var(--font-size-h2);
 		}
 	}
 
@@ -258,11 +310,11 @@
 		}
 
 		.result-value {
-			font-size: 1.5rem;
+			font-size: 1.75rem;
 		}
 
-		.result-content {
-			gap: var(--spacing-sm);
+		.house-icon {
+			font-size: 2.5rem;
 		}
 	}
 
@@ -274,12 +326,12 @@
 			background: white !important;
 		}
 
-		.result-display::before {
-			display: none;
-		}
-
 		.result-value.valid {
 			color: #333 !important;
+		}
+
+		.action-button {
+			display: none;
 		}
 	}
 </style>
