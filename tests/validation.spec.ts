@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { validateFormInputs, validatePrincipal, validateInterestRate, validateDuration } from '../src/lib/validation';
+import {
+	validateFormInputs,
+	validatePrincipal,
+	validateInterestRate,
+	validateDuration
+} from '../src/lib/validation';
 
 describe('Validation Functions', () => {
 	describe('validatePrincipal', () => {

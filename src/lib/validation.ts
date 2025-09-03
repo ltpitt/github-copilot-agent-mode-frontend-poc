@@ -61,7 +61,11 @@ export function validateDuration(value: number): ValidationResult {
 /**
  * Validates all form inputs at once
  */
-export function validateFormInputs(principal: number, interestRate: number, duration: number): {
+export function validateFormInputs(
+	principal: number,
+	interestRate: number,
+	duration: number
+): {
 	isValid: boolean;
 	errors: {
 		principal?: string;

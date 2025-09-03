@@ -42,7 +42,7 @@
 		event.preventDefault();
 		hasInteracted = true;
 		showErrors = true;
-		
+
 		if (isFormValid()) {
 			onsubmit?.({
 				principal,
@@ -169,7 +169,7 @@
 		{/if}
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()}> 
+	<button type="submit" class="submit-button" disabled={!isFormValid()}>
 		{#if isFormValid()}
 			Calculate
 		{:else}
