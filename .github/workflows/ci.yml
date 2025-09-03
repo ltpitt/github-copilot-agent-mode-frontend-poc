@@ -45,13 +45,12 @@ jobs:
         timeout-minutes: 2
 
       - name: Install Playwright browsers (for full test suite)
-        run: npx playwright install chromium
+        run: npx playwright install --with-deps
         continue-on-error: true
-        timeout-minutes: 5
+        timeout-minutes: 10
 
       - name: Run full test suite
         run: npm run test
-        continue-on-error: true
         timeout-minutes: 3
 
       - name: Upload build artifacts
