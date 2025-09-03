@@ -3,15 +3,15 @@
 
 	// Demo scenarios to showcase the component
 	let demoPayments = [
-		{ label: 'Small Mortgage', amount: 850.50 },
+		{ label: 'Small Mortgage', amount: 850.5 },
 		{ label: 'Medium Mortgage', amount: 1432.25 },
 		{ label: 'Large Mortgage', amount: 2108.75 },
-		{ label: 'Luxury Property', amount: 3500.00 },
+		{ label: 'Luxury Property', amount: 3500.0 },
 		{ label: 'Zero Payment', amount: 0 },
 		{ label: 'Invalid Payment', amount: -100 }
 	];
 
-	let interactiveAmount = 1200.50;
+	let interactiveAmount = 1200.5;
 </script>
 
 <svelte:head>
@@ -23,10 +23,10 @@
 	<p>This page demonstrates the ResultDisplay.svelte component with various payment amounts.</p>
 
 	<div class="demo-container">
-		{#each demoPayments as { label, amount }}
+		{#each demoPayments as { label, amount } (label)}
 			<div class="demo-item">
 				<h3>{label} (Input: €{amount})</h3>
-				<ResultDisplay monthlyPayment={amount} label={label} />
+				<ResultDisplay monthlyPayment={amount} {label} />
 			</div>
 		{/each}
 	</div>
