@@ -66,6 +66,56 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
+## 🌐 Live Demo
+
+The mortgage calculator is deployed and available at:
+**https://ltpitt.github.io/github-copilot-agent-mode-frontend-poc/**
+
+### Deployment
+
+This application is automatically deployed to GitHub Pages using GitHub Actions. The deployment happens automatically when changes are pushed to the `main` branch.
+
+#### Manual Deployment
+
+To deploy manually or set up GitHub Pages for a fork:
+
+1. **Enable GitHub Pages** in your repository settings:
+   - Go to `Settings` → `Pages`
+   - Select `GitHub Actions` as the source
+
+2. **Push to main branch** - The deployment workflow will run automatically
+
+3. **Access your site** at `https://[username].github.io/[repository-name]/`
+
+#### Deployment Configuration
+
+The project uses:
+
+- **@sveltejs/adapter-static** for static site generation
+- **GitHub Actions workflow** (`.github/workflows/deploy.yml`) for CI/CD
+- **Base path configuration** for GitHub Pages subpath deployment
+- **Prerendering** enabled for all routes
+
+#### Build Configuration
+
+Key configuration for GitHub Pages deployment:
+
+```javascript
+// svelte.config.js
+adapter: adapter({
+  pages: 'build',
+  assets: 'build',
+  fallback: undefined,
+  precompress: false,
+  strict: true
+}),
+paths: {
+  base: process.env.NODE_ENV === 'production'
+    ? '/github-copilot-agent-mode-frontend-poc'
+    : ''
+}
+```
+
 ### Code Quality
 
 Format code:
