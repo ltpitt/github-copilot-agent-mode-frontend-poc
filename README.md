@@ -5,6 +5,7 @@ A proof-of-concept frontend application for a mortgage calculator, inspired by [
 ## 🎯 Project Purpose & Scope
 
 This POC aims to:
+
 - Create a modern, accessible mortgage calculator frontend
 - Match ING's visual design and user experience
 - Implement best practices for Svelte development
@@ -12,6 +13,7 @@ This POC aims to:
 - Serve as a reference for GitHub Copilot agent mode optimization
 
 ### Key Features (Planned)
+
 - Interactive mortgage calculation with real-time updates
 - Responsive design matching ING's style guidelines
 - Accessibility-first approach (WCAG 2.1 AA compliance)
@@ -31,18 +33,21 @@ This POC aims to:
 ## 🚀 Setup Instructions
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm 9+
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/ltpitt/github-copilot-agent-mode-frontend-poc.git
    cd github-copilot-agent-mode-frontend-poc
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -69,13 +74,7 @@ npm run preview
 npm run test
 
 # Run unit tests in watch mode
-npm run test:watch
-
-# Run E2E tests
-npm run test:e2e
-
-# Run all tests
-npm run test:all
+npm run test:unit
 
 # Lint code
 npm run lint
@@ -100,25 +99,24 @@ This project follows a comprehensive testing approach:
 ### Running Tests
 
 ```bash
-# Run all tests with coverage
-npm run test:coverage
+# Run all tests
+npm run test
 
-# Run specific test file
-npm run test mortgage-calculator.test.js
-
-# Debug tests in browser
-npm run test:ui
+# Run unit tests in watch mode
+npm run test:unit
 ```
 
 ## 🎨 Design Guidelines
 
 ### Visual Reference
+
 - **Primary Reference**: [ING Mortgage Calculator](https://www.ing.nl/en/personal/mortgage/mortgage-calculator)
 - **Color Palette**: ING Orange (#FF6200), complementary blues and grays
 - **Typography**: Clean, modern fonts with excellent readability
 - **Layout**: Card-based design with clear visual hierarchy
 
 ### Accessibility Standards
+
 - WCAG 2.1 AA compliance
 - Keyboard navigation support
 - Screen reader compatibility
@@ -128,6 +126,7 @@ npm run test:ui
 ## 📦 Deployment Instructions
 
 ### Production Build
+
 ```bash
 # Build the application
 npm run build
@@ -147,10 +146,11 @@ npm run preview
    - Deploy the built application with SSR support
 
 3. **Docker**
+
    ```bash
    # Build Docker image
    docker build -t mortgage-calculator .
-   
+
    # Run container
    docker run -p 3000:3000 mortgage-calculator
    ```
@@ -158,6 +158,7 @@ npm run preview
 ### Environment Variables
 
 Create a `.env` file for configuration:
+
 ```bash
 # API endpoints (if needed)
 VITE_API_BASE_URL=https://api.example.com
@@ -180,13 +181,11 @@ VITE_ENABLE_DEBUG=false
 │   │   ├── utils/           # Utility functions and helpers
 │   │   └── types/           # TypeScript type definitions
 │   ├── routes/              # SvelteKit routes and pages
-│   ├── tests/               # Test files
 │   └── app.html             # HTML template
 ├── static/                  # Static assets
-├── tests/                   # E2E tests
 ├── package.json
-├── vite.config.js
-├── playwright.config.js
+├── vite.config.ts
+├── tsconfig.json
 └── README.md
 ```
 
@@ -201,6 +200,7 @@ VITE_ENABLE_DEBUG=false
 7. **Open a Pull Request**
 
 ### Code Quality Standards
+
 - All tests must pass
 - Code coverage should not decrease
 - Follow Svelte best practices

@@ -12,12 +12,14 @@ This folder contains design references, UX guidelines, and visual documentation 
 ## 🎨 Design Resources
 
 ### ING Visual Identity
+
 - **Primary Reference**: [ING Mortgage Calculator](https://www.ing.nl/en/personal/mortgage/mortgage-calculator)
 - **ING Brand Guidelines**: [ING Corporate Website](https://www.ing.com/)
 - **Color Palette**: ING Orange (#FF6200), supporting blues and grays
 - **Typography**: Modern, accessible font choices
 
 ### Design System Components
+
 - Form elements and input controls
 - Button styles and interactive states
 - Card layouts and information hierarchy
@@ -28,6 +30,7 @@ This folder contains design references, UX guidelines, and visual documentation 
 ## 🔍 Analysis Notes
 
 ### Current ING Calculator Observations
+
 1. **Clean, minimalist design** with plenty of white space
 2. **Progressive disclosure** - information revealed step by step
 3. **Clear visual hierarchy** with prominent call-to-action buttons
@@ -36,6 +39,7 @@ This folder contains design references, UX guidelines, and visual documentation 
 6. **Real-time calculation updates** with smooth transitions
 
 ### Key UX Patterns to Implement
+
 - Step-by-step form progression
 - Input validation with helpful error messages
 - Results displayed in easy-to-understand format
@@ -45,12 +49,14 @@ This folder contains design references, UX guidelines, and visual documentation 
 ## 📱 Device Considerations
 
 ### Mobile-First Approach
+
 - Touch-friendly interface elements (44px minimum)
 - Simplified navigation for small screens
 - Optimized input methods for mobile keyboards
 - Swipe gestures for form progression
 
 ### Desktop Enhancements
+
 - Advanced filtering and comparison tools
 - Detailed breakdown views
 - Keyboard shortcuts for power users

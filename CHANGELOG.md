@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
+
 - Interactive mortgage calculation form
 - Real-time calculation updates
 - Responsive design implementation
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2024-09-03
 
 ### Added
+
 - Initial project setup and repository structure
 - GitHub Copilot instructions in `.github/copilot.yml`
 - Comprehensive README.md with project documentation
@@ -31,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation folder with design references
 
 ### Developer Experience
+
 - Established code quality standards
 - Test-driven development (TDD) guidelines
 - Svelte best practices documentation
@@ -38,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Git workflow and commit conventions
 
 ### Documentation
+
 - Project purpose and scope definition
 - Tech stack documentation (Svelte, Vitest, Playwright)
 - Setup and installation instructions
@@ -57,9 +61,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Release Notes
 
 ### v0.1.0 - Foundation Release
+
 This initial release establishes the project foundation with comprehensive documentation, development guidelines, and GitHub Copilot integration. The focus is on setting up proper development practices and clear guidance for future development work.
 
 **Key Highlights:**
+
 - Comprehensive Copilot instructions for AI-assisted development
 - Detailed documentation following best practices
 - Clear project structure and coding standards
@@ -68,6 +74,7 @@ This initial release establishes the project foundation with comprehensive docum
 - Accessibility-first development approach
 
 **Next Steps:**
+
 - Set up Svelte project structure with SvelteKit
 - Implement basic mortgage calculation logic with TDD
 - Create reusable UI components matching ING design
