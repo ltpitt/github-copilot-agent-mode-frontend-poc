@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateMonthlyPayment } from '../src/lib/mortgageCalculator';
+import { calculateMonthlyPayment } from './mortgageCalculator';
 
 describe('Mortgage Calculator - Annuity Formula', () => {
 	describe('Basic Calculations', () => {

@@ -1,8 +1,0 @@
-# Tests Directory
-
-This directory is for unit and integration tests.
-
-Structure:
-- unit/ - Unit tests for individual functions and components
-- integration/ - Integration tests for workflows and features
-- fixtures/ - Test data and mock files

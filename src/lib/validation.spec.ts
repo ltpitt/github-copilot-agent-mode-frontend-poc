@@ -5,7 +5,7 @@ import {
 	validateInterestRate,
 	validateDuration,
 	validateBuyingType
-} from '../src/lib/validation';
+} from './validation';
 
 describe('Validation Functions', () => {
 	describe('validatePrincipal', () => {
