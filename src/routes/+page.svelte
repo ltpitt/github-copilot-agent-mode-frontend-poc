@@ -10,30 +10,24 @@
 			const principal = loanAmount;
 			const annualRate = interestRate / 100; // Convert percentage to decimal
 			const numberOfPayments = loanTerm * 12; // Convert years to months
-			
+
 			return calculateMonthlyPayment(principal, annualRate, numberOfPayments);
-		} catch (error) {
+		} catch {
 			return 0;
 		}
 	});
 
-	let totalPayments = $derived(monthlyPayment * loanTerm * 12);
-	let totalInterest = $derived(totalPayments - loanAmount);
+	let totalPayments = $derived(() => monthlyPayment() * loanTerm * 12);
+	let totalInterest = $derived(() => totalPayments() - loanAmount);
 </script>
 
 <main>
 	<h1>Mortgage Calculator POC</h1>
-	
+
 	<div class="calculator">
 		<div class="form-group">
 			<label for="loanAmount">Loan Amount ($)</label>
-			<input
-				id="loanAmount"
-				type="number"
-				bind:value={loanAmount}
-				min="0"
-				step="1000"
-			/>
+			<input id="loanAmount" type="number" bind:value={loanAmount} min="0" step="1000" />
 		</div>
 
 		<div class="form-group">
@@ -50,29 +44,22 @@
 
 		<div class="form-group">
 			<label for="loanTerm">Loan Term (years)</label>
-			<input
-				id="loanTerm"
-				type="number"
-				bind:value={loanTerm}
-				min="1"
-				step="1"
-				max="50"
-			/>
+			<input id="loanTerm" type="number" bind:value={loanTerm} min="1" step="1" max="50" />
 		</div>
 
 		<div class="results">
 			<h3>Calculation Results</h3>
 			<div class="result-item">
 				<span class="label">Monthly Payment:</span>
-				<span class="value">${monthlyPayment.toFixed(2)}</span>
+				<span class="value">${monthlyPayment().toFixed(2)}</span>
 			</div>
 			<div class="result-item">
 				<span class="label">Total Interest:</span>
-				<span class="value">${totalInterest.toFixed(2)}</span>
+				<span class="value">${totalInterest().toFixed(2)}</span>
 			</div>
 			<div class="result-item">
 				<span class="label">Total Amount:</span>
-				<span class="value">${totalPayments.toFixed(2)}</span>
+				<span class="value">${totalPayments().toFixed(2)}</span>
 			</div>
 		</div>
 	</div>
@@ -86,7 +73,7 @@
 	}
 
 	h1 {
-		color: #FF6200;
+		color: #ff6200;
 		text-align: center;
 		margin-bottom: 2rem;
 	}
@@ -120,7 +107,7 @@
 
 	input:focus {
 		outline: none;
-		border-color: #FF6200;
+		border-color: #ff6200;
 	}
 
 	.results {
@@ -156,7 +143,7 @@
 
 	.value {
 		font-weight: 700;
-		color: #FF6200;
+		color: #ff6200;
 		font-size: 1.1rem;
 	}
 </style>
