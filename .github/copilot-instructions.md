@@ -6,59 +6,151 @@ This repository is a **Proof of Concept (POC)** for testing techniques to use Gi
 
 ## Tech Stack
 
-- **Svelte 5** - Modern reactive framework
+- **Svelte 5** - Modern reactive framework (with runes system)
 - **SvelteKit** - Full-stack Svelte framework
 - **Vite** - Fast build tool and development server
 - **TypeScript** - Type safety and enhanced developer experience
+- **Vitest** - Unit testing framework
+- **Playwright** - Browser testing (optional)
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 
 ## Working Effectively
 
-### Bootstrap and Setup
+### Prerequisites & Environment Setup
 
-- Dependencies are pre-installed via `package-lock.json`
-- If you need to reinstall: `npm install` -- takes 25 seconds. NEVER CANCEL.
-- Always run `npm run format` after making code changes to ensure consistent formatting
+- Requires Node.js 20+ and npm 10+ (verified: Node v20.19.4, npm v10.8.2)
+- Uses SvelteKit with Vite as the build tool
+- TypeScript for type safety
+- Vitest for unit testing, Playwright for browser testing
 
-### Development Workflow
+### Bootstrap, Build, and Test the Repository
 
-- Start development: `npm run dev` -- ready in 1 second. NEVER CANCEL the dev server.
-- Application runs at: `http://localhost:5173/`
-- Type checking: `npm run check` -- takes 3 seconds
-- Code linting: `npm run lint` -- takes 3 seconds (includes Prettier and ESLint)
-- Code formatting: `npm run format` -- takes under 1 second
+**CRITICAL: NEVER CANCEL any build or test commands. All commands below have been validated and timed.**
 
-### Building and Testing
+1. **Install Dependencies**
 
-- Production build: `npm run build` -- takes 4 seconds. NEVER CANCEL.
-- Preview production build: `npm run preview` -- starts immediately at `http://localhost:4173/`
-- Build creates optimized bundles in `.svelte-kit/output/`
+   ```bash
+   npm install
+   ```
 
-## Validation
+   - Duration: 10 seconds (NEVER CANCEL - set timeout to 30+ seconds)
+   - Runs `svelte-kit sync` automatically via prepare script
+   - May show low severity audit warnings (normal)
 
-### Manual Testing Requirements
+2. **Build for Production**
 
-ALWAYS manually test the mortgage calculator functionality after making changes:
+   ```bash
+   npm run build
+   ```
 
-1. **Start the application**: `npm run dev`
-2. **Navigate to**: `http://localhost:5173/`
-3. **Test mortgage calculation**:
-   - Verify default values load: $300,000 loan, 3.5% rate, 30 years
-   - Expected monthly payment: $1,347.13
-   - Change loan amount to $500,000 and verify calculation updates
-   - Change interest rate to 4.0% and verify calculation updates
-   - Change loan term to 15 years and verify calculation updates
+   - Duration: 3.5 seconds (NEVER CANCEL - set timeout to 15+ seconds)
+   - Creates `.svelte-kit/output/` directory with client and server builds
+   - Warns about adapter-auto detection (normal for POC)
 
-### Validation Commands
+3. **Development Server**
 
-ALWAYS run these commands before completing any work:
+   ```bash
+   npm run dev
+   ```
 
-- `npm run check` -- Type checking (3 seconds)
-- `npm run lint` -- Code quality (3 seconds)
-- `npm run build` -- Production build (4 seconds)
+   - Starts on http://localhost:5173
+   - Hot reload enabled
+   - Duration: 1 second startup (NEVER CANCEL - set timeout to 10+ seconds)
 
-These commands MUST pass or the work is incomplete.
+4. **Production Preview**
+
+   ```bash
+   npm run preview
+   ```
+
+   - Starts on http://localhost:4173
+   - Must run `npm run build` first
+   - Duration: instant startup (NEVER CANCEL - set timeout to 10+ seconds)
+
+5. **Type Checking**
+
+   ```bash
+   npm run check
+   ```
+
+   - Duration: 3.1 seconds (NEVER CANCEL - set timeout to 15+ seconds)
+   - Runs svelte-check with TypeScript validation
+
+6. **Linting**
+
+   ```bash
+   npm run lint
+   ```
+
+   - Duration: 3.6 seconds (NEVER CANCEL - set timeout to 15+ seconds)
+   - Runs Prettier format check and ESLint
+   - Must pass for CI compliance
+
+7. **Code Formatting**
+
+   ```bash
+   npm run format
+   ```
+
+   - Duration: 1 second (NEVER CANCEL - set timeout to 10+ seconds)
+   - Auto-fixes formatting with Prettier
+
+8. **Unit Tests (Server-side)**
+
+   ```bash
+   npx vitest run --project server
+   ```
+
+   - Duration: 1.8 seconds (NEVER CANCEL - set timeout to 15+ seconds)
+   - Runs server-side tests without browser dependency
+   - Tests basic math/utility functions
+
+### Browser Testing Setup (CRITICAL)
+
+**IMPORTANT:** Full test suite requires Playwright browser installation:
+
+```bash
+npx playwright install
+```
+
+- **KNOWN ISSUE:** Browser download may fail in restricted environments
+- If download fails, document the limitation but continue with server tests
+- Duration: 10+ minutes when successful (NEVER CANCEL - set timeout to 20+ minutes)
+
+**Full Test Suite (after Playwright setup):**
+
+```bash
+npm run test
+```
+
+- Runs both server and browser tests
+- Duration: 3 seconds when working (NEVER CANCEL - set timeout to 30+ seconds)
+- **Falls back to server tests only if browser setup fails**
+
+## Manual Validation Scenarios
+
+**ALWAYS perform these validation steps after making changes:**
+
+1. **Mortgage Calculator Testing**
+   - Start dev server: `npm run dev`
+   - Navigate to http://localhost:5173
+   - Verify mortgage calculator loads with default values
+   - Test calculation updates when changing loan amount, rate, or term
+   - Check browser console for errors
+   - Test responsive design (mobile/desktop views)
+
+2. **Production Build Validation**
+   - Run: `npm run build && npm run preview`
+   - Navigate to http://localhost:4173
+   - Verify same functionality as dev server
+   - Test performance and loading speed
+
+3. **Code Quality Validation**
+   - Run: `npm run lint` (must pass)
+   - Run: `npm run format` (auto-fixes issues)
+   - Run: `npm run check` (TypeScript validation)
+   - All must complete successfully before committing
 
 ## Code Structure
 
@@ -68,96 +160,154 @@ These commands MUST pass or the work is incomplete.
 - `src/lib/` - Reusable components and utilities
 - `src/lib/assets/` - Static assets (favicon, images)
 - `static/` - Public static files
+- `tests/` - Test files (unit, integration)
+- `docs/` - Design references and documentation
 
 ### Important Files
 
 - `src/routes/+page.svelte` - Main mortgage calculator page
-- `src/lib/MortgageCalculator.svelte` - Core calculator component
+- `src/lib/mortgageCalculator.ts` - Core calculation logic
 - `src/routes/+layout.svelte` - Application layout with favicon
 - `package.json` - Dependencies and scripts
 - `svelte.config.js` - SvelteKit configuration
-- `vite.config.ts` - Vite build configuration
+- `vite.config.ts` - Vite build configuration with Vitest
 - `tsconfig.json` - TypeScript configuration
 
 ### Component Architecture
 
-The mortgage calculator uses Svelte 5's new runes system:
+The mortgage calculator uses modern patterns:
 
-- `$state()` for reactive variables
-- `$derived()` for computed values
-- Always use TypeScript for type safety
+- Utility functions for business logic (`src/lib/mortgageCalculator.ts`)
+- Svelte 5 runes system: `$state()`, `$derived()` for reactive variables
+- TypeScript for type safety throughout
+- Component-based architecture with clear separation of concerns
 
-## Common Tasks
+## Design and Accessibility
+
+### Visual Reference
+
+- **Primary Reference:** https://www.ing.nl/en/personal/mortgage/mortgage-calculator
+- **Color Scheme:** ING Orange (#FF6200) primary, complementary blues/grays
+- **Layout:** Card-based design with clear visual hierarchy
+- **Typography:** Clean, modern, accessible fonts
+
+### Accessibility Standards
+
+- **WCAG 2.1 AA compliance required**
+- Proper ARIA labels and semantic HTML
+- Keyboard navigation support
+- Screen reader compatibility
+- Minimum 44px touch targets for mobile
+- High contrast color ratios
+
+## Common Development Tasks
 
 ### Adding New Components
 
-1. Create component in `src/lib/ComponentName.svelte`
+1. Create component in `src/lib/` or `src/lib/components/`
 2. Export from `src/lib/index.ts` if needed
-3. Import and use in pages or other components
-4. Always run `npm run check` to verify TypeScript
+3. Write tests alongside component files
+4. Follow Svelte best practices and TypeScript typing
+5. Always run `npm run check` to verify TypeScript
 
-### Styling
+### Styling Guidelines
 
 - Component-scoped CSS using `<style>` blocks
 - Uses CSS custom properties and modern CSS features
-- Primary brand color: `#ff3e00` (Svelte orange)
+- Primary brand color: `#FF6200` (ING Orange)
+- Follow ING design system patterns
 
-### Dependencies
+### Testing Strategy
 
-- All development dependencies are in `devDependencies`
-- No runtime dependencies (static build)
-- Update dependencies carefully and test thoroughly
+- **Unit Tests:** Business logic and utility functions (working)
+- **Component Tests:** Svelte component behavior (requires Playwright)
+- **Integration Tests:** User workflows and data flow
+- **Server Tests:** Run with `npx vitest run --project server`
 
-## Build Times and Expectations
+### Development Workflow
 
-- **npm install**: 25 seconds - NEVER CANCEL
-- **npm run dev**: 1 second startup - NEVER CANCEL the dev server
-- **npm run build**: 4 seconds - NEVER CANCEL
-- **npm run check**: 3 seconds
-- **npm run lint**: 3 seconds
-- **npm run format**: Under 1 second
-
-## Troubleshooting
-
-### Common Issues
-
-- **Build fails with missing favicon**: Ensure `src/lib/assets/favicon.svg` exists
-- **TypeScript errors**: Run `npm run check` and fix type issues
-- **Linting failures**: Run `npm run format` then `npm run lint`
-- **Dev server port conflict**: Change port with `npm run dev -- --port 3000`
-
-### Known Limitations
-
-- Uses `@sveltejs/adapter-auto` which requires deployment platform detection
-- No test framework currently configured
-- No CI/CD pipeline beyond basic GitHub workflows
+1. **Always run** `npm run lint` and `npm run check` before committing
+2. **Always test** changes with `npm run dev` and manual validation
+3. **Always verify** production build with `npm run build && npm run preview`
+4. **Run server tests** with `npx vitest run --project server`
 
 ## Project Structure Reference
 
 ```
 Repository root:
 ├── .github/
-│   └── copilot-instructions.md
+│   ├── copilot.yml          # Legacy Copilot config
+│   └── copilot-instructions.md  # This file
+├── docs/                    # Design references and documentation
+│   ├── README.md           # Design system overview
+│   ├── accessibility.md    # WCAG compliance guidelines
+│   ├── design-system.md    # ING design patterns
+│   └── ux-patterns.md      # User experience guidelines
 ├── src/
-│   ├── routes/
-│   │   ├── +layout.svelte
-│   │   └── +page.svelte
 │   ├── lib/
-│   │   ├── assets/
-│   │   │   └── favicon.svg
-│   │   ├── MortgageCalculator.svelte
-│   │   └── index.ts
-│   ├── app.d.ts
-│   └── app.html
-├── static/
+│   │   ├── assets/         # Static assets (favicon, images)
+│   │   ├── mortgageCalculator.ts  # Core calculation logic
+│   │   └── index.ts        # Library exports
+│   ├── routes/
+│   │   ├── +layout.svelte  # App layout component
+│   │   ├── +page.svelte    # Main mortgage calculator page
+│   │   └── page.svelte.spec.ts  # Page component tests (browser)
+│   ├── components/         # Reusable components
+│   ├── app.d.ts           # TypeScript app definitions
+│   ├── app.html           # HTML template
+│   ├── demo.spec.ts       # Demo unit tests (server)
+│   └── example.spec.ts    # Example utility tests (server)
+├── static/                # Static files served at root
 │   └── robots.txt
-├── package.json
-├── svelte.config.js
-├── vite.config.ts
-├── tsconfig.json
-├── eslint.config.js
-├── .prettierrc
-├── .prettierignore
-├── .gitignore
-└── README.md
+├── tests/                 # Test files
+│   ├── mortgageCalculator.spec.ts  # Unit tests for calculator
+│   ├── unit/              # Unit test directory
+│   ├── integration/       # Integration test directory
+│   └── fixtures/          # Test fixtures
+├── package.json           # Dependencies and scripts
+├── svelte.config.js       # SvelteKit configuration
+├── vite.config.ts         # Vite configuration with Vitest
+├── tsconfig.json          # TypeScript configuration
+├── eslint.config.js       # ESLint configuration
+├── .prettierrc            # Prettier configuration
+├── .prettierignore        # Prettier ignore patterns
+├── .gitignore             # Git ignore patterns
+└── README.md              # Project documentation
 ```
+
+## Troubleshooting
+
+### Common Issues
+
+- **Playwright download fails:** Continue with server tests only, document limitation
+- **Type errors:** Run `npm run check` for detailed TypeScript diagnostics
+- **Build failures:** Check for ESLint/Prettier issues with `npm run lint`
+- **Tests failing:** Verify Playwright installation and browser availability
+- **Build fails with missing favicon**: Ensure `src/lib/assets/favicon.svg` exists
+- **Dev server port conflict**: Change port with `npm run dev -- --port 3000`
+
+### Performance Considerations
+
+- Build size currently ~70kB (reasonable for POC)
+- Dev server starts in ~1 second
+- Production build completes in ~3.5 seconds
+- All commands are fast - longer times indicate issues
+
+## CI/CD Expectations
+
+**Before Committing:**
+
+- [ ] `npm run lint` passes
+- [ ] `npm run check` passes
+- [ ] `npm run build` succeeds
+- [ ] Manual validation completed
+- [ ] Server tests pass (`npx vitest run --project server`)
+
+**Expected CI Pipeline:**
+
+- Install dependencies
+- Run linting and type checking
+- Build application
+- Run test suite (may skip browser tests in restricted environments)
+
+Remember: This POC prioritizes development velocity and comprehensive documentation over complex features. Focus on clean, maintainable code that follows established patterns.
