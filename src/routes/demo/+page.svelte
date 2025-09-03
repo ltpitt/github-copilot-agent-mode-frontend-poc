@@ -9,7 +9,6 @@
 	} | null>(null);
 
 	function handleFormSubmit(data: { principal: number; annualInterestRate: number; durationYears: number }) {
-		console.log('Form submitted with data:', data);
 		const { principal, annualInterestRate, durationYears } = data;
 		
 		try {
@@ -17,21 +16,15 @@
 			const annualRate = annualInterestRate / 100;
 			const numberOfPayments = durationYears * 12;
 			
-			console.log('Calculating with:', { principal, annualRate, numberOfPayments });
-			
 			const monthlyPayment = calculateMonthlyPayment(principal, annualRate, numberOfPayments);
 			const totalPayments = monthlyPayment * numberOfPayments;
 			const totalInterest = totalPayments - principal;
-			
-			console.log('Calculation results:', { monthlyPayment, totalPayments, totalInterest });
 			
 			calculationResult = {
 				monthlyPayment,
 				totalPayments,
 				totalInterest
 			};
-			
-			console.log('calculationResult state updated:', calculationResult);
 		} catch (error) {
 			console.error('Calculation error:', error);
 			calculationResult = null;
@@ -71,6 +64,10 @@
 						<span class="value">€{calculationResult.totalPayments.toFixed(2)}</span>
 					</div>
 				</div>
+			</div>
+		{:else}
+			<div class="placeholder">
+				<p>Click "Calculate Monthly Payment" to see results</p>
 			</div>
 		{/if}
 	</div>
@@ -162,6 +159,15 @@
 		font-weight: 700;
 		color: #ff6200;
 		font-size: 1.2rem;
+	}
+
+	.placeholder {
+		background: #f8f9fa;
+		padding: 2rem;
+		border-radius: 8px;
+		border: 2px dashed #dee2e6;
+		text-align: center;
+		color: #666;
 	}
 
 	.features {
