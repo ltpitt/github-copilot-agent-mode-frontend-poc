@@ -1,0 +1,116 @@
+# GitHub Copilot Instructions for ING Mortgage Calculator Frontend POC
+
+## Project Overview
+This is a proof-of-concept frontend application for a mortgage calculator, inspired by ING's official mortgage calculator. The goal is to create a modern, accessible, and responsive web application using Svelte with comprehensive testing.
+
+## Development Guidelines
+
+### Code Quality & Style
+- **Clean, Modular Code**: Write small, focused functions and components with clear responsibilities
+- **Readable Code**: Use descriptive variable names, add JSDoc comments for complex logic, and maintain consistent formatting
+- **Svelte Best Practices**: 
+  - Use Svelte stores for shared state management
+  - Leverage reactive statements (`$:`) for computed values
+  - Keep components small and reusable
+  - Use proper component lifecycle methods (onMount, onDestroy)
+  - Follow Svelte naming conventions (PascalCase for components, camelCase for variables)
+
+### Test-Driven Development (TDD)
+- **Write Tests First**: Create tests before implementing features
+- **Testing Stack**: Use Vitest for unit/integration tests, Playwright for E2E tests
+- **Test Coverage**: Aim for high test coverage, especially for business logic (mortgage calculations)
+- **Test Types**:
+  - Unit tests for utility functions and calculations
+  - Component tests for Svelte components
+  - Integration tests for user workflows
+  - E2E tests for critical user journeys
+
+### Git & Version Control
+- **Atomic Commits**: Make small, focused commits that address a single concern
+- **Descriptive Messages**: Use conventional commit format (feat:, fix:, docs:, test:, refactor:)
+- **Branch Strategy**: Use feature branches, create PRs for all changes
+
+### Code Generation Preference
+- **Generate Over Refactor**: When adding new features, prefer generating new code over modifying existing working code
+- **Scaffolding**: Use Svelte/Vite scaffolding tools for new components and pages
+- **Templates**: Create reusable templates for common patterns (form components, validation, etc.)
+
+## ING Design Alignment
+
+### Visual Reference
+- **Primary Reference**: https://www.ing.nl/en/personal/mortgage/mortgage-calculator
+- **Color Scheme**: Use ING's orange (#FF6200) as primary, with complementary blues and grays
+- **Typography**: Clean, modern fonts similar to ING's design system
+- **Layout**: Card-based design with clear visual hierarchy
+
+### Design Principles
+- **Accessibility First**: 
+  - WCAG 2.1 AA compliance
+  - Proper ARIA labels and roles
+  - Keyboard navigation support
+  - Screen reader compatibility
+  - Color contrast ratios
+- **Responsive Design**: 
+  - Mobile-first approach
+  - Breakpoints: mobile (320px+), tablet (768px+), desktop (1024px+)
+  - Touch-friendly interface elements
+- **User Experience**:
+  - Progressive disclosure of information
+  - Clear error messages and validation
+  - Loading states and feedback
+  - Intuitive form controls
+
+### Component Architecture
+- **Form Components**: Create reusable input, select, and validation components
+- **Layout Components**: Header, footer, navigation, and grid systems
+- **Business Components**: Mortgage calculator, results display, comparison tools
+- **UI Components**: Buttons, cards, modals, tooltips
+
+## Technical Stack Guidance
+
+### Svelte Specific
+- Use SvelteKit for routing and SSR capabilities
+- Implement proper error boundaries
+- Optimize for performance with code splitting
+- Use Svelte transitions for smooth UX
+
+### Testing Strategy
+- **Vitest Configuration**: Set up with proper mocking and coverage
+- **Playwright Setup**: Configure for cross-browser testing
+- **Test Data**: Create realistic mortgage calculation test cases
+
+### Build & Deployment
+- **Vite Configuration**: Optimize for production builds
+- **Environment Variables**: Separate config for dev/staging/prod
+- **Performance**: Monitor bundle size and loading times
+- **SEO**: Ensure proper meta tags and structured data
+
+## File Organization
+```
+src/
+├── lib/
+│   ├── components/     # Reusable UI components
+│   ├── stores/        # Svelte stores
+│   ├── utils/         # Utility functions
+│   └── types/         # TypeScript types
+├── routes/            # SvelteKit routes
+├── tests/             # Test files
+└── assets/            # Static assets
+```
+
+## Quality Checklist
+Before submitting code, ensure:
+- [ ] All tests pass (unit, integration, E2E)
+- [ ] Code follows Svelte best practices
+- [ ] Accessibility requirements met
+- [ ] Responsive design tested
+- [ ] Performance optimized
+- [ ] Error handling implemented
+- [ ] Documentation updated
+
+## Common Patterns
+- Use custom actions for DOM manipulation
+- Implement proper form validation with real-time feedback
+- Create consistent loading and error states
+- Use proper TypeScript types for all props and variables
+- Implement keyboard shortcuts for power users
