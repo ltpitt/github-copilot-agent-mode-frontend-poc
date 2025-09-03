@@ -162,11 +162,6 @@
 		align-items: start;
 	}
 
-	.calculator-form,
-	.calculator-results {
-		/* Styling handled by child components */
-	}
-
 	/* Responsive Design */
 	@media (max-width: 768px) {
 		:global(:root) {

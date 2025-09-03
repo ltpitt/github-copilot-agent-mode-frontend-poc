@@ -98,15 +98,27 @@ This project follows a comprehensive testing approach:
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (automatically detects browser availability)
 npm run test
 
 # Run unit tests in watch mode
 npm run test:unit
 
 # Run server-side tests only (no browser required)
-npx vitest run --project server
+npm run test:server
+
+# Run browser tests only (requires Playwright browsers)
+npm run test:browser
 ```
+
+**Note:** Browser tests require Playwright browsers to be installed:
+
+```bash
+# Install Playwright browsers for browser testing
+npx playwright install --with-deps
+```
+
+The test runner automatically detects if Playwright browsers are available and gracefully falls back to server-side tests only when browsers are not installed.
 
 ## 🎨 Design Guidelines
 
