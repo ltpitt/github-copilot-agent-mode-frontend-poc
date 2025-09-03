@@ -59,30 +59,48 @@ export function validateDuration(value: number): ValidationResult {
 }
 
 /**
+ * Validates buying type selection (alone or together)
+ */
+export function validateBuyingType(value: boolean | null | undefined): ValidationResult {
+	if (value === null || value === undefined) {
+		return { isValid: false, message: 'You have not answered the question. This is mandatory.' };
+	}
+	return { isValid: true };
+}
+
+/**
  * Validates all form inputs at once
  */
 export function validateFormInputs(
 	principal: number,
 	interestRate: number,
-	duration: number
+	duration: number,
+	buyingAlone?: boolean | null
 ): {
 	isValid: boolean;
 	errors: {
 		principal?: string;
 		interestRate?: string;
 		duration?: string;
+		buyingType?: string;
 	};
 } {
 	const principalResult = validatePrincipal(principal);
 	const interestResult = validateInterestRate(interestRate);
 	const durationResult = validateDuration(duration);
+	const buyingTypeResult = validateBuyingType(buyingAlone);
 
 	return {
-		isValid: principalResult.isValid && interestResult.isValid && durationResult.isValid,
+		isValid:
+			principalResult.isValid &&
+			interestResult.isValid &&
+			durationResult.isValid &&
+			buyingTypeResult.isValid,
 		errors: {
 			...(principalResult.message && { principal: principalResult.message }),
 			...(interestResult.message && { interestRate: interestResult.message }),
-			...(durationResult.message && { duration: durationResult.message })
+			...(durationResult.message && { duration: durationResult.message }),
+			...(buyingTypeResult.message && { buyingType: buyingTypeResult.message })
 		}
 	};
 }
