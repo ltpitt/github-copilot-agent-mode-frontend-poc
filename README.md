@@ -38,19 +38,44 @@ This POC aims to:
 - Node.js 20+ (verified with v20.19.4)
 - npm 10+ (verified with v10.8.2)
 
-### Installation
+### Quick Start with Makefile
 
-Dependencies are already installed. If you need to reinstall them:
+This project includes a convenient Makefile for common development tasks:
 
 ```bash
+# See all available commands
+make help
+
+# Install dependencies
+make install
+
+# Start development server
+make run
+
+# Run tests
+make test
+
+# Build for production
+make build
+```
+
+### Installation
+
+```bash
+# Using Makefile (recommended)
+make install
+
+# Or using npm directly
 npm install
 ```
 
 ### Development
 
-Start the development server:
-
 ```bash
+# Using Makefile (recommended)
+make run
+
+# Or using npm directly
 npm run dev
 ```
 
@@ -58,13 +83,15 @@ The application will be available at `http://localhost:5173/`
 
 ### Building
 
-To create a production version of your app:
-
 ```bash
+# Using Makefile (recommended)
+make build
+
+# Or using npm directly
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+You can preview the production build with `make preview` or `npm run preview`.
 
 ## 🌐 Live Demo
 
@@ -118,22 +145,16 @@ paths: {
 
 ### Code Quality
 
-Format code:
-
 ```bash
-npm run format
-```
+# Using Makefile (recommended)
+make format    # Format code
+make lint      # Check code style and run linting
+make check     # Run TypeScript type checking
 
-Lint code:
-
-```bash
-npm run lint
-```
-
-Type check:
-
-```bash
-npm run check
+# Or using npm directly
+npm run format # Format code
+npm run lint   # Lint code
+npm run check  # Type check
 ```
 
 ## 🧪 Testing Strategy
@@ -148,27 +169,79 @@ This project follows a comprehensive testing approach:
 ### Running Tests
 
 ```bash
-# Run all tests (automatically detects browser availability)
-npm run test
+# Using Makefile (recommended)
+make test           # Run all tests (automatically detects browser availability)
+make test-server    # Run server-side tests only (no browser required)
+make test-browser   # Run browser tests only (requires Playwright browsers)
 
-# Run unit tests in watch mode
-npm run test:unit
-
-# Run server-side tests only (no browser required)
-npm run test:server
-
-# Run browser tests only (requires Playwright browsers)
-npm run test:browser
+# Or using npm directly
+npm run test        # Run all tests (automatically detects browser availability)
+npm run test:unit   # Run unit tests in watch mode
+npm run test:server # Run server-side tests only (no browser required)
+npm run test:browser # Run browser tests only (requires Playwright browsers)
 ```
 
 **Note:** Browser tests require Playwright browsers to be installed:
 
 ```bash
-# Install Playwright browsers for browser testing
+# Using Makefile (recommended)
+make install-browsers
+
+# Or using npm directly
 npx playwright install --with-deps
 ```
 
 The test runner automatically detects if Playwright browsers are available and gracefully falls back to server-side tests only when browsers are not installed.
+
+## 🛠️ Makefile Commands
+
+This project includes a comprehensive Makefile that provides convenient shortcuts for all development tasks. The Makefile follows best practices and includes a helpful command reference.
+
+### Quick Reference
+
+```bash
+make help           # Show all available commands with descriptions
+make install        # Install all dependencies
+make run            # Start development server
+make test           # Run all tests
+make build          # Build for production
+```
+
+### All Available Commands
+
+- **Setup & Installation:**
+  - `make install` - Install all dependencies
+  - `make install-browsers` - Install Playwright browsers for browser testing
+
+- **Development:**
+  - `make run` / `make dev` - Start development server
+  - `make build` - Build for production
+  - `make preview` - Preview production build locally
+  - `make dev-setup` - Full development setup
+
+- **Testing:**
+  - `make test` - Run all tests (requires Playwright browsers for full suite)
+  - `make test-server` - Run server-side tests only (no browser required)
+  - `make test-browser` - Run browser tests only (requires Playwright browsers)
+
+- **Code Quality:**
+  - `make lint` - Check code style and run linting
+  - `make format` - Format code with Prettier
+  - `make check` - Run TypeScript type checking
+
+- **Maintenance:**
+  - `make clean` - Clean build artifacts and node_modules
+  - `make ci` - Run CI pipeline (lint, check, build, test-server)
+  - `make audit` - Run npm audit for security vulnerabilities
+
+### Why Use the Makefile?
+
+1. **Simplified Commands** - Shorter, memorable commands (`make run` vs `npm run dev`)
+2. **Consistency** - Same commands work across different projects
+3. **Documentation** - Built-in help system with `make help`
+4. **Best Practices** - Follows standard Makefile conventions
+5. **Error Handling** - Better error messages and status indicators
+6. **Workflow Shortcuts** - Combined commands like `make ci` for complete CI pipeline
 
 ## 🎨 Design Guidelines
 
@@ -207,6 +280,7 @@ Repository root:
 │   └── app.html           # HTML template
 ├── tests/                 # Test files
 ├── static/                # Static files served at root
+├── Makefile              # Development task automation
 ├── package.json           # Dependencies and scripts
 ├── svelte.config.js       # SvelteKit configuration
 ├── vite.config.ts         # Vite configuration with Vitest
