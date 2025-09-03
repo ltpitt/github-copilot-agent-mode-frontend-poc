@@ -5,6 +5,7 @@
 			principal: number;
 			annualInterestRate: number;
 			durationYears: number;
+			buyingAlone: boolean;
 		}) => void;
 	}
 
@@ -14,6 +15,7 @@
 	let principal = $state(300000); // Default loan amount in Euros
 	let annualInterestRate = $state(3.5); // Default annual interest rate in percentage
 	let durationYears = $state(30); // Default duration in years
+	let buyingAlone = $state(true); // Whether buying alone or with partner
 
 	// Form validation derived state
 	let isFormValid = $derived(() => {
@@ -27,7 +29,8 @@
 			onsubmit?.({
 				principal,
 				annualInterestRate,
-				durationYears
+				durationYears,
+				buyingAlone
 			});
 		}
 	}
@@ -44,164 +47,356 @@
 </script>
 
 <form class="input-form" onsubmit={handleSubmit}>
-	<h2>Mortgage Calculator</h2>
-	<p class="description">Enter your loan details to calculate monthly payments in Euros</p>
+	<h2>What maximum amount can I borrow?</h2>
 
 	<div class="form-group">
-		<label for="principal">Principal Amount (€)</label>
-		<input
-			id="principal"
-			type="number"
-			bind:value={principal}
-			min="1"
-			step="1000"
-			placeholder="300000"
-			onkeydown={handleKeyDown}
-			required
-		/>
+		<fieldset>
+			<legend class="question-label">Do you buy alone or together?</legend>
+			<div class="radio-group">
+				<label class="radio-option">
+					<input type="radio" bind:group={buyingAlone} value={true} name="buying-type" />
+					<span class="radio-icon">👤</span>
+					Alone
+				</label>
+				<label class="radio-option">
+					<input type="radio" bind:group={buyingAlone} value={false} name="buying-type" />
+					<span class="radio-icon">👥</span>
+					Together
+				</label>
+			</div>
+		</fieldset>
+	</div>
+
+	<div class="form-group">
+		<label for="principal">Your gross annual income</label>
+		<div class="input-with-suffix">
+			<input
+				id="principal"
+				type="number"
+				bind:value={principal}
+				min="1"
+				step="1000"
+				placeholder="40,000"
+				onkeydown={handleKeyDown}
+				required
+			/>
+			<span class="input-suffix">EUR</span>
+		</div>
 	</div>
 
 	<div class="form-group">
 		<label for="interest-rate">Annual Interest Rate (%)</label>
-		<input
-			id="interest-rate"
-			type="number"
-			bind:value={annualInterestRate}
-			min="0"
-			max="50"
-			step="0.01"
-			placeholder="3.5"
-			onkeydown={handleKeyDown}
-			required
-		/>
+		<div class="input-with-suffix">
+			<input
+				id="interest-rate"
+				type="number"
+				bind:value={annualInterestRate}
+				min="0"
+				max="50"
+				step="0.01"
+				placeholder="3.5"
+				onkeydown={handleKeyDown}
+				required
+			/>
+			<span class="input-suffix">%</span>
+		</div>
 	</div>
 
 	<div class="form-group">
 		<label for="duration">Duration (years)</label>
-		<input
-			id="duration"
-			type="number"
-			bind:value={durationYears}
-			min="1"
-			max="50"
-			step="1"
-			placeholder="30"
-			onkeydown={handleKeyDown}
-			required
-		/>
+		<div class="input-with-suffix">
+			<input
+				id="duration"
+				type="number"
+				bind:value={durationYears}
+				min="1"
+				max="50"
+				step="1"
+				placeholder="30"
+				onkeydown={handleKeyDown}
+				required
+			/>
+			<span class="input-suffix">years</span>
+		</div>
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()}>
-		Calculate Monthly Payment
-	</button>
+	<button type="submit" class="submit-button" disabled={!isFormValid()}> Calculate </button>
 </form>
 
 <style>
 	.input-form {
-		background: white;
-		padding: 2rem;
-		border-radius: 8px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-		max-width: 500px;
-		margin: 0 auto;
+		background: var(--color-background);
+		padding: var(--spacing-xl);
+		border-radius: var(--border-radius-lg);
+		box-shadow: var(--shadow-medium);
+		border: 1px solid var(--color-border-light);
+		width: 100%;
+		margin: 0;
 	}
 
 	h2 {
-		color: #ff6200;
-		text-align: center;
-		margin-bottom: 0.5rem;
-		font-size: 1.5rem;
-	}
-
-	.description {
-		text-align: center;
-		color: #666;
-		margin-bottom: 2rem;
-		font-size: 0.9rem;
+		color: var(--color-primary);
+		margin-bottom: var(--spacing-xl);
+		font-size: var(--font-size-h3);
+		font-weight: var(--font-weight-bold);
+		line-height: var(--line-height-tight);
 	}
 
 	.form-group {
-		margin-bottom: 1.5rem;
+		margin-bottom: var(--spacing-xl);
+		position: relative;
+	}
+
+	.question-label {
+		display: block;
+		margin-bottom: var(--spacing-md);
+		font-weight: var(--font-weight-semibold);
+		color: var(--color-text-primary);
+		font-size: var(--font-size-body);
+		border: none;
+		padding: 0;
+	}
+
+	fieldset {
+		border: none;
+		margin: 0;
+		padding: 0;
 	}
 
 	label {
 		display: block;
-		margin-bottom: 0.5rem;
-		font-weight: 600;
-		color: #333;
-		font-size: 0.95rem;
+		margin-bottom: var(--spacing-xs);
+		font-weight: var(--font-weight-semibold);
+		color: var(--color-text-primary);
+		font-size: var(--font-size-body);
+	}
+
+	.radio-group {
+		display: flex;
+		gap: var(--spacing-lg);
+	}
+
+	.radio-option {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		padding: var(--spacing-md);
+		border: 2px solid var(--color-border);
+		border-radius: var(--border-radius-sm);
+		cursor: pointer;
+		transition: all var(--transition-normal);
+		flex: 1;
+		justify-content: center;
+		background: var(--color-background);
+		font-weight: var(--font-weight-medium);
+	}
+
+	.radio-option:hover {
+		border-color: var(--color-primary);
+		background: var(--color-background-light);
+	}
+
+	.radio-option input[type='radio'] {
+		margin: 0;
+		width: auto;
+		min-height: auto;
+	}
+
+	.radio-option:has(input:checked) {
+		border-color: var(--color-primary);
+		background: var(--color-primary);
+		color: white;
+	}
+
+	.radio-icon {
+		font-size: 1.2em;
+	}
+
+	.input-with-suffix {
+		position: relative;
+		display: flex;
+		align-items: center;
 	}
 
 	input {
 		width: 100%;
-		padding: 0.75rem;
-		border: 2px solid #ddd;
-		border-radius: 4px;
-		font-size: 1rem;
+		padding: 1rem var(--spacing-md);
+		border: 2px solid var(--color-border);
+		border-radius: var(--border-radius-sm);
+		font-size: var(--font-size-body);
+		font-family: var(--font-family);
+		background-color: var(--color-background);
+		color: var(--color-text-primary);
 		transition:
-			border-color 0.2s,
-			box-shadow 0.2s;
+			border-color var(--transition-normal),
+			box-shadow var(--transition-normal),
+			background-color var(--transition-normal);
 		box-sizing: border-box;
+		min-height: 48px; /* Minimum touch target size */
+	}
+
+	.input-with-suffix input {
+		padding-right: 4rem;
+	}
+
+	.input-suffix {
+		position: absolute;
+		right: var(--spacing-md);
+		color: var(--color-text-secondary);
+		font-weight: var(--font-weight-medium);
+		font-size: var(--font-size-small);
+		background: var(--color-background-light);
+		padding: 0.25rem 0.5rem;
+		border-radius: var(--border-radius-sm);
+		border: 1px solid var(--color-border-light);
+		pointer-events: none;
 	}
 
 	input:focus {
 		outline: none;
-		border-color: #ff6200;
-		box-shadow: 0 0 0 3px rgba(255, 98, 0, 0.1);
+		border-color: var(--color-blue);
+		box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+		background-color: var(--color-background);
 	}
 
-	input:invalid {
-		border-color: #e74c3c;
+	input:hover:not(:focus) {
+		border-color: var(--color-text-secondary);
+	}
+
+	input:invalid:not(:focus) {
+		border-color: #cc0000;
+	}
+
+	input:invalid:focus {
+		border-color: #cc0000;
+		box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
 	}
 
 	.submit-button {
 		width: 100%;
-		padding: 1rem;
-		background-color: #ff6200;
-		color: white;
+		padding: 1rem var(--spacing-lg);
+		background-color: var(--color-primary);
+		color: var(--color-background);
 		border: none;
-		border-radius: 4px;
-		font-size: 1rem;
-		font-weight: 600;
+		border-radius: var(--border-radius-sm);
+		font-size: var(--font-size-body);
+		font-weight: var(--font-weight-semibold);
+		font-family: var(--font-family);
 		cursor: pointer;
 		transition:
-			background-color 0.2s,
-			opacity 0.2s;
-		margin-top: 1rem;
+			background-color var(--transition-normal),
+			transform var(--transition-fast),
+			box-shadow var(--transition-normal);
+		margin-top: var(--spacing-lg);
+		min-height: 48px; /* Minimum touch target size */
+		position: relative;
+		overflow: hidden;
 	}
 
 	.submit-button:hover:not(:disabled) {
-		background-color: #e55a00;
+		background-color: var(--color-primary-dark);
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-light);
+	}
+
+	.submit-button:active:not(:disabled) {
+		transform: translateY(0);
+		box-shadow: none;
 	}
 
 	.submit-button:disabled {
-		background-color: #ccc;
+		background-color: var(--color-text-light);
 		cursor: not-allowed;
 		opacity: 0.6;
+		transform: none;
+		box-shadow: none;
 	}
 
 	.submit-button:focus {
-		outline: none;
-		box-shadow: 0 0 0 3px rgba(255, 98, 0, 0.3);
+		outline: 2px solid var(--color-blue);
+		outline-offset: 2px;
 	}
 
-	/* Accessibility improvements */
+	/* Enhanced focus indicators for accessibility */
+	input:focus,
+	.submit-button:focus {
+		outline: 2px solid var(--color-blue);
+		outline-offset: 2px;
+	}
+
+	.radio-option:focus-within {
+		outline: 2px solid var(--color-blue);
+		outline-offset: 2px;
+	}
+
+	/* High contrast mode support */
+	@media (prefers-contrast: high) {
+		.input-form {
+			border: 2px solid var(--color-text-primary);
+		}
+
+		input,
+		.radio-option {
+			border-width: 2px;
+		}
+
+		input:focus,
+		.radio-option:focus-within {
+			border-color: var(--color-blue);
+			outline: 3px solid var(--color-blue);
+		}
+
+		.submit-button {
+			border: 2px solid var(--color-text-primary);
+		}
+	}
+
+	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
 		input,
-		.submit-button {
+		.submit-button,
+		.radio-option {
 			transition: none;
+		}
+
+		.submit-button:hover:not(:disabled) {
+			transform: none;
 		}
 	}
 
 	/* Responsive design */
-	@media (max-width: 600px) {
+	@media (max-width: 768px) {
 		.input-form {
-			padding: 1.5rem;
-			margin: 1rem;
+			padding: var(--spacing-lg);
+			border-radius: var(--border-radius-md);
 		}
 
 		h2 {
-			font-size: 1.3rem;
+			font-size: var(--font-size-h3);
+		}
+
+		.form-group {
+			margin-bottom: var(--spacing-lg);
+		}
+
+		.radio-group {
+			flex-direction: column;
+			gap: var(--spacing-sm);
+		}
+
+		.radio-option {
+			justify-content: flex-start;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.input-form {
+			padding: var(--spacing-md);
+		}
+
+		input,
+		.submit-button {
+			font-size: 16px; /* Prevent zoom on iOS */
 		}
 	}
 </style>
