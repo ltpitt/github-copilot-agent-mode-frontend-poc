@@ -1,0 +1,64 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        timeout-minutes: 2
+
+      - name: Check code formatting
+        run: npx prettier --check .
+        timeout-minutes: 1
+
+      - name: Run ESLint
+        run: npx eslint .
+        timeout-minutes: 2
+
+      - name: Run TypeScript type checking
+        run: npm run check
+        timeout-minutes: 2
+
+      - name: Security audit
+        run: npm audit --audit-level moderate
+        continue-on-error: true
+        timeout-minutes: 1
+
+      - name: Check for outdated dependencies
+        run: npm outdated
+        continue-on-error: true
+        timeout-minutes: 1
+
+      - name: Generate code quality report
+        run: |
+          echo "## Code Quality Summary" > code-quality-report.md
+          echo "✅ Code formatting: Prettier" >> code-quality-report.md
+          echo "✅ Linting: ESLint" >> code-quality-report.md
+          echo "✅ Type checking: TypeScript" >> code-quality-report.md
+          echo "✅ Security audit completed" >> code-quality-report.md
+          echo "✅ Dependency check completed" >> code-quality-report.md
+
+      - name: Upload code quality report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: code-quality-report
+          path: code-quality-report.md
+          retention-days: 30
