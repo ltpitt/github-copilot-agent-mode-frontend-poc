@@ -5,6 +5,7 @@ This document outlines the UX patterns and interaction guidelines for the ING Mo
 ## 🎯 Core User Journey
 
 ### Primary User Flow
+
 1. **Landing** - User arrives at the calculator
 2. **Input** - User enters mortgage parameters
 3. **Calculate** - Real-time calculation updates
@@ -12,6 +13,7 @@ This document outlines the UX patterns and interaction guidelines for the ING Mo
 5. **Action** - User proceeds to next steps or adjustments
 
 ### Key User Goals
+
 - **Quick Estimation** - Get a rough mortgage calculation quickly
 - **Detailed Analysis** - Understand different scenarios and options
 - **Comparison** - Compare different mortgage terms and rates
@@ -20,6 +22,7 @@ This document outlines the UX patterns and interaction guidelines for the ING Mo
 ## 📋 Form Design Patterns
 
 ### Progressive Disclosure
+
 ```
 Step 1: Basic Information
 ├── Purchase price / Property value
@@ -40,15 +43,17 @@ Step 3: Results & Options
 ```
 
 ### Input Validation Strategy
+
 - **Real-time validation** for immediate feedback
 - **Non-blocking validation** - don't prevent users from continuing
 - **Helpful error messages** with clear solutions
 - **Success indicators** for completed fields
 
 ### Form Field Types
+
 ```typescript
 // Currency inputs
-<CurrencyInput 
+<CurrencyInput
   label="Purchase Price"
   value={purchasePrice}
   min={50000}
@@ -79,12 +84,14 @@ Step 3: Results & Options
 ## 🧮 Calculation Patterns
 
 ### Real-time Updates
+
 - **Debounced calculations** (300ms delay) to avoid excessive processing
 - **Visual feedback** during calculation (loading states)
 - **Smooth transitions** between different results
 - **Highlighting changes** when inputs are modified
 
 ### Results Display
+
 ```
 Monthly Payment: € 1,234
 ├── Principal: € 987
@@ -98,6 +105,7 @@ Total Loan Cost: € 444,240
 ```
 
 ### Scenario Comparison
+
 - **Side-by-side comparison** of different scenarios
 - **What-if analysis** with slider controls
 - **Impact visualization** showing cost differences
@@ -106,6 +114,7 @@ Total Loan Cost: € 444,240
 ## 🎨 Visual Feedback Patterns
 
 ### Loading States
+
 ```typescript
 // Skeleton loading for calculation results
 <div class="skeleton-loader">
@@ -115,20 +124,22 @@ Total Loan Cost: € 444,240
 </div>
 
 // Progress indicators for multi-step forms
-<ProgressBar 
-  currentStep={2} 
-  totalSteps={4} 
+<ProgressBar
+  currentStep={2}
+  totalSteps={4}
   labels={['Basic Info', 'Loan Details', 'Results', 'Options']}
 />
 ```
 
 ### Success/Error States
+
 - **Green checkmarks** for successful inputs
 - **Red error icons** with descriptive text
 - **Warning indicators** for unusual values
 - **Info tooltips** for complex terms
 
 ### Interactive Elements
+
 - **Hover effects** on all clickable elements
 - **Focus states** clearly visible for keyboard users
 - **Active states** for pressed buttons
@@ -137,15 +148,17 @@ Total Loan Cost: € 444,240
 ## 📱 Mobile UX Patterns
 
 ### Touch-Friendly Design
+
 - **44px minimum** touch target size
 - **Generous spacing** between interactive elements
 - **Swipe gestures** for form navigation
 - **Pull-to-refresh** for recalculating
 
 ### Mobile-Specific Features
+
 ```typescript
 // Large number inputs with custom keyboard
-<NumberInput 
+<NumberInput
   type="currency"
   inputMode="decimal"
   pattern="[0-9]*"
@@ -153,7 +166,7 @@ Total Loan Cost: € 444,240
 />
 
 // Mobile-optimized dropdowns
-<Select 
+<Select
   options={loanTermOptions}
   mobileFullScreen={true}
   searchable={false}
@@ -161,6 +174,7 @@ Total Loan Cost: € 444,240
 ```
 
 ### Progressive Enhancement
+
 - **Core functionality** works without JavaScript
 - **Enhanced interactions** with JavaScript enabled
 - **Offline capability** for basic calculations
@@ -169,24 +183,31 @@ Total Loan Cost: € 444,240
 ## 🎭 Micro-Interactions
 
 ### Calculation Updates
+
 ```css
 .result-update {
-  animation: highlightChange 0.5s ease-in-out;
+	animation: highlightChange 0.5s ease-in-out;
 }
 
 @keyframes highlightChange {
-  0% { background-color: rgba(255, 98, 0, 0.2); }
-  100% { background-color: transparent; }
+	0% {
+		background-color: rgba(255, 98, 0, 0.2);
+	}
+	100% {
+		background-color: transparent;
+	}
 }
 ```
 
 ### Form Interactions
+
 - **Field focus** with subtle border animation
 - **Input value changes** with smooth number counting
 - **Form submission** with loading spinner
 - **Error appearance** with shake animation
 
 ### Page Transitions
+
 - **Smooth scrolling** to results section
 - **Fade transitions** between form steps
 - **Slide animations** for comparison views
@@ -195,15 +216,17 @@ Total Loan Cost: € 444,240
 ## 🔍 Search and Discovery
 
 ### Input Assistance
+
 - **Autocomplete suggestions** for common values
 - **Recent calculations** saved in localStorage
 - **Preset scenarios** for quick testing
 - **Smart defaults** based on market data
 
 ### Help and Guidance
+
 ```typescript
 // Contextual tooltips
-<Tooltip 
+<Tooltip
   content="The interest rate depends on your creditworthiness and market conditions"
   position="top"
 >
@@ -211,7 +234,7 @@ Total Loan Cost: € 444,240
 </Tooltip>
 
 // Progressive help system
-<HelpSystem 
+<HelpSystem
   steps={[
     'Enter your purchase price',
     'Add your down payment',
@@ -225,22 +248,24 @@ Total Loan Cost: € 444,240
 ## 📊 Data Visualization
 
 ### Chart Types
+
 - **Pie charts** for payment breakdown
 - **Bar charts** for scenario comparison
 - **Line graphs** for payment over time
 - **Donut charts** for loan composition
 
 ### Interactive Elements
+
 ```typescript
 // Hover states on chart elements
-<PieChart 
+<PieChart
   data={paymentBreakdown}
   onHover={(segment) => showTooltip(segment)}
   colors={['#FF6200', '#0066CC', '#CCCCCC']}
 />
 
 // Responsive chart sizing
-<ResponsiveChart 
+<ResponsiveChart
   minHeight={200}
   maxHeight={400}
   aspectRatio={16/9}
@@ -250,31 +275,30 @@ Total Loan Cost: € 444,240
 ## ♿ Accessibility Patterns
 
 ### Keyboard Navigation
+
 - **Tab order** follows visual flow
 - **Skip links** for main content
 - **Escape key** closes modals/dropdowns
 - **Arrow keys** for slider controls
 
 ### Screen Reader Support
+
 ```html
 <!-- Descriptive labels and instructions -->
 <label for="purchase-price">
-  Purchase Price
-  <span class="sr-only">(Enter the total price of the property)</span>
+	Purchase Price
+	<span class="sr-only">(Enter the total price of the property)</span>
 </label>
 
 <!-- Live regions for dynamic updates -->
-<div aria-live="polite" aria-atomic="true">
-  Monthly payment: €1,234
-</div>
+<div aria-live="polite" aria-atomic="true">Monthly payment: €1,234</div>
 
 <!-- Progress announcements -->
-<div aria-live="assertive" class="sr-only">
-  Step 2 of 4 completed
-</div>
+<div aria-live="assertive" class="sr-only">Step 2 of 4 completed</div>
 ```
 
 ### Visual Accessibility
+
 - **High contrast mode** support
 - **Reduced motion** preferences respected
 - **Large text** scaling support
@@ -283,18 +307,21 @@ Total Loan Cost: € 444,240
 ## 🎯 Conversion Optimization
 
 ### Call-to-Action Placement
+
 - **Primary CTA** prominently displayed
 - **Secondary actions** clearly differentiated
 - **Next steps** obvious and compelling
 - **Trust indicators** near action buttons
 
 ### Form Optimization
+
 - **Minimal required fields** to reduce friction
 - **Optional fields** clearly marked
 - **Progress indication** for multi-step forms
 - **Save progress** functionality for longer forms
 
 ### Trust Building
+
 - **Security indicators** for data protection
 - **Privacy statements** easily accessible
 - **Expert recommendations** highlighted
@@ -303,12 +330,14 @@ Total Loan Cost: € 444,240
 ## 📈 Performance Patterns
 
 ### Optimization Strategies
+
 - **Lazy loading** for non-critical content
 - **Code splitting** by route/feature
 - **Image optimization** with WebP/AVIF
 - **Critical CSS** inlined
 
 ### Loading Priorities
+
 1. **Core calculation logic** - highest priority
 2. **Basic form elements** - high priority
 3. **Visual enhancements** - medium priority
