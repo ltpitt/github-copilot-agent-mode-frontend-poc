@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { validateFormInputs } from './validation.js';
+	import NumberInput from './NumberInput.svelte';
 
 	// Props for event callbacks
 	interface Props {
@@ -93,80 +94,57 @@
 	</div>
 
 	<div class="form-group">
-		<label for="principal">Your gross annual income</label>
-		<div class="input-with-suffix">
-			<input
-				id="principal"
-				type="number"
-				bind:value={principal}
-				min="1"
-				step="1000"
-				placeholder="40,000"
-				onkeydown={handleKeyDown}
-				oninput={handleInputInteraction}
-				onblur={handleInputInteraction}
-				class:error={shouldShowErrors() && validationResults()?.errors?.principal}
-				required
-			/>
-			<span class="input-suffix">EUR</span>
-		</div>
-		{#if shouldShowErrors() && validationResults()?.errors?.principal}
-			<div class="error-message" role="alert">
-				{validationResults().errors.principal}
-			</div>
-		{/if}
+		<NumberInput
+			id="principal"
+			label="Your gross annual income"
+			bind:value={principal}
+			min={1}
+			max={10000000}
+			step={1000}
+			suffix="EUR"
+			required
+			error={shouldShowErrors() && !!validationResults()?.errors?.principal}
+			errorMessage={validationResults()?.errors?.principal || ''}
+			oninput={handleInputInteraction}
+			onblur={handleInputInteraction}
+			onkeydown={handleKeyDown}
+		/>
 	</div>
 
 	<div class="form-group">
-		<label for="interest-rate">Annual Interest Rate (%)</label>
-		<div class="input-with-suffix">
-			<input
-				id="interest-rate"
-				type="number"
-				bind:value={annualInterestRate}
-				min="0"
-				max="50"
-				step="0.01"
-				placeholder="3.5"
-				onkeydown={handleKeyDown}
-				oninput={handleInputInteraction}
-				onblur={handleInputInteraction}
-				class:error={shouldShowErrors() && validationResults()?.errors?.interestRate}
-				required
-			/>
-			<span class="input-suffix">%</span>
-		</div>
-		{#if shouldShowErrors() && validationResults()?.errors?.interestRate}
-			<div class="error-message" role="alert">
-				{validationResults().errors.interestRate}
-			</div>
-		{/if}
+		<NumberInput
+			id="interest-rate"
+			label="Annual Interest Rate (%)"
+			bind:value={annualInterestRate}
+			min={0}
+			max={50}
+			step={0.01}
+			suffix="%"
+			required
+			error={shouldShowErrors() && !!validationResults()?.errors?.interestRate}
+			errorMessage={validationResults()?.errors?.interestRate || ''}
+			oninput={handleInputInteraction}
+			onblur={handleInputInteraction}
+			onkeydown={handleKeyDown}
+		/>
 	</div>
 
 	<div class="form-group">
-		<label for="duration">Duration (years)</label>
-		<div class="input-with-suffix">
-			<input
-				id="duration"
-				type="number"
-				bind:value={durationYears}
-				min="1"
-				max="50"
-				step="1"
-				placeholder="30"
-				onkeydown={handleKeyDown}
-				oninput={handleInputInteraction}
-				onblur={handleInputInteraction}
-				class:error={shouldShowErrors() && validationResults()?.errors?.duration}
-				required
-			/>
-			<span class="input-suffix">years</span>
-		</div>
-		{#if shouldShowErrors() && validationResults()?.errors?.duration}
-			<div class="error-message" role="alert">
-				{validationResults().errors.duration}
-			</div>
-		{/if}
+		<NumberInput
+			id="duration"
+			label="Duration (years)"
+			bind:value={durationYears}
+			min={1}
+			max={50}
+			step={1}
+			suffix="years"
+			required
+			error={shouldShowErrors() && !!validationResults()?.errors?.duration}
+			errorMessage={validationResults()?.errors?.duration || ''}
+			oninput={handleInputInteraction}
+			onblur={handleInputInteraction}
+			onkeydown={handleKeyDown}
+		/>
 	</div>
 
 	<button type="submit" class="submit-button" disabled={!isFormValid()}>
@@ -200,6 +178,11 @@
 	.form-group {
 		margin-bottom: var(--spacing-xl);
 		position: relative;
+	}
+
+	/* Increase spacing between form groups for better visual hierarchy */
+	.form-group:not(:last-child) {
+		margin-bottom: calc(var(--spacing-xl) * 1.5);
 	}
 
 	.question-label {
@@ -267,94 +250,6 @@
 		font-size: 1.2em;
 	}
 
-	.input-with-suffix {
-		position: relative;
-		display: flex;
-		align-items: center;
-	}
-
-	input {
-		width: 100%;
-		padding: 1rem var(--spacing-md);
-		border: 2px solid var(--color-border);
-		border-radius: var(--border-radius-sm);
-		font-size: var(--font-size-body);
-		font-family: var(--font-family);
-		background-color: var(--color-background);
-		color: var(--color-text-primary);
-		transition:
-			border-color var(--transition-normal),
-			box-shadow var(--transition-normal),
-			background-color var(--transition-normal);
-		box-sizing: border-box;
-		min-height: 48px; /* Minimum touch target size */
-	}
-
-	.input-with-suffix input {
-		padding-right: 4rem;
-	}
-
-	.input-suffix {
-		position: absolute;
-		right: var(--spacing-md);
-		color: var(--color-text-secondary);
-		font-weight: var(--font-weight-medium);
-		font-size: var(--font-size-small);
-		background: var(--color-background-light);
-		padding: 0.25rem 0.5rem;
-		border-radius: var(--border-radius-sm);
-		border: 1px solid var(--color-border-light);
-		pointer-events: none;
-	}
-
-	input:focus {
-		outline: none;
-		border-color: var(--color-blue);
-		box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
-		background-color: var(--color-background);
-	}
-
-	input:hover:not(:focus) {
-		border-color: var(--color-text-secondary);
-	}
-
-	input:invalid:not(:focus) {
-		border-color: #cc0000;
-	}
-
-	input:invalid:focus {
-		border-color: #cc0000;
-		box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
-	}
-
-	/* Error state styling */
-	input.error {
-		border-color: #cc0000;
-		background-color: #fff5f5;
-	}
-
-	input.error:focus {
-		border-color: #cc0000;
-		box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
-		background-color: #fff5f5;
-	}
-
-	.error-message {
-		margin-top: var(--spacing-xs);
-		color: #cc0000;
-		font-size: var(--font-size-small);
-		font-weight: var(--font-weight-medium);
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-xs);
-		line-height: var(--line-height-normal);
-	}
-
-	.error-message::before {
-		content: '⚠️';
-		font-size: 0.9em;
-	}
-
 	.submit-button {
 		width: 100%;
 		padding: 1rem var(--spacing-lg);
@@ -401,7 +296,6 @@
 	}
 
 	/* Enhanced focus indicators for accessibility */
-	input:focus,
 	.submit-button:focus {
 		outline: 2px solid var(--color-blue);
 		outline-offset: 2px;
@@ -418,12 +312,10 @@
 			border: 2px solid var(--color-text-primary);
 		}
 
-		input,
 		.radio-option {
 			border-width: 2px;
 		}
 
-		input:focus,
 		.radio-option:focus-within {
 			border-color: var(--color-blue);
 			outline: 3px solid var(--color-blue);
@@ -436,7 +328,6 @@
 
 	/* Reduced motion support */
 	@media (prefers-reduced-motion: reduce) {
-		input,
 		.submit-button,
 		.radio-option {
 			transition: none;
@@ -477,7 +368,6 @@
 			padding: var(--spacing-md);
 		}
 
-		input,
 		.submit-button {
 			font-size: 16px; /* Prevent zoom on iOS */
 		}

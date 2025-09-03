@@ -151,20 +151,22 @@
 		color: var(--color-text-secondary);
 		font-size: var(--font-size-body);
 		line-height: var(--line-height-relaxed);
-		margin-bottom: var(--spacing-xl);
+		margin-bottom: calc(var(--spacing-xl) * 1.5);
 		max-width: 600px;
 	}
 
 	.calculator-container {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-xl);
+		gap: calc(var(--spacing-xl) * 2);
 		align-items: start;
+		margin-top: var(--spacing-xl);
 	}
 
 	.calculator-form,
 	.calculator-results {
-		/* Styling handled by child components */
+		/* Ensure consistent spacing */
+		margin: 0;
 	}
 
 	/* Responsive Design */
@@ -190,7 +192,8 @@
 
 		.calculator-container {
 			grid-template-columns: 1fr;
-			gap: var(--spacing-lg);
+			gap: calc(var(--spacing-lg) * 1.5);
+			margin-top: var(--spacing-lg);
 		}
 	}
 
