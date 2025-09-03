@@ -8,18 +8,22 @@
 		totalInterest: number;
 	} | null>(null);
 
-	function handleFormSubmit(data: { principal: number; annualInterestRate: number; durationYears: number }) {
+	function handleFormSubmit(data: {
+		principal: number;
+		annualInterestRate: number;
+		durationYears: number;
+	}) {
 		const { principal, annualInterestRate, durationYears } = data;
-		
+
 		try {
 			// Convert percentage to decimal and years to months
 			const annualRate = annualInterestRate / 100;
 			const numberOfPayments = durationYears * 12;
-			
+
 			const monthlyPayment = calculateMonthlyPayment(principal, annualRate, numberOfPayments);
 			const totalPayments = monthlyPayment * numberOfPayments;
 			const totalInterest = totalPayments - principal;
-			
+
 			calculationResult = {
 				monthlyPayment,
 				totalPayments,
@@ -34,19 +38,22 @@
 
 <svelte:head>
 	<title>InputForm Demo - Mortgage Calculator</title>
-	<meta name="description" content="Demonstration of the InputForm component for mortgage calculations" />
+	<meta
+		name="description"
+		content="Demonstration of the InputForm component for mortgage calculations"
+	/>
 </svelte:head>
 
 <main>
 	<h1>InputForm Component Demo</h1>
 	<p class="intro">
-		This page demonstrates the <code>InputForm</code> component that emits form data on submit.
-		The component uses Euro currency formatting and includes validation.
+		This page demonstrates the <code>InputForm</code> component that emits form data on submit. The component
+		uses Euro currency formatting and includes validation.
 	</p>
 
 	<div class="demo-container">
 		<InputForm onsubmit={handleFormSubmit} />
-		
+
 		{#if calculationResult}
 			<div class="results">
 				<h3>Calculation Results</h3>
