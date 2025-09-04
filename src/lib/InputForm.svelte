@@ -188,21 +188,36 @@
 
 <style>
 	.input-form {
-		background: var(--color-background);
-		padding: var(--spacing-xl);
-		border-radius: var(--border-radius-lg);
-		box-shadow: var(--shadow-medium);
+		background: var(--color-background-section);
+		padding: var(--spacing-3xl);
+		border-radius: var(--border-radius-xl);
+		box-shadow: var(--shadow-lg);
 		border: 1px solid var(--color-border-light);
 		width: 100%;
 		margin: 0;
+		position: relative;
+		backdrop-filter: blur(10px);
+	}
+
+	.input-form::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 4px;
+		background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+		border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 	}
 
 	h2 {
 		color: var(--color-primary);
-		margin-bottom: var(--spacing-xl);
+		margin-bottom: var(--spacing-2xl);
 		font-size: var(--font-size-h3);
 		font-weight: var(--font-weight-bold);
 		line-height: var(--line-height-tight);
+		font-family: var(--font-family-display);
+		letter-spacing: -0.01em;
 	}
 
 	.form-group {
@@ -265,88 +280,138 @@
 
 	.radio-group {
 		display: flex;
-		gap: var(--spacing-lg);
+		gap: var(--spacing-md);
 	}
 
 	.radio-option {
 		display: flex;
 		align-items: center;
 		gap: var(--spacing-sm);
-		padding: var(--spacing-md);
+		padding: var(--spacing-lg) var(--spacing-xl);
 		border: 2px solid var(--color-border);
-		border-radius: var(--border-radius-sm);
+		border-radius: var(--border-radius-md);
 		cursor: pointer;
 		transition: all var(--transition-normal);
 		flex: 1;
 		justify-content: center;
 		background: var(--color-background);
 		font-weight: var(--font-weight-medium);
+		position: relative;
+		overflow: hidden;
+		min-height: 56px;
+		font-size: var(--font-size-body);
+	}
+
+	.radio-option::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255, 98, 0, 0.1), transparent);
+		transition: left var(--transition-slow);
+	}
+
+	.radio-option:hover::before {
+		left: 100%;
 	}
 
 	.radio-option:hover {
 		border-color: var(--color-primary);
-		background: var(--color-background-light);
+		background: var(--color-primary-lighter);
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-md);
 	}
 
 	.radio-option input[type='radio'] {
 		margin: 0;
 		width: auto;
 		min-height: auto;
+		position: relative;
+		z-index: 2;
 	}
 
 	.radio-option:has(input:checked) {
 		border-color: var(--color-primary);
 		background: var(--color-primary);
 		color: white;
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-lg);
+	}
+
+	.radio-option:has(input:checked)::before {
+		display: none;
 	}
 
 	.radio-icon {
-		font-size: 1.2em;
+		font-size: 1.25em;
+		position: relative;
+		z-index: 2;
 	}
 
 	.submit-button {
 		width: 100%;
-		padding: 1rem var(--spacing-lg);
-		background-color: var(--color-primary);
+		padding: var(--spacing-lg) var(--spacing-2xl);
+		background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
 		color: var(--color-background);
 		border: none;
-		border-radius: var(--border-radius-sm);
+		border-radius: var(--border-radius-md);
 		font-size: var(--font-size-body);
 		font-weight: var(--font-weight-semibold);
 		font-family: var(--font-family);
 		cursor: pointer;
-		transition:
-			background-color var(--transition-normal),
-			transform var(--transition-fast),
-			box-shadow var(--transition-normal);
-		margin-top: var(--spacing-lg);
-		min-height: 48px; /* Minimum touch target size */
+		transition: all var(--transition-normal);
+		margin-top: var(--spacing-2xl);
+		min-height: 56px;
 		position: relative;
 		overflow: hidden;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		box-shadow: var(--shadow-md);
+	}
+
+	.submit-button::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+		transition: left var(--transition-slow);
+	}
+
+	.submit-button:hover:not(:disabled)::before {
+		left: 100%;
 	}
 
 	.submit-button:hover:not(:disabled) {
-		background-color: var(--color-primary-dark);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-light);
+		background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-xl);
 	}
 
 	.submit-button:active:not(:disabled) {
 		transform: translateY(0);
-		box-shadow: none;
+		box-shadow: var(--shadow-md);
 	}
 
 	.submit-button:disabled {
-		background-color: var(--color-text-light);
+		background: linear-gradient(135deg, var(--color-text-light) 0%, #aaa 100%);
 		cursor: not-allowed;
-		opacity: 0.6;
+		opacity: 0.7;
 		transform: none;
-		box-shadow: none;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.submit-button:disabled::before {
+		display: none;
 	}
 
 	.submit-button:focus {
-		outline: 2px solid var(--color-blue);
-		outline-offset: 2px;
+		outline: none;
+		box-shadow: var(--shadow-xl), var(--focus-ring);
 	}
 
 	/* Enhanced focus indicators for accessibility */
@@ -392,38 +457,41 @@
 		}
 	}
 
-	/* Responsive design */
+	/* Enhanced Responsive design */
 	@media (max-width: 768px) {
 		.input-form {
-			padding: var(--spacing-lg);
-			border-radius: var(--border-radius-md);
+			padding: var(--spacing-2xl);
+			border-radius: var(--border-radius-lg);
 		}
 
 		h2 {
-			font-size: var(--font-size-h3);
+			font-size: var(--font-size-h4);
+			text-align: center;
 		}
 
 		.form-group {
-			margin-bottom: var(--spacing-lg);
+			margin-bottom: var(--spacing-xl);
 		}
 
 		.radio-group {
 			flex-direction: column;
-			gap: var(--spacing-sm);
+			gap: var(--spacing-md);
 		}
 
 		.radio-option {
 			justify-content: flex-start;
+			padding: var(--spacing-md) var(--spacing-lg);
 		}
 	}
 
 	@media (max-width: 480px) {
 		.input-form {
-			padding: var(--spacing-md);
+			padding: var(--spacing-xl);
 		}
 
 		.submit-button {
 			font-size: 16px; /* Prevent zoom on iOS */
+			min-height: 52px;
 		}
 	}
 </style>
