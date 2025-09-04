@@ -13,6 +13,7 @@
 		disabled?: boolean;
 		error?: boolean;
 		errorMessage?: string;
+		helperText?: string;
 		oninput?: (event: Event) => void;
 		onblur?: (event: Event) => void;
 		onkeydown?: (event: KeyboardEvent) => void;
@@ -31,6 +32,7 @@
 		disabled = false,
 		error = false,
 		errorMessage = '',
+		helperText = '',
 		oninput,
 		onblur,
 		onkeydown
@@ -131,7 +133,7 @@
 			bind:value
 			{min}
 			{max}
-			{step}
+			step="any"
 			{placeholder}
 			{required}
 			{disabled}
@@ -170,6 +172,15 @@
 				/>
 			</svg>
 			{errorMessage}
+		</div>
+	{:else if helperText}
+		<div class="helper-text">
+			<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="info-icon">
+				<path
+					d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3.9c0 .2-.1.4-.3.5-.2.1-.4.2-.7.2s-.5-.1-.7-.2c-.2-.1-.3-.3-.3-.5V6.5c0-.2.1-.4.3-.5.2-.1.4-.2.7-.2s.5.1.7.2c.2.1.3.3.3.5v1.6z"
+				/>
+			</svg>
+			{helperText}
 		</div>
 	{/if}
 </div>
@@ -366,7 +377,24 @@
 		line-height: var(--line-height-normal);
 	}
 
+	.helper-text {
+		margin-top: var(--spacing-xs);
+		color: var(--color-text-secondary);
+		font-size: var(--font-size-small);
+		font-weight: var(--font-weight-regular);
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		line-height: var(--line-height-normal);
+	}
+
 	.error-icon {
+		flex-shrink: 0;
+		width: 16px;
+		height: 16px;
+	}
+
+	.info-icon {
 		flex-shrink: 0;
 		width: 16px;
 		height: 16px;

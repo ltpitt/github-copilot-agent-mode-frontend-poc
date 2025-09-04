@@ -130,11 +130,11 @@
 			bind:value={principal}
 			min={1}
 			max={10000000}
-			step={1000}
 			suffix="EUR"
 			required
 			error={shouldShowErrors() && !!validationResults()?.errors?.principal}
 			errorMessage={validationResults()?.errors?.principal || ''}
+			helperText="Enter any amount between €1 and €10,000,000"
 			oninput={handleInputInteraction}
 			onblur={handleInputInteraction}
 			onkeydown={handleKeyDown}
@@ -148,11 +148,11 @@
 			bind:value={annualInterestRate}
 			min={0}
 			max={50}
-			step={0.01}
 			suffix="%"
 			required
 			error={shouldShowErrors() && !!validationResults()?.errors?.interestRate}
 			errorMessage={validationResults()?.errors?.interestRate || ''}
+			helperText="Enter rate between 0% and 50% (e.g., 3.5, 4.25)"
 			oninput={handleInputInteraction}
 			onblur={handleInputInteraction}
 			onkeydown={handleKeyDown}
@@ -166,11 +166,11 @@
 			bind:value={durationYears}
 			min={1}
 			max={50}
-			step={1}
 			suffix="years"
 			required
 			error={shouldShowErrors() && !!validationResults()?.errors?.duration}
 			errorMessage={validationResults()?.errors?.duration || ''}
+			helperText="Enter a whole number between 1 and 50 years"
 			oninput={handleInputInteraction}
 			onblur={handleInputInteraction}
 			onkeydown={handleKeyDown}
