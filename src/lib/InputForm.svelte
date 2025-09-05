@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { validateFormInputs } from './validation.js';
 	import NumberInput from './NumberInput.svelte';
+	import EnergyLabelSelect from './EnergyLabelSelect.svelte';
+	import type { EnergyLabel } from './mortgageCalculator.js';
 
 	// Props for event callbacks
 	interface Props {
@@ -9,6 +11,7 @@
 			annualInterestRate: number;
 			durationYears: number;
 			buyingAlone: boolean | null;
+			energyLabel: EnergyLabel | null;
 		}) => void;
 	}
 
@@ -19,6 +22,7 @@
 	let annualInterestRate = $state(3.5); // Default annual interest rate in percentage
 	let durationYears = $state(30); // Default duration in years
 	let buyingAlone = $state<boolean | null>(null); // Whether buying alone or with partner - starts as null to require selection
+	let energyLabel = $state<EnergyLabel | null>(null); // Energy label selection
 
 	// Validation state
 	let hasInteracted = $state(false); // Track if user has interacted with form
@@ -26,7 +30,13 @@
 
 	// Form validation derived state
 	let validationResults = $derived(() => {
-		return validateFormInputs(principal, annualInterestRate, durationYears, buyingAlone);
+		return validateFormInputs(
+			principal,
+			annualInterestRate,
+			durationYears,
+			buyingAlone,
+			energyLabel
+		);
 	});
 
 	let isFormValid = $derived(() => {
@@ -47,6 +57,7 @@
 		console.log('Form submitted, validation state:', {
 			isFormValid: isFormValid(),
 			buyingAlone,
+			energyLabel,
 			validationResults: validationResults()
 		});
 
@@ -55,7 +66,8 @@
 				principal,
 				annualInterestRate,
 				durationYears,
-				buyingAlone
+				buyingAlone,
+				energyLabel
 			});
 		} else {
 			console.log('Form validation failed');
@@ -174,6 +186,21 @@
 			oninput={handleInputInteraction}
 			onblur={handleInputInteraction}
 			onkeydown={handleKeyDown}
+		/>
+	</div>
+
+	<div class="form-group">
+		<EnergyLabelSelect
+			id="energy-label"
+			label="Energy label"
+			bind:value={energyLabel}
+			required
+			error={shouldShowErrors() && !!validationResults()?.errors?.energyLabel}
+			errorMessage={validationResults()?.errors?.energyLabel || ''}
+			helperText="Select the energy efficiency rating of the property"
+			oninput={handleInputInteraction}
+			onblur={handleInputInteraction}
+			onchange={handleInputInteraction}
 		/>
 	</div>
 

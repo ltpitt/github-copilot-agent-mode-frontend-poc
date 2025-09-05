@@ -1,15 +1,19 @@
 <script lang="ts">
-	import { calculateMonthlyPayment } from '$lib/mortgageCalculator.js';
+	import {
+		calculateMortgageWithEnergyLabel,
+		type EnergyLabel,
+		type MortgageCalculationResult
+	} from '$lib/mortgageCalculator.js';
 	import InputForm from '$lib/InputForm.svelte';
 	import ResultDisplay from '$lib/ResultDisplay.svelte';
 
 	// State for storing the calculation result and form data
-	let monthlyPayment = $state(0);
-	let maximumMortgage = $state(0);
+	let calculationResult = $state<MortgageCalculationResult | null>(null);
 	let calculationData = $state({
 		principal: 0,
 		annualInterestRate: 0,
-		durationYears: 0
+		durationYears: 0,
+		energyLabel: null as EnergyLabel | null
 	});
 
 	// Handle form submission from InputForm component
@@ -18,10 +22,11 @@
 		annualInterestRate: number;
 		durationYears: number;
 		buyingAlone: boolean | null;
+		energyLabel: EnergyLabel | null;
 	}) {
 		console.log('Form submitted with data:', data);
 		try {
-			const { principal, annualInterestRate, durationYears, buyingAlone } = data;
+			const { principal, annualInterestRate, durationYears, buyingAlone, energyLabel } = data;
 
 			// Ensure we have valid data
 			if (buyingAlone === null) {
@@ -29,30 +34,46 @@
 				return;
 			}
 
+			if (energyLabel === null) {
+				console.error('Energy label not selected');
+				return;
+			}
+
 			console.log('Processing calculation with:', {
 				principal,
 				annualInterestRate,
 				durationYears,
-				buyingAlone
+				buyingAlone,
+				energyLabel
 			});
 
 			const annualRate = annualInterestRate / 100; // Convert percentage to decimal
-			const numberOfPayments = durationYears * 12; // Convert years to months
 
-			// Calculate maximum loan amount based on income (4.5x annual income)
-			const maxLoanAmount = principal * 4.5;
-			maximumMortgage = maxLoanAmount;
+			// For demonstration, we'll use the income as home value * 1.2 (typical scenario)
+			// In a real application, this would come from property appraisal
+			const homeValue = principal * 6; // Rough estimate: 6x annual income for home value
 
-			// Calculate monthly payment for the maximum loan amount
-			monthlyPayment = calculateMonthlyPayment(maxLoanAmount, annualRate, numberOfPayments);
-			calculationData = { principal, annualInterestRate, durationYears };
+			// Calculate mortgage with energy label considerations
+			calculationResult = calculateMortgageWithEnergyLabel(
+				principal, // income
+				homeValue, // home value
+				energyLabel,
+				annualRate,
+				durationYears
+			);
 
-			console.log('Calculation results:', { maxLoanAmount, monthlyPayment });
+			calculationData = { principal, annualInterestRate, durationYears, energyLabel };
+
+			console.log('Calculation results:', calculationResult);
 		} catch (error) {
 			console.error('Error in calculation:', error);
-			monthlyPayment = 0;
-			maximumMortgage = 0;
-			calculationData = { principal: 0, annualInterestRate: 0, durationYears: 0 };
+			calculationResult = null;
+			calculationData = {
+				principal: 0,
+				annualInterestRate: 0,
+				durationYears: 0,
+				energyLabel: null
+			};
 		}
 	}
 </script>
@@ -69,7 +90,12 @@
 			<InputForm onsubmit={handleFormSubmit} />
 		</div>
 		<div class="calculator-results">
-			<ResultDisplay {monthlyPayment} {maximumMortgage} {calculationData} />
+			<ResultDisplay
+				monthlyPayment={calculationResult?.monthlyPayment || 0}
+				maximumMortgage={calculationResult?.finalLoanAmount || 0}
+				{calculationData}
+				{calculationResult}
+			/>
 		</div>
 	</div>
 </main>

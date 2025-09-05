@@ -77,12 +77,12 @@ export function validateEnergyLabel(value: EnergyLabel | null | undefined): Vali
 	if (value === null || value === undefined) {
 		return { isValid: false, message: 'Energy label is required' };
 	}
-	
+
 	const validLabels: EnergyLabel[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 	if (!validLabels.includes(value)) {
 		return { isValid: false, message: 'Energy label must be A, B, C, D, E, F, or G' };
 	}
-	
+
 	return { isValid: true };
 }
 

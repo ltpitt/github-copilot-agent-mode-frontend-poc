@@ -1,9 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { 
-	calculateMonthlyPayment, 
-	calculateEnergyLabelAdjustment, 
-	calculateMortgageWithEnergyLabel,
-	type EnergyLabel
+import {
+	calculateMonthlyPayment,
+	calculateEnergyLabelAdjustment,
+	calculateMortgageWithEnergyLabel
 } from './mortgageCalculator';
 
 describe('Mortgage Calculator - Annuity Formula', () => {

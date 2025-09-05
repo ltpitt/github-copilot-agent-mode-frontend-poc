@@ -168,7 +168,7 @@ describe('Validation Functions', () => {
 		});
 
 		it('should return multiple errors for invalid inputs', () => {
-			const result = validateFormInputs(-1000, -1, 0, true, 'X' as any);
+			const result = validateFormInputs(-1000, -1, 0, true, 'X' as never);
 			expect(result.isValid).toBe(false);
 			expect(result.errors.principal).toBe('Income must be greater than 0');
 			expect(result.errors.interestRate).toBe('Interest rate cannot be negative');
@@ -197,8 +197,8 @@ describe('Validation Functions', () => {
 	describe('validateEnergyLabel', () => {
 		it('should validate all valid energy labels', () => {
 			const validLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-			validLabels.forEach(label => {
-				const result = validateEnergyLabel(label as any);
+			validLabels.forEach((label) => {
+				const result = validateEnergyLabel(label as never);
 				expect(result.isValid).toBe(true);
 				expect(result.message).toBeUndefined();
 			});
@@ -218,8 +218,8 @@ describe('Validation Functions', () => {
 
 		it('should reject invalid energy labels', () => {
 			const invalidLabels = ['H', 'X', '1', 'a', 'AA', ''];
-			invalidLabels.forEach(label => {
-				const result = validateEnergyLabel(label as any);
+			invalidLabels.forEach((label) => {
+				const result = validateEnergyLabel(label as never);
 				expect(result.isValid).toBe(false);
 				expect(result.message).toBe('Energy label must be A, B, C, D, E, F, or G');
 			});

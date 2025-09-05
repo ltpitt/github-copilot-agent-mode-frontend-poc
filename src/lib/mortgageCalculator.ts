@@ -73,12 +73,12 @@ export function calculateEnergyLabelAdjustment(energyLabel: EnergyLabel, income:
 		case 'B':
 			// Energy-efficient homes get additional borrowing capacity
 			return 10000;
-		
+
 		case 'C':
 		case 'D':
 			// No adjustment for average efficiency (base case)
 			return 0;
-		
+
 		case 'E':
 		case 'F':
 		case 'G':
@@ -88,10 +88,10 @@ export function calculateEnergyLabelAdjustment(energyLabel: EnergyLabel, income:
 			} else if (income > 50000) {
 				// Scale reduction up to €30,000 for high incomes
 				const scalingFactor = Math.min((income - 50000) / 100000, 1); // Cap at €150k income
-				return -5500 - (24500 * scalingFactor); // Range from -5500 to -30000
+				return -5500 - 24500 * scalingFactor; // Range from -5500 to -30000
 			}
 			return -5500; // Minimum reduction for lower incomes
-		
+
 		default:
 			return 0;
 	}
@@ -141,7 +141,11 @@ export function calculateMortgageWithEnergyLabel(
 
 	// Calculate monthly payment
 	const numberOfPayments = durationYears * 12;
-	const monthlyPayment = calculateMonthlyPayment(finalLoanAmount, annualInterestRate, numberOfPayments);
+	const monthlyPayment = calculateMonthlyPayment(
+		finalLoanAmount,
+		annualInterestRate,
+		numberOfPayments
+	);
 
 	return {
 		homeValue,
