@@ -66,6 +66,7 @@
 			{oninput}
 			{onblur}
 			class="energy-select"
+			data-testid="{id}-select"
 			style:--selected-color={selectedLabelColor()}
 		>
 			<option value="">Select energy label</option>

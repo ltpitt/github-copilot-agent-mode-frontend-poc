@@ -117,14 +117,18 @@
 			<div class="house-with-label">
 				<div class="house-icon">🏠</div>
 				{#if calculationResult?.energyLabel}
-					<div class="energy-label" style:background-color={energyLabelColor()}>
+					<div
+						class="energy-label"
+						style:background-color={energyLabelColor()}
+						data-testid="energy-label-display"
+					>
 						{calculationResult.energyLabel}
 					</div>
 				{/if}
 			</div>
 			<div class="result-main">
 				<h3 class="result-title">{label}</h3>
-				<div class="result-value" class:valid={isValidCalculation()}>
+				<div class="result-value" class:valid={isValidCalculation()} data-testid="maximum-mortgage">
 					{formattedMaxMortgage()}
 				</div>
 			</div>
@@ -134,7 +138,8 @@
 			<div class="result-details">
 				<div class="detail-item">
 					<span class="detail-label">Gross monthly costs</span>
-					<span class="detail-value">{formattedMonthlyPayment()}</span>
+					<span class="detail-value" data-testid="monthly-payment">{formattedMonthlyPayment()}</span
+					>
 				</div>
 
 				{#if calculationResult.outOfPocket > 0}

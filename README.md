@@ -149,6 +149,7 @@ npx playwright test # Run all Playwright E2E tests
 ```
 
 **E2E Playwright Details:**
+
 - Playwright E2E tests are in the `e2e/tests/` directory.
 - The `playwright.config.ts` file ensures the SvelteKit dev server is started automatically.
 - For interactive debugging, use:
