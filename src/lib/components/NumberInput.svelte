@@ -140,6 +140,8 @@
 			class="number-input"
 			class:error
 			data-testid="{id}-input"
+			aria-label={label}
+			aria-required={required ? 'true' : 'false'}
 			oninput={handleInput}
 			onblur={handleBlur}
 			onkeydown={handleKeyDown}

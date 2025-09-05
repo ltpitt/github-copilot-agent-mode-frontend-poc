@@ -273,7 +273,6 @@ make build          # Build for production
 
 ## 📁 Project Structure
 
-
 ```
 Repository root:
 ├── .github/                # Copilot instructions and GitHub config
