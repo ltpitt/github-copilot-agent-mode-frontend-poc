@@ -6,16 +6,43 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 	});
 
 	test('should show validation errors for empty required fields', async ({ page }) => {
-		// Clear all default values
-		await page.fill('input[data-testid="principal-input"]', '');
-		await page.fill('input[data-testid="interest-rate-input"]', '');
-		await page.fill('input[data-testid="duration-input"]', '');
+		// Wait for page to be fully loaded
+		await page.waitForLoadState('networkidle');
+		await page.waitForTimeout(500);
 
-		// Try to submit without selecting buying type or energy label
+		// Set invalid values that should trigger validation errors
+		await page.fill('input[data-testid="principal-input"]', '0'); // Invalid: must be > 0
+		await page.fill('input[data-testid="interest-rate-input"]', '-1'); // Invalid: must be >= 0  
+		await page.fill('input[data-testid="duration-input"]', '0'); // Invalid: must be > 0
+
+		// Debug: Check button state and form details before submitting
+		const button = page.locator('button[type="submit"]');
+		const isButtonEnabled = await button.isEnabled();
+		const buttonText = await button.textContent();
+		console.log(`Submit button - enabled: ${isButtonEnabled}, text: "${buttonText}"`);
+
+		// Try to submit without selecting buying type or energy label (these should fail validation)
+		console.log('Submitting form with invalid fields...');
 		await page.click('button[type="submit"]');
 
-		// Wait for form processing and error display
-		await page.waitForTimeout(500);
+		// Wait longer for form processing and error display
+		await page.waitForTimeout(2000);
+
+		// Debug: Check what error messages exist
+		const errorMessages = await page.locator('.error-message').count();
+		console.log(`Found ${errorMessages} error messages`);
+		
+		// Also check for any validation-related elements
+		const allErrors = await page.locator('[role="alert"]').count();
+		console.log(`Found ${allErrors} alert elements`);
+		
+		if (errorMessages === 0) {
+			// Check console output to see if form is actually being submitted
+			const logs = await page.evaluate(() => {
+				return (window as any).lastFormSubmission || 'No form submission logged';
+			});
+			console.log('Form submission state:', logs);
+		}
 
 		// Check for validation error messages
 		await expect(page.locator('.error-message').first()).toBeVisible({ timeout: 10000 });
