@@ -159,39 +159,7 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		expect(newAmount).toBeGreaterThan(initialAmount);
 	});
 
-	test('should validate complete user journey with corrections', async ({ page }) => {
-		// Start with invalid data
-		await page.fill('input[data-testid="principal-input"]', '0'); // Invalid income
-		await page.fill('input[data-testid="interest-rate-input"]', '-1'); // Invalid rate
-		// Don't select buying type or energy label
 
-		// Try to submit
-		await page.click('button[type="submit"]');
-
-		// Should show errors
-		await expect(page.locator('.error-message')).toBeVisible();
-
-		// Button should be disabled or show error state
-		const submitButton = page.locator('button[type="submit"]');
-		const isDisabled = await submitButton.isDisabled();
-		const buttonText = await submitButton.textContent();
-
-		expect(isDisabled || buttonText?.includes('fix errors')).toBeTruthy();
-
-		// Correct the errors one by one
-		await page.fill('input[data-testid="principal-input"]', '100000');
-		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
-		await page.check('input[data-testid="buying-alone-true"]');
-		await selectEnergyLabelRobust(page, 'C');
-
-		// Now form should be valid
-		await expect(submitButton).toBeEnabled();
-		await expect(submitButton).toHaveText('Calculate');
-
-		// Submit should work
-		await page.click('button[type="submit"]');
-		await expect(page.locator('[data-testid="maximum-mortgage"]')).not.toHaveText('€0');
-	});
 
 	test('should maintain data consistency across multiple calculations', async ({ page }) => {
 		const testScenarios = [

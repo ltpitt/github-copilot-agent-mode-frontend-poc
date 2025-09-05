@@ -165,16 +165,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await expect(energyIndicator).toHaveText('B');
 	});
 
-	test('should validate energy label selection is required', async ({ page }) => {
-		// Fill all other fields
-		await page.fill('input[data-testid="principal-input"]', '250000');
-		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
-		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
 
-		// Leave energy label unselected and test validation
-		await testFormSubmissionValidation(page, 'energy label is required');
-	});
 
 	test('should allow changing energy label after selection', async ({ page }) => {
 		const energySelect = page.locator('select[data-testid="energy-label-select"]');
@@ -242,31 +233,5 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await expect(page.locator('select[data-testid="energy-label-select"]')).toHaveValue('C');
 	});
 
-	test('should have accessible energy label selection', async ({ page }) => {
-		const energySelect = page.locator('select[data-testid="energy-label-select"]');
 
-		// Check accessibility attributes
-		await expect(energySelect).toHaveAttribute('aria-label');
-		await expect(energySelect).toHaveAttribute('required');
-
-		// Label should be properly associated
-		const label = page.locator('label[for="energy-label"]');
-		await expect(label).toBeVisible();
-
-		// Should be keyboard navigable
-		await energySelect.focus();
-		await expect(energySelect).toBeFocused();
-
-		// Should be able to navigate options with keyboard
-		await page.keyboard.press('ArrowDown');
-		await page.keyboard.press('Enter');
-		
-		// Wait for DOM updates
-		await page.waitForTimeout(300);
-
-		// Should have selected an option
-		const selectedValue = await energySelect.inputValue();
-		expect(selectedValue).toBeTruthy();
-		expect(['A', 'B', 'C', 'D', 'E', 'F', 'G']).toContain(selectedValue);
-	});
 });

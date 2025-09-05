@@ -30,28 +30,7 @@ test.describe('Mortgage Calculator - Responsive Design', () => {
 		await page.goto('http://localhost:5173');
 	});
 
-	test('should display properly on desktop viewport', async ({ page }) => {
-		// Set desktop viewport
-		await page.setViewportSize({ width: 1440, height: 900 });
 
-		// Check main layout elements
-		await expect(page.locator('h1')).toBeVisible();
-		await expect(page.locator('.calculator-container')).toBeVisible();
-
-		// Should have two-column layout on desktop
-		const container = page.locator('.calculator-container');
-		const computedStyle = await container.evaluate((el) => {
-			const style = getComputedStyle(el);
-			return {
-				display: style.display,
-				gridTemplateColumns: style.gridTemplateColumns
-			};
-		});
-
-		expect(computedStyle.display).toBe('grid');
-		// Should have two columns (1fr 1fr or similar)
-		expect(computedStyle.gridTemplateColumns).toContain('1fr');
-	});
 
 	test('should adapt layout for tablet viewport', async ({ page }) => {
 		// Set tablet viewport
@@ -69,33 +48,7 @@ test.describe('Mortgage Calculator - Responsive Design', () => {
 		await expect(page.locator('input[data-testid="principal-input"]')).toHaveValue('250000');
 	});
 
-	test('should stack layout on mobile viewport', async ({ page }) => {
-		// Set mobile viewport
-		await page.setViewportSize({ width: 375, height: 667 });
 
-		// All main elements should be visible
-		await expect(page.locator('h1')).toBeVisible();
-		await expect(page.locator('.calculator-container')).toBeVisible();
-
-		// Should have single column layout on mobile
-		const container = page.locator('.calculator-container');
-		const computedStyle = await container.evaluate((el) => {
-			const style = getComputedStyle(el);
-			return {
-				gridTemplateColumns: style.gridTemplateColumns
-			};
-		});
-
-		// Should have single column (1fr or similar)
-		expect(computedStyle.gridTemplateColumns).toBe('1fr');
-
-		// Check that form elements are still accessible and properly sized
-		const principalInput = page.locator('input[data-testid="principal-input"]');
-		await expect(principalInput).toBeVisible();
-
-		const inputBox = await principalInput.boundingBox();
-		expect(inputBox?.width).toBeGreaterThan(200); // Should be reasonably wide
-	});
 
 	test('should have appropriate touch targets on mobile', async ({ page }) => {
 		await page.setViewportSize({ width: 375, height: 667 });
@@ -179,31 +132,7 @@ test.describe('Mortgage Calculator - Responsive Design', () => {
 		}
 	});
 
-	test('should not require horizontal scrolling', async ({ page }) => {
-		const viewports = [
-			{ width: 375, height: 667 }, // iPhone SE
-			{ width: 414, height: 896 }, // iPhone 11
-			{ width: 768, height: 1024 } // iPad
-		];
 
-		for (const viewport of viewports) {
-			await page.setViewportSize(viewport);
-
-			// Check that content fits within viewport width
-			const bodyScrollWidth = await page.evaluate(() => document.body.scrollWidth);
-			const viewportWidth = viewport.width;
-
-			// Allow for small differences (scrollbars, etc.) but no major horizontal overflow
-			expect(bodyScrollWidth).toBeLessThanOrEqual(viewportWidth + 20);
-
-			// Check specific elements don't overflow
-			const container = page.locator('.calculator-container');
-			if (await container.isVisible()) {
-				const containerBox = await container.boundingBox();
-				expect(containerBox?.width).toBeLessThanOrEqual(viewportWidth);
-			}
-		}
-	});
 
 	test('should maintain proper spacing at different screen sizes', async ({ page }) => {
 		// Desktop

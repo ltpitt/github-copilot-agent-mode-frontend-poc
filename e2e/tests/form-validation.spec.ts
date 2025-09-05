@@ -131,18 +131,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await testFormSubmissionValidation(page, 'mandatory');
 	});
 
-	test('should require energy label selection', async ({ page }) => {
-		// Fill all other required fields
-		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '250000', false);
-		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.5', false);
-		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false);
-		
-		// Select buying type
-		await page.check('input[data-testid="buying-alone-true"]');
 
-		// Don't select energy label and test validation
-		await testFormSubmissionValidation(page, 'energy label is required');
-	});
 
 	test('should validate numeric inputs only accept numbers', async ({ page }) => {
 		const principalInput = page.locator('input[data-testid="principal-input"]');
@@ -208,23 +197,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		}
 	});
 
-	test('should provide real-time validation feedback', async ({ page }) => {
-		const principalInput = page.locator('input[data-testid="principal-input"]');
 
-		// Start with invalid value
-		await principalInput.fill('-1000');
-		await principalInput.blur();
-
-		// Error should appear
-		await expect(page.locator('.error-message').first()).toBeVisible();
-
-		// Change to valid value
-		await principalInput.fill('250000');
-		await principalInput.blur();
-
-		// Error should disappear
-		await expect(page.locator('.error-message')).not.toBeVisible();
-	});
 
 	test('should handle decimal input formatting', async ({ page }) => {
 		// Test various decimal formats

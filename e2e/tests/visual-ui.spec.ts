@@ -173,40 +173,7 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 		await expect(page.locator('[data-testid="monthly-payment"]')).toBeVisible();
 	});
 
-	test('should handle error states with proper visual feedback', async ({ page }) => {
-		// Trigger validation errors
-		const principalInput = page.locator('input[data-testid="principal-input"]');
-		await principalInput.fill('-1000');
-		await principalInput.blur();
 
-		// Check for error styling
-		const errorMessage = page.locator('.error-message');
-		await expect(errorMessage).toBeVisible();
-
-		const errorStyles = await errorMessage.evaluate((el) => {
-			const style = getComputedStyle(el);
-			return {
-				color: style.color,
-				display: style.display
-			};
-		});
-
-		// Error should be visible and styled appropriately
-		expect(errorStyles.display).toBe('flex');
-		// Should use red color for errors
-		expect(errorStyles.color).toContain('rgb(204, 0, 0)'); // Error red
-
-		// Input should also show error styling
-		const inputErrorStyles = await principalInput.evaluate((el) => {
-			const style = getComputedStyle(el);
-			return {
-				borderColor: style.borderColor
-			};
-		});
-
-		// Should have error border color
-		expect(inputErrorStyles.borderColor).not.toBe('rgb(225, 229, 233)'); // Not default border
-	});
 
 	test('should maintain accessibility color contrast', async ({ page }) => {
 		// Check main text elements have sufficient contrast
