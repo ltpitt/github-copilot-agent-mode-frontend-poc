@@ -317,7 +317,7 @@
 		}
 
 		.calculator-container {
-			grid-template-columns: 1fr;
+			grid-template-columns: 1fr !important;
 			gap: var(--spacing-2xl);
 			margin-top: var(--spacing-xl);
 		}
@@ -330,6 +330,8 @@
 	@media (max-width: 480px) {
 		main {
 			padding: var(--spacing-lg) var(--spacing-sm);
+			max-width: 100vw;
+			box-sizing: border-box;
 		}
 
 		h1 {
@@ -338,6 +340,19 @@
 
 		.calculator-container {
 			gap: var(--spacing-xl);
+			max-width: 100%;
+			box-sizing: border-box;
+		}
+
+		:global(.input-form) {
+			padding: var(--spacing-lg);
+			max-width: 100%;
+			box-sizing: border-box;
+		}
+
+		:global(.number-input-container) {
+			max-width: 100%;
+			box-sizing: border-box;
 		}
 	}
 

@@ -83,24 +83,28 @@
 		const target = event.target as HTMLInputElement;
 		const newValue = parseFloat(target.value);
 
+		// Always update the value to allow validation to work properly
+		// Don't clamp on input, only on blur to allow validation of invalid values
 		if (!isNaN(newValue)) {
-			// Apply bounds checking
-			if (newValue >= min && newValue <= max) {
-				value = newValue;
-			} else if (newValue < min) {
-				value = min;
-				target.value = min.toString();
-			} else if (newValue > max) {
-				value = max;
-				target.value = max.toString();
-			}
+			value = newValue;
+		} else if (target.value === '' || target.value === '-') {
+			// Allow empty or just negative sign for user input
+			value = 0;
 		}
 
-		oninput?.(event);
+		// Trigger callback for validation in parent components
+		requestAnimationFrame(() => {
+			oninput?.(event);
+		});
 	}
 
 	function handleBlur(event: Event) {
-		onblur?.(event);
+		// Don't clamp on blur - let validation handle invalid values
+		// This ensures error messages can be displayed properly
+		// Trigger callback for validation in parent components
+		requestAnimationFrame(() => {
+			onblur?.(event);
+		});
 	}
 </script>
 

@@ -35,19 +35,21 @@
 		energyLabel: false
 	}); // Track individual field interactions
 
-	// Form validation derived state
+	// Form validation derived state - ensure proper reactivity
 	let validationResults = $derived(() => {
-		return validateFormInputs(
+		const results = validateFormInputs(
 			principal,
 			annualInterestRate,
 			durationYears,
 			buyingAlone,
 			energyLabel
 		);
+		return results;
 	});
 
 	let isFormValid = $derived(() => {
-		return validationResults().isValid;
+		const valid = validationResults().isValid;
+		return valid;
 	});
 
 	// Show errors when user tries to submit invalid form or after interaction
@@ -55,25 +57,35 @@
 		return showErrors || (hasInteracted && !isFormValid());
 	});
 
-	// Individual field error display logic
+	// Individual field error display logic - show errors when field has been interacted with
 	let shouldShowPrincipalError = $derived(() => {
-		return (showErrors || fieldInteractions.principal) && !!validationResults()?.errors?.principal;
+		const hasError = !!validationResults()?.errors?.principal;
+		const shouldShow = (showErrors || fieldInteractions.principal) && hasError;
+		return shouldShow;
 	});
 
 	let shouldShowInterestRateError = $derived(() => {
-		return (showErrors || fieldInteractions.interestRate) && !!validationResults()?.errors?.interestRate;
+		const hasError = !!validationResults()?.errors?.interestRate;  
+		const shouldShow = (showErrors || fieldInteractions.interestRate) && hasError;
+		return shouldShow;
 	});
 
 	let shouldShowDurationError = $derived(() => {
-		return (showErrors || fieldInteractions.duration) && !!validationResults()?.errors?.duration;
+		const hasError = !!validationResults()?.errors?.duration;
+		const shouldShow = (showErrors || fieldInteractions.duration) && hasError;
+		return shouldShow;
 	});
 
 	let shouldShowBuyingTypeError = $derived(() => {
-		return (showErrors || fieldInteractions.buyingType) && !!validationResults()?.errors?.buyingType;
+		const hasError = !!validationResults()?.errors?.buyingType;
+		const shouldShow = (showErrors || fieldInteractions.buyingType) && hasError;
+		return shouldShow;
 	});
 
 	let shouldShowEnergyLabelError = $derived(() => {
-		return (showErrors || fieldInteractions.energyLabel) && !!validationResults()?.errors?.energyLabel;
+		const hasError = !!validationResults()?.errors?.energyLabel;
+		const shouldShow = (showErrors || fieldInteractions.energyLabel) && hasError;
+		return shouldShow;
 	});
 
 	// Handle form submission
@@ -119,30 +131,46 @@
 		}
 	}
 
-	// Handle field-specific interactions
+	// Handle field-specific interactions - enhanced for E2E testing
 	function handlePrincipalInteraction() {
 		handleInputInteraction();
 		fieldInteractions.principal = true;
+		// Force immediate validation state update for E2E tests
+		requestAnimationFrame(() => {
+			fieldInteractions.principal = true;
+		});
 	}
 
 	function handleInterestRateInteraction() {
 		handleInputInteraction();
 		fieldInteractions.interestRate = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.interestRate = true;
+		});
 	}
 
 	function handleDurationInteraction() {
 		handleInputInteraction();
 		fieldInteractions.duration = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.duration = true;
+		});
 	}
 
 	function handleBuyingTypeInteraction() {
 		handleInputInteraction();
 		fieldInteractions.buyingType = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.buyingType = true;
+		});
 	}
 
 	function handleEnergyLabelInteraction() {
 		handleInputInteraction();
 		fieldInteractions.energyLabel = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.energyLabel = true;
+		});
 	}
 </script>
 
@@ -385,8 +413,10 @@
 		font-weight: var(--font-weight-medium);
 		position: relative;
 		overflow: hidden;
-		min-height: 56px;
+		min-height: 56px; /* Ensure minimum 44px touch target + padding */
 		font-size: var(--font-size-body);
+		/* Ensure proper touch target for mobile */
+		touch-action: manipulation;
 	}
 
 	.radio-option::before {
@@ -413,10 +443,12 @@
 
 	.radio-option input[type='radio'] {
 		margin: 0;
-		width: auto;
-		min-height: auto;
+		width: 24px; /* Ensure minimum 20px for touch targets */
+		height: 24px;
+		min-height: 24px;
 		position: relative;
 		z-index: 2;
+		flex-shrink: 0;
 	}
 
 	.radio-option:has(input:checked) {
@@ -440,7 +472,7 @@
 	.submit-button {
 		width: 100%;
 		padding: var(--spacing-lg) var(--spacing-2xl);
-		background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+		background: var(--color-primary); /* Use direct ING orange color */
 		color: var(--color-background);
 		border: none;
 		border-radius: var(--border-radius-md);
@@ -474,7 +506,7 @@
 	}
 
 	.submit-button:hover:not(:disabled) {
-		background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+		background: var(--color-primary-dark);
 		transform: translateY(-2px);
 		box-shadow: var(--shadow-xl);
 	}
@@ -485,7 +517,7 @@
 	}
 
 	.submit-button:disabled {
-		background: linear-gradient(135deg, var(--color-text-light) 0%, #aaa 100%);
+		background: var(--color-text-light);
 		cursor: not-allowed;
 		opacity: 0.7;
 		transform: none;
@@ -493,13 +525,12 @@
 	}
 
 	.submit-button.invalid {
-		background: linear-gradient(135deg, #cc6600 0%, #aa5500 100%);
+		background: var(--color-primary); /* Keep ING orange even when invalid */
 		cursor: pointer;
 	}
 
 	.submit-button.invalid:hover {
-		background: linear-gradient(135deg, #aa5500 0%, #cc6600 100%);
-		transform: translateY(-1px);
+		background: var(--color-primary-dark);
 	}
 
 	.submit-button:disabled::before {
