@@ -1,24 +1,3 @@
-### End-to-End (E2E) Testing with Playwright
-
-To run Playwright E2E tests (recommended for full browser automation and visual checks):
-
-```bash
-# Using Makefile (recommended)
-make test-e2e
-
-# Or using Playwright directly
-npx playwright test
-```
-
-This will automatically start the SvelteKit dev server and run all E2E tests in the `e2e/tests/` directory, as configured in `playwright.config.ts`.
-
-For interactive debugging, you can use:
-
-```bash
-npx playwright test --ui
-```
-
-**Note:** Playwright E2E tests are separate from Vitest unit/server tests and are the preferred way to visually verify your app in a real browser.
 # GitHub Copilot Agent Mode Frontend POC
 
 This repository is a **Proof of Concept (POC)** for testing techniques to use GitHub Copilot Agent Mode at its best. The goal is to build a **mortgage calculator** in a quick and solid way, leveraging the power of GitHub Copilot Agent Mode for rapid development.
@@ -114,27 +93,6 @@ npm run build
 
 You can preview the production build with `make preview` or `npm run preview`.
 
-## 🌐 Live Demo
-
-The mortgage calculator is deployed and available at:
-**https://ltpitt.github.io/github-copilot-agent-mode-frontend-poc/**
-
-### Deployment
-
-This application is automatically deployed to GitHub Pages using GitHub Actions. The deployment happens automatically when changes are pushed to the `main` branch.
-
-#### Manual Deployment
-
-To deploy manually or set up GitHub Pages for a fork:
-
-1. **Enable GitHub Pages** in your repository settings:
-   - Go to `Settings` → `Pages`
-   - Select `GitHub Actions` as the source
-
-2. **Push to main branch** - The deployment workflow will run automatically
-
-3. **Access your site** at `https://[username].github.io/[repository-name]/`
-
 #### Deployment Configuration
 
 The project uses:
@@ -179,6 +137,49 @@ npm run check  # Type check
 ```
 
 ## 🧪 Testing Strategy
+
+This project follows a comprehensive testing approach:
+
+- **Unit Tests**: Business logic and utility functions (working)
+- **Component Tests**: Svelte component behavior (requires Playwright)
+- **Integration Tests**: User workflows and data flow
+- **Accessibility Tests**: Automated a11y validation
+- **End-to-End (E2E) Tests**: Full browser automation and visual checks using Playwright
+
+### Running Tests
+
+```bash
+# Using Makefile (recommended)
+make test           # Run all tests (Vitest unit/server tests)
+make test-server    # Run server-side tests only (no browser required)
+make test-browser   # Run browser tests only (requires Playwright browsers)
+make test-e2e       # Run Playwright E2E tests (full browser automation)
+
+# Or using npm/Playwright directly
+npm run test        # Run all Vitest tests
+npx playwright test # Run all Playwright E2E tests
+```
+
+**E2E Playwright Details:**
+- Playwright E2E tests are in the `e2e/tests/` directory.
+- The `playwright.config.ts` file ensures the SvelteKit dev server is started automatically.
+- For interactive debugging, use:
+  ```bash
+  npx playwright test --ui
+  ```
+- E2E tests are the preferred way to visually verify your app in a real browser and are separate from Vitest unit/server tests.
+
+**Note:** Browser tests require Playwright browsers to be installed:
+
+```bash
+# Using Makefile (recommended)
+make install-browsers
+
+# Or using npm directly
+npx playwright install --with-deps
+```
+
+The test runner automatically detects if Playwright browsers are available and gracefully falls back to server-side tests only when browsers are not installed.
 
 This project follows a comprehensive testing approach:
 
