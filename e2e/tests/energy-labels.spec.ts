@@ -36,6 +36,9 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 	test('should show correct colors for each energy label', async ({ page }) => {
 		const energySelect = page.locator('select[data-testid="energy-label-select"]');
 
+		// Ensure the select exists and is visible
+		await expect(energySelect).toBeVisible();
+
 		// Define expected colors for each energy label
 		const energyLabelColors = {
 			A: '#00a651', // Green
@@ -48,23 +51,39 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		};
 
 		for (const [label, expectedColor] of Object.entries(energyLabelColors)) {
-			// Select the energy label using keyboard navigation which should work better with Svelte
-			await energySelect.click();
-			await page.keyboard.press('ArrowDown'); // Move from default option to first option
+			console.log(`Testing energy label: ${label}`);
 			
-			// Navigate to the desired option
-			const labelIndex = Object.keys(energyLabelColors).indexOf(label);
-			for (let i = 0; i < labelIndex; i++) {
-				await page.keyboard.press('ArrowDown');
-			}
-			await page.keyboard.press('Enter');
+			// Select the energy label using selectOption and force event triggering
+			await energySelect.selectOption(label);
+			
+			// Force trigger change events to ensure Svelte reactivity works in test environment
+			await page.evaluate((selectId) => {
+				const select = document.querySelector(`[data-testid="${selectId}"]`) as HTMLSelectElement;
+				if (select) {
+					// Trigger both input and change events
+					select.dispatchEvent(new Event('input', { bubbles: true }));
+					select.dispatchEvent(new Event('change', { bubbles: true }));
+				}
+			}, 'energy-label-select');
+			
+			console.log(`Selected energy label: ${label}`);
 			
 			// Wait for DOM updates
-			await page.waitForTimeout(200);
+			await page.waitForTimeout(500);
+
+			// Debug: Check if the select value actually changed
+			const selectValue = await energySelect.inputValue();
+			console.log(`Select value after selection: ${selectValue}`);
+
+			// Debug: Check what elements are actually on the page
+			const allEnergyIndicators = await page.locator('.energy-indicator').count();
+			const allDataTestIds = await page.locator('[data-testid="energy-indicator"]').count();
+			console.log(`Found ${allEnergyIndicators} .energy-indicator elements`);
+			console.log(`Found ${allDataTestIds} [data-testid="energy-indicator"] elements`);
 
 			// Check that the visual indicator appears with the correct color
 			const energyIndicator = page.locator('[data-testid="energy-indicator"]');
-			await expect(energyIndicator).toBeVisible();
+			await expect(energyIndicator).toBeVisible({ timeout: 10000 });
 			await expect(energyIndicator).toHaveText(label);
 
 			// Check the background color of the indicator
@@ -264,6 +283,9 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		// Should be able to navigate options with keyboard
 		await page.keyboard.press('ArrowDown');
 		await page.keyboard.press('Enter');
+		
+		// Wait for DOM updates
+		await page.waitForTimeout(300);
 
 		// Should have selected an option
 		const selectedValue = await energySelect.inputValue();

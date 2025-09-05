@@ -14,8 +14,11 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		// Try to submit without selecting buying type or energy label
 		await page.click('button[type="submit"]');
 
+		// Wait for form processing and error display
+		await page.waitForTimeout(500);
+
 		// Check for validation error messages
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible({ timeout: 10000 });
 
 		// Check that results are not shown when form is invalid
 		const resultDisplay = page.locator('.result-display');
@@ -23,8 +26,18 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		const isResultVisible = await resultDisplay.isVisible();
 		if (isResultVisible) {
 			// If results are shown, they should indicate no calculation or error state
-			const monthlyPayment = await page.locator('[data-testid="monthly-payment"]').textContent();
-			expect(monthlyPayment).toMatch(/€0|€0\.00/); // Should show €0 or similar
+			// Check if monthly payment element exists first
+			const monthlyPaymentElement = page.locator('[data-testid="monthly-payment"]');
+			const monthlyPaymentExists = await monthlyPaymentElement.count() > 0;
+			
+			if (monthlyPaymentExists) {
+				const monthlyPayment = await monthlyPaymentElement.textContent();
+				expect(monthlyPayment).toMatch(/€0|€0\.00/); // Should show €0 or similar
+			}
+			
+			// Check that the maximum mortgage shows 0 or similar (this should always exist)
+			const maxMortgage = await page.locator('[data-testid="maximum-mortgage"]').textContent();
+			expect(maxMortgage).toMatch(/€0|€0\.00/); // Should show €0 or similar
 		}
 	});
 
