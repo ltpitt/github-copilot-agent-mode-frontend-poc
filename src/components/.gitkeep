@@ -1,7 +1,0 @@
-# Components Directory
-
-This directory is for Svelte UI components.
-
-Add your Svelte components here following this structure:
-- ComponentName.svelte
-- ComponentName.test.ts (for component-specific tests)

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { validateFormInputs } from './validation.js';
+	import { validateFormInputs } from '../utils/validation.js';
 	import NumberInput from './NumberInput.svelte';
 	import EnergyLabelSelect from './EnergyLabelSelect.svelte';
-	import type { EnergyLabel } from './mortgageCalculator.js';
+	import type { EnergyLabel } from '../utils/mortgageCalculator.js';
 
 	// Props for event callbacks
 	interface Props {

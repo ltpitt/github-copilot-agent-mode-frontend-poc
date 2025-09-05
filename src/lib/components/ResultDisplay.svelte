@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { EnergyLabel, MortgageCalculationResult } from './mortgageCalculator.js';
+	import type { EnergyLabel, MortgageCalculationResult } from '../utils/mortgageCalculator.js';
 
 	// Props interface for the ResultDisplay component
 	interface Props {
@@ -177,7 +177,7 @@
 					{interestDescription()}
 					{#if calculationResult.energyLabel}
 						<br />Energy label:
-						<strong style:color={energyLabelColor}>{calculationResult.energyLabel}</strong>
+						<strong style:color={energyLabelColor()}>{calculationResult.energyLabel}</strong>
 					{/if}
 				</div>
 			</div>

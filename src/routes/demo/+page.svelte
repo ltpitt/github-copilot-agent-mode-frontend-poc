@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { InputForm } from '$lib';
-	import { calculateMonthlyPayment } from '$lib/mortgageCalculator.js';
+	import { calculateMonthlyPayment } from '$lib';
 
 	let calculationResult = $state<{
 		monthlyPayment: number;
