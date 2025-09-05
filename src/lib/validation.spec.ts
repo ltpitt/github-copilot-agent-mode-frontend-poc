@@ -4,7 +4,8 @@ import {
 	validatePrincipal,
 	validateInterestRate,
 	validateDuration,
-	validateBuyingType
+	validateBuyingType,
+	validateEnergyLabel
 } from './validation';
 
 describe('Validation Functions', () => {
@@ -137,14 +138,14 @@ describe('Validation Functions', () => {
 	});
 
 	describe('validateFormInputs', () => {
-		it('should validate all valid inputs including buying type', () => {
-			const result = validateFormInputs(300000, 3.5, 30, true);
+		it('should validate all valid inputs including buying type and energy label', () => {
+			const result = validateFormInputs(300000, 3.5, 30, true, 'C');
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
 		});
 
-		it('should validate with buying alone false', () => {
-			const result = validateFormInputs(300000, 3.5, 30, false);
+		it('should validate with buying alone false and energy label', () => {
+			const result = validateFormInputs(300000, 3.5, 30, false, 'B');
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
 		});
@@ -155,6 +156,7 @@ describe('Validation Functions', () => {
 			expect(result.errors.buyingType).toBe(
 				'You have not answered the question. This is mandatory.'
 			);
+			expect(result.errors.energyLabel).toBe('Energy label is required');
 		});
 
 		it('should fail validation when buying type is explicitly null', () => {
@@ -166,27 +168,61 @@ describe('Validation Functions', () => {
 		});
 
 		it('should return multiple errors for invalid inputs', () => {
-			const result = validateFormInputs(-1000, -1, 0, true);
+			const result = validateFormInputs(-1000, -1, 0, true, 'X' as never);
 			expect(result.isValid).toBe(false);
 			expect(result.errors.principal).toBe('Income must be greater than 0');
 			expect(result.errors.interestRate).toBe('Interest rate cannot be negative');
 			expect(result.errors.duration).toBe('Duration must be greater than 0 years');
+			expect(result.errors.energyLabel).toBe('Energy label must be A, B, C, D, E, F, or G');
 			expect(result.errors.buyingType).toBeUndefined();
 		});
 
 		it('should return single error when only one field is invalid', () => {
-			const result = validateFormInputs(-5000, 4.5, 25, false);
+			const result = validateFormInputs(-5000, 4.5, 25, false, 'A');
 			expect(result.isValid).toBe(false);
 			expect(result.errors.principal).toBe('Income must be greater than 0');
 			expect(result.errors.interestRate).toBeUndefined();
 			expect(result.errors.duration).toBeUndefined();
 			expect(result.errors.buyingType).toBeUndefined();
+			expect(result.errors.energyLabel).toBeUndefined();
 		});
 
-		it('should handle edge case values with valid buying type', () => {
-			const result = validateFormInputs(1, 0, 1, true);
+		it('should handle edge case values with valid buying type and energy label', () => {
+			const result = validateFormInputs(1, 0, 1, true, 'G');
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
+		});
+	});
+
+	describe('validateEnergyLabel', () => {
+		it('should validate all valid energy labels', () => {
+			const validLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+			validLabels.forEach((label) => {
+				const result = validateEnergyLabel(label as never);
+				expect(result.isValid).toBe(true);
+				expect(result.message).toBeUndefined();
+			});
+		});
+
+		it('should reject null energy label', () => {
+			const result = validateEnergyLabel(null);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('Energy label is required');
+		});
+
+		it('should reject undefined energy label', () => {
+			const result = validateEnergyLabel(undefined);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('Energy label is required');
+		});
+
+		it('should reject invalid energy labels', () => {
+			const invalidLabels = ['H', 'X', '1', 'a', 'AA', ''];
+			invalidLabels.forEach((label) => {
+				const result = validateEnergyLabel(label as never);
+				expect(result.isValid).toBe(false);
+				expect(result.message).toBe('Energy label must be A, B, C, D, E, F, or G');
+			});
 		});
 	});
 });

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { EnergyLabel, MortgageCalculationResult } from './mortgageCalculator.js';
+
 	// Props interface for the ResultDisplay component
 	interface Props {
 		monthlyPayment: number;
@@ -7,16 +9,30 @@
 			principal: number;
 			annualInterestRate: number;
 			durationYears: number;
+			energyLabel?: EnergyLabel | null;
 		};
+		calculationResult?: MortgageCalculationResult | null;
 		label?: string;
 	}
 
 	let {
 		monthlyPayment,
 		maximumMortgage = 0,
-		calculationData = { principal: 0, annualInterestRate: 0, durationYears: 0 },
+		calculationData = { principal: 0, annualInterestRate: 0, durationYears: 0, energyLabel: null },
+		calculationResult = null,
 		label = 'Maximum mortgage'
 	}: Props = $props();
+
+	// Energy label colors
+	const energyLabelColors: Record<EnergyLabel, string> = {
+		A: '#00a651',
+		B: '#8ac83b',
+		C: '#ffd502',
+		D: '#ffa500',
+		E: '#ff6600',
+		F: '#ff3300',
+		G: '#cc0000'
+	};
 
 	// Format currency using EUR formatting for European markets
 	let formattedMaxMortgage = $derived(() => {
@@ -45,6 +61,39 @@
 		}).format(monthlyPayment);
 	});
 
+	// Format other amounts from calculation result
+	let formattedBaseCapacity = $derived(() => {
+		if (!calculationResult?.baseCapacity) return '€0';
+		return new Intl.NumberFormat('en-NL', {
+			style: 'currency',
+			currency: 'EUR',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(calculationResult.baseCapacity);
+	});
+
+	let formattedEnergyAdjustment = $derived(() => {
+		if (!calculationResult?.energyLabelAdjustment) return '€0';
+		const amount = calculationResult.energyLabelAdjustment;
+		const formatted = new Intl.NumberFormat('en-NL', {
+			style: 'currency',
+			currency: 'EUR',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(Math.abs(amount));
+		return amount >= 0 ? `+${formatted}` : `-${formatted}`;
+	});
+
+	let formattedOutOfPocket = $derived(() => {
+		if (!calculationResult?.outOfPocket) return '€0';
+		return new Intl.NumberFormat('en-NL', {
+			style: 'currency',
+			currency: 'EUR',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(calculationResult.outOfPocket);
+	});
+
 	// Determine if the payment amount is valid for styling purposes
 	let isValidCalculation = $derived(() => {
 		return monthlyPayment != null && !isNaN(monthlyPayment) && monthlyPayment > 0;
@@ -54,12 +103,25 @@
 		if (!isValidCalculation()) return '';
 		return `Annuity, ${calculationData.durationYears} year fixed ${calculationData.annualInterestRate}%`;
 	});
+
+	// Get energy label color
+	let energyLabelColor = $derived(() => {
+		if (!calculationResult?.energyLabel) return '#999999';
+		return energyLabelColors[calculationResult.energyLabel];
+	});
 </script>
 
 <div class="result-container">
 	<div class="result-display" class:invalid={!isValidCalculation()}>
 		<div class="result-header">
-			<div class="house-icon">🏠</div>
+			<div class="house-with-label">
+				<div class="house-icon">🏠</div>
+				{#if calculationResult?.energyLabel}
+					<div class="energy-label" style:background-color={energyLabelColor()}>
+						{calculationResult.energyLabel}
+					</div>
+				{/if}
+			</div>
 			<div class="result-main">
 				<h3 class="result-title">{label}</h3>
 				<div class="result-value" class:valid={isValidCalculation()}>
@@ -68,7 +130,58 @@
 			</div>
 		</div>
 
-		{#if isValidCalculation()}
+		{#if isValidCalculation() && calculationResult}
+			<div class="result-details">
+				<div class="detail-item">
+					<span class="detail-label">Gross monthly costs</span>
+					<span class="detail-value">{formattedMonthlyPayment()}</span>
+				</div>
+
+				{#if calculationResult.outOfPocket > 0}
+					<div class="detail-item">
+						<span class="detail-label">Out of pocket</span>
+						<span class="detail-value">{formattedOutOfPocket()}</span>
+					</div>
+				{/if}
+
+				<div class="breakdown-section">
+					<h4 class="breakdown-title">Mortgage Breakdown</h4>
+
+					<div class="breakdown-item">
+						<span class="breakdown-label">Base capacity (income × 4.5)</span>
+						<span class="breakdown-value">{formattedBaseCapacity()}</span>
+					</div>
+
+					{#if calculationResult.energyLabelAdjustment !== 0}
+						<div
+							class="breakdown-item energy-adjustment"
+							class:positive={calculationResult.energyLabelAdjustment > 0}
+							class:negative={calculationResult.energyLabelAdjustment < 0}
+						>
+							<span class="breakdown-label">
+								Energy label {calculationResult.energyLabel} adjustment
+							</span>
+							<span class="breakdown-value">{formattedEnergyAdjustment()}</span>
+						</div>
+					{/if}
+
+					{#if calculationResult.finalLoanAmount < calculationResult.revisedCapacity}
+						<div class="breakdown-item constraint">
+							<span class="breakdown-label">Limited by appraised value</span>
+							<span class="breakdown-note">Capped at property value</span>
+						</div>
+					{/if}
+				</div>
+
+				<div class="interest-info">
+					{interestDescription()}
+					{#if calculationResult.energyLabel}
+						<br />Energy label:
+						<strong style:color={energyLabelColor}>{calculationResult.energyLabel}</strong>
+					{/if}
+				</div>
+			</div>
+		{:else if isValidCalculation()}
 			<div class="result-details">
 				<div class="detail-item">
 					<span class="detail-label">Gross monthly costs</span>
@@ -145,6 +258,30 @@
 		color: var(--color-primary);
 		flex-shrink: 0;
 		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+	}
+
+	.house-with-label {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-sm);
+	}
+
+	.energy-label {
+		width: 40px;
+		height: 32px;
+		border-radius: var(--border-radius-md);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-body);
+		text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+		box-shadow: var(--shadow-sm);
+		border: 2px solid white;
+		margin-top: -8px;
 	}
 
 	.result-main {
@@ -239,6 +376,59 @@
 		background: var(--color-background);
 		border-radius: var(--border-radius-md);
 		border-left: 3px solid var(--color-primary);
+	}
+
+	.breakdown-section {
+		margin: var(--spacing-lg) 0;
+		padding: var(--spacing-md) 0;
+		border-top: 1px solid var(--color-border-light);
+	}
+
+	.breakdown-title {
+		font-size: var(--font-size-small);
+		font-weight: var(--font-weight-semibold);
+		color: var(--color-text-secondary);
+		margin: 0 0 var(--spacing-md) 0;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.breakdown-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: var(--spacing-sm) 0;
+		font-size: var(--font-size-small);
+	}
+
+	.breakdown-label {
+		color: var(--color-text-secondary);
+		font-weight: var(--font-weight-medium);
+		flex: 1;
+	}
+
+	.breakdown-value {
+		font-weight: var(--font-weight-bold);
+		color: var(--color-text-primary);
+	}
+
+	.breakdown-note {
+		font-size: var(--font-size-xs);
+		color: var(--color-text-light);
+		font-style: italic;
+	}
+
+	.energy-adjustment.positive .breakdown-value {
+		color: #00a651;
+	}
+
+	.energy-adjustment.negative .breakdown-value {
+		color: #cc0000;
+	}
+
+	.constraint .breakdown-label {
+		color: var(--color-text-light);
+		font-style: italic;
 	}
 
 	.action-section {
