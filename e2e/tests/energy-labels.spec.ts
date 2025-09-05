@@ -103,33 +103,8 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		for (const [label, expectedColor] of Object.entries(energyLabelColors)) {
 			console.log(`Testing energy label: ${label}`);
 			
-			// Use page.evaluate() to set value and fire events directly - more reliable with Svelte 5
-			await page.evaluate((labelValue) => {
-				const select = document.querySelector('[data-testid="energy-label-select"]') as HTMLSelectElement;
-				if (select) {
-					// Set the value directly
-					select.value = labelValue;
-					
-					// Fire the events that Svelte listens for in the correct order
-					select.dispatchEvent(new Event('input', { bubbles: true }));
-					select.dispatchEvent(new Event('change', { bubbles: true }));
-				}
-			}, label);
-			
-			console.log(`Selected energy label: ${label}`);
-			
-			// Wait for DOM updates and reactivity to complete
-			await page.waitForTimeout(100);
-
-			// Debug: Check if the select value actually changed
-			const selectValue = await energySelect.inputValue();
-			console.log(`Select value after selection: ${selectValue}`);
-
-			// Debug: Check what elements are actually on the page
-			const allEnergyIndicators = await page.locator('.energy-indicator').count();
-			const allDataTestIds = await page.locator('[data-testid="energy-indicator"]').count();
-			console.log(`Found ${allEnergyIndicators} .energy-indicator elements`);
-			console.log(`Found ${allDataTestIds} [data-testid="energy-indicator"] elements`);
+			// Use the improved helper function for reliable selection
+			await selectEnergyLabel(page, label);
 
 			// Check that the visual indicator appears with the correct color
 			const energyIndicator = page.locator('[data-testid="energy-indicator"]');
