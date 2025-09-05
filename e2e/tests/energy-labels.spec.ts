@@ -4,7 +4,8 @@ import {
 	selectEnergyLabelRobust, 
 	waitForValidationState,
 	fillFormFieldWithValidation,
-	submitFormWithWait 
+	submitFormWithWait,
+	testFormSubmissionValidation 
 } from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Energy Labels', () => {
@@ -171,16 +172,8 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="duration-input"]', '30');
 		await page.check('input[data-testid="buying-alone-true"]');
 
-		// Leave energy label unselected and submit
-		await submitFormWithWait(page);
-
-		// Should show validation error after form submission
-		await waitForValidationState(page, true);
-		
-		// Error should be related to energy label
-		const errorMessage = page.locator('.error-message').first();
-		const errorText = await errorMessage.textContent();
-		expect(errorText?.toLowerCase()).toContain('energy');
+		// Leave energy label unselected and test validation
+		await testFormSubmissionValidation(page, 'energy label is required');
 	});
 
 	test('should allow changing energy label after selection', async ({ page }) => {

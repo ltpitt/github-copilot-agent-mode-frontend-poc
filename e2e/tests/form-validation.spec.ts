@@ -5,31 +5,9 @@ import {
 	waitForValidationState,
 	fillFormFieldWithValidation,
 	submitFormWithWait,
-	waitForValidationDelay
+	waitForValidationDelay,
+	testFormSubmissionValidation
 } from '../test-helpers.js';
-
-// Helper function to reliably select energy label with Svelte 5 reactivity
-async function selectEnergyLabel(page: any, labelValue: string) {
-	const select = page.locator('[data-testid="energy-label-select"]');
-	
-	// Wait for the select to be fully loaded and visible
-	await expect(select).toBeVisible();
-	await expect(select).toBeEnabled();
-	
-	// Wait for any initial animations or load states to complete
-	await page.waitForLoadState('networkidle');
-	await page.waitForTimeout(500);
-	
-	// Use Playwright's selectOption which should work consistently
-	await select.selectOption(labelValue || '');
-	
-	// Wait a moment for the selection to take effect
-	await page.waitForTimeout(200);
-	
-	// Check if energy indicator exists (if a value was selected)
-	if (labelValue) {
-		await page.waitForTimeout(300);
-	}
 
 test.describe('Mortgage Calculator - Form Validation', () => {
 	test.beforeEach(async ({ page }) => {
@@ -149,11 +127,8 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false);
 		await selectEnergyLabelRobust(page, 'B');
 
-		// Don't select buying type and submit
-		await submitFormWithWait(page);
-
-		// Should show error for missing buying type selection
-		await waitForValidationState(page, true);
+		// Don't select buying type and test validation
+		await testFormSubmissionValidation(page, 'mandatory');
 	});
 
 	test('should require energy label selection', async ({ page }) => {
@@ -165,11 +140,8 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		// Select buying type
 		await page.check('input[data-testid="buying-alone-true"]');
 
-		// Don't select energy label and submit
-		await submitFormWithWait(page);
-
-		// Should show error for missing energy label selection
-		await waitForValidationState(page, true);
+		// Don't select energy label and test validation
+		await testFormSubmissionValidation(page, 'energy label is required');
 	});
 
 	test('should validate numeric inputs only accept numbers', async ({ page }) => {
