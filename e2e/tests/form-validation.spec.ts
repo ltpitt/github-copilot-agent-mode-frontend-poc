@@ -1,4 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { 
+	selectEnergyLabelWithWait, 
+	selectEnergyLabelRobust, 
+	waitForValidationState,
+	fillFormFieldWithValidation,
+	submitFormWithWait,
+	waitForValidationDelay
+} from '../test-helpers.js';
 
 // Helper function to reliably select energy label with Svelte 5 reactivity
 async function selectEnergyLabel(page: any, labelValue: string) {
@@ -22,7 +30,6 @@ async function selectEnergyLabel(page: any, labelValue: string) {
 	if (labelValue) {
 		await page.waitForTimeout(300);
 	}
-}
 
 test.describe('Mortgage Calculator - Form Validation', () => {
 	test.beforeEach(async ({ page }) => {
@@ -94,104 +101,75 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 	});
 
 	test('should validate principal amount constraints', async ({ page }) => {
-		const principalInput = page.locator('input[data-testid="principal-input"]');
-
 		// Test negative values
-		await principalInput.fill('-1000');
-		await principalInput.blur();
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '-1000', true);
 
 		// Test zero value
-		await principalInput.fill('0');
-		await principalInput.blur();
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '0', true);
 
 		// Test very large values (should be handled gracefully)
-		await principalInput.fill('999999999');
-		await principalInput.blur();
-		// Should either accept or show reasonable error
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '999999999', false);
 
-		// Test valid value
-		await principalInput.fill('250000');
-		await principalInput.blur();
-		// Error should disappear
-		await expect(page.locator('.error-message')).not.toBeVisible();
+		// Test valid value - errors should disappear
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '250000', false);
 	});
 
 	test('should validate interest rate constraints', async ({ page }) => {
-		const interestInput = page.locator('input[data-testid="interest-rate-input"]');
-
 		// Test negative interest rate
-		await interestInput.fill('-1');
-		await interestInput.blur();
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '-1', true);
 
 		// Test zero interest rate (should be valid)
-		await interestInput.fill('0');
-		await interestInput.blur();
-		// Zero interest rate should be acceptable for calculations
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '0', false);
 
 		// Test unreasonably high interest rate
-		await interestInput.fill('50');
-		await interestInput.blur();
-		// Should either accept or show warning
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '50', false);
 
 		// Test valid interest rate
-		await interestInput.fill('3.5');
-		await interestInput.blur();
-		await expect(page.locator('.error-message')).not.toBeVisible();
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.5', false);
 	});
 
 	test('should validate duration constraints', async ({ page }) => {
-		const durationInput = page.locator('input[data-testid="duration-input"]');
-
 		// Test negative duration
-		await durationInput.fill('-5');
-		await durationInput.blur();
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '-5', true);
 
 		// Test zero duration
-		await durationInput.fill('0');
-		await durationInput.blur();
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '0', true);
 
 		// Test very long duration
-		await durationInput.fill('100');
-		await durationInput.blur();
-		// Should either accept or show warning
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '100', false);
 
 		// Test valid duration
-		await durationInput.fill('30');
-		await durationInput.blur();
-		await expect(page.locator('.error-message')).not.toBeVisible();
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false);
 	});
 
 	test('should require buying type selection', async ({ page }) => {
 		// Fill all other required fields
-		await page.fill('input[data-testid="principal-input"]', '250000');
-		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
-		await page.fill('input[data-testid="duration-input"]', '30');
-		await selectEnergyLabel(page, 'B');
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '250000', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.5', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false);
+		await selectEnergyLabelRobust(page, 'B');
 
-		// Don't select buying type
-		await page.click('button[type="submit"]');
+		// Don't select buying type and submit
+		await submitFormWithWait(page);
 
 		// Should show error for missing buying type selection
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await waitForValidationState(page, true);
 	});
 
 	test('should require energy label selection', async ({ page }) => {
 		// Fill all other required fields
-		await page.fill('input[data-testid="principal-input"]', '250000');
-		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
-		await page.fill('input[data-testid="duration-input"]', '30');
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '250000', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.5', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false);
+		
+		// Select buying type
 		await page.check('input[data-testid="buying-alone-true"]');
 
-		// Don't select energy label
-		await page.click('button[type="submit"]');
+		// Don't select energy label and submit
+		await submitFormWithWait(page);
 
 		// Should show error for missing energy label selection
-		await expect(page.locator('.error-message').first()).toBeVisible();
+		await waitForValidationState(page, true);
 	});
 
 	test('should validate numeric inputs only accept numbers', async ({ page }) => {
@@ -238,7 +216,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await page.fill('input[data-testid="interest-rate-input"]', '5.0');
 		await page.fill('input[data-testid="duration-input"]', '25');
 		await page.check('input[data-testid="buying-alone-false"]');
-		await selectEnergyLabel(page, 'D');
+		await selectEnergyLabelRobust(page, 'D');
 
 		// Check if there's a reset button and use it
 		const resetButton = page.locator('button[type="reset"], button[data-testid="reset-button"]');

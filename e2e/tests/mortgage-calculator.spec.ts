@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { selectEnergyLabelRobust, waitForValidationState, submitFormWithWait } from '../test-helpers.js';
 
 // Helper function to reliably select energy label with Svelte 5 reactivity
 async function selectEnergyLabel(page: any, labelValue: string) {
@@ -84,7 +85,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.check('input[data-testid="buying-alone-true"]');
 
 		// Select energy label B
-		await selectEnergyLabel(page, 'B');
+		await selectEnergyLabelRobust(page, 'B');
 
 		// Submit form
 		await page.click('button[type="submit"]');
@@ -114,7 +115,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="interest-rate-input"]', '3.0');
 		await page.fill('input[data-testid="duration-input"]', '30');
 		await page.check('input[data-testid="buying-alone-true"]');
-		await selectEnergyLabel(page, 'A');
+		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
 		// Get initial monthly payment
@@ -136,7 +137,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await selectEnergyLabel(page, 'C');
+		await selectEnergyLabelRobust(page, 'C');
 
 		// Test buying alone
 		await page.check('input[data-testid="buying-alone-true"]');
@@ -181,7 +182,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="interest-rate-input"]', '0.1');
 		await page.fill('input[data-testid="duration-input"]', '5');
 		await page.check('input[data-testid="buying-alone-true"]');
-		await selectEnergyLabel(page, 'G');
+		await selectEnergyLabelRobust(page, 'G');
 		await page.click('button[type="submit"]');
 
 		await expect(page.locator('[data-testid="monthly-payment"]')).toBeVisible();
@@ -191,7 +192,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="principal-input"]', '1000000');
 		await page.fill('input[data-testid="interest-rate-input"]', '10');
 		await page.fill('input[data-testid="duration-input"]', '40');
-		await selectEnergyLabel(page, 'A');
+		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
 		await expect(page.locator('[data-testid="monthly-payment"]')).toBeVisible();

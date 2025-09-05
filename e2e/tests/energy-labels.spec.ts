@@ -1,54 +1,11 @@
 import { test, expect } from '@playwright/test';
-
-// Helper function to reliably select energy label with Svelte 5 reactivity
-async function selectEnergyLabel(page: any, labelValue: string) {
-	const select = page.locator('[data-testid="energy-label-select"]');
-	
-	// Wait for the select to be fully loaded and visible
-	await expect(select).toBeVisible();
-	await expect(select).toBeEnabled();
-	
-	// Wait for any initial animations or load states to complete
-	await page.waitForLoadState('networkidle');
-	await page.waitForTimeout(500);
-	
-	console.log(`Attempting to select: ${labelValue}`);
-	
-	// Use Playwright's selectOption which should work consistently
-	await select.selectOption(labelValue || '');
-	
-	// Wait a moment for the selection to take effect
-	await page.waitForTimeout(200);
-	
-	// Verify the selection was made
-	const actualValue = await select.inputValue();
-	console.log(`Actual value after selection: "${actualValue}"`);
-	
-	if (labelValue && actualValue !== labelValue) {
-		console.log('Selection failed, trying alternative approach...');
-		// Try clicking and using keyboard
-		await select.click();
-		await page.waitForTimeout(100);
-		await page.keyboard.press('Home'); // Go to first option
-		
-		// Navigate to the desired option
-		const labels = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
-		const targetIndex = labels.indexOf(labelValue);
-		for (let i = 0; i < targetIndex; i++) {
-			await page.keyboard.press('ArrowDown');
-		}
-		await page.keyboard.press('Enter');
-		await page.waitForTimeout(200);
-	}
-	
-	// Final check
-	const finalValue = await select.inputValue();
-	console.log(`Final value: "${finalValue}"`);
-	
-	// Check if energy indicator exists
-	const indicatorCount = await page.locator('[data-testid="energy-indicator"]').count();
-	console.log(`Energy indicators found: ${indicatorCount}`);
-}
+import { 
+	selectEnergyLabelWithWait, 
+	selectEnergyLabelRobust, 
+	waitForValidationState,
+	fillFormFieldWithValidation,
+	submitFormWithWait 
+} from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Energy Labels', () => {
 	test.beforeEach(async ({ page }) => {
@@ -104,7 +61,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 			console.log(`Testing energy label: ${label}`);
 			
 			// Use the improved helper function for reliable selection
-			await selectEnergyLabel(page, label);
+			await selectEnergyLabelRobust(page, label);
 
 			// Check that the visual indicator appears with the correct color
 			const energyIndicator = page.locator('[data-testid="energy-indicator"]');
@@ -135,7 +92,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await expect(page.locator('.energy-indicator')).not.toBeVisible();
 
 		// Select energy label A using helper function
-		await selectEnergyLabel(page, 'A');
+		await selectEnergyLabelRobust(page, 'A');
 
 		// Get the select element for verification
 		const selectElement = page.locator('select[data-testid="energy-label-select"]');
@@ -162,13 +119,13 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.check('input[data-testid="buying-alone-true"]');
 
 		// Test with most efficient energy label (A)
-		await selectEnergyLabel(page, 'A');
+		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
 		const maxMortgageA = await page.locator('[data-testid="maximum-mortgage"]').textContent();
 
 		// Test with least efficient energy label (G)
-		await selectEnergyLabel(page, 'G');
+		await selectEnergyLabelRobust(page, 'G');
 		await page.click('button[type="submit"]');
 
 		const maxMortgageG = await page.locator('[data-testid="maximum-mortgage"]').textContent();
@@ -187,7 +144,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
 		await page.check('input[data-testid="buying-alone-true"]');
-		await selectEnergyLabel(page, 'B');
+		await selectEnergyLabelRobust(page, 'B');
 
 		await page.click('button[type="submit"]');
 
@@ -214,14 +171,14 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="duration-input"]', '30');
 		await page.check('input[data-testid="buying-alone-true"]');
 
-		// Leave energy label unselected
-		await page.click('button[type="submit"]');
+		// Leave energy label unselected and submit
+		await submitFormWithWait(page);
 
-		// Should show validation error
-		const errorMessage = page.locator('.error-message');
-		await expect(errorMessage).toBeVisible();
-
+		// Should show validation error after form submission
+		await waitForValidationState(page, true);
+		
 		// Error should be related to energy label
+		const errorMessage = page.locator('.error-message').first();
 		const errorText = await errorMessage.textContent();
 		expect(errorText?.toLowerCase()).toContain('energy');
 	});
@@ -230,7 +187,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		const energySelect = page.locator('select[data-testid="energy-label-select"]');
 
 		// Select first energy label
-		await selectEnergyLabel(page, 'A');
+		await selectEnergyLabelRobust(page, 'A');
 		await expect(page.locator('.energy-indicator')).toHaveText('A');
 		await expect(page.locator('.energy-indicator')).toHaveCSS(
 			'background-color',
@@ -238,7 +195,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		);
 
 		// Change to different energy label
-		await selectEnergyLabel(page, 'F');
+		await selectEnergyLabelRobust(page, 'F');
 		await expect(page.locator('.energy-indicator')).toHaveText('F');
 		await expect(page.locator('.energy-indicator')).toHaveCSS(
 			'background-color',
@@ -246,7 +203,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		);
 
 		// Should be able to deselect (go back to placeholder)
-		await selectEnergyLabel(page, '');
+		await selectEnergyLabelRobust(page, '');
 		await expect(page.locator('.energy-indicator')).not.toBeVisible();
 	});
 
@@ -259,7 +216,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		const colors = [];
 
 		for (const label of labels) {
-			await selectEnergyLabel(page, label);
+			await selectEnergyLabelRobust(page, label);
 			await expect(energyIndicator).toBeVisible();
 
 			const backgroundColor = await energyIndicator.evaluate(
@@ -279,7 +236,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 
 	test('should maintain energy label selection during form interactions', async ({ page }) => {
 		// Select energy label
-		await selectEnergyLabel(page, 'C');
+		await selectEnergyLabelRobust(page, 'C');
 		await expect(page.locator('.energy-indicator')).toHaveText('C');
 
 		// Change other form fields
