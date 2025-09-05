@@ -117,7 +117,7 @@
 			<div class="house-with-label">
 				<div class="house-icon">🏠</div>
 				{#if calculationResult?.energyLabel}
-					<div class="energy-label" style:background-color={energyLabelColor}>
+					<div class="energy-label" style:background-color={energyLabelColor()}>
 						{calculationResult.energyLabel}
 					</div>
 				{/if}
