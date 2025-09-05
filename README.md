@@ -45,18 +45,6 @@ This project includes a convenient Makefile for common development tasks:
 ```bash
 # See all available commands
 make help
-
-# Install dependencies
-make install
-
-# Start development server
-make run
-
-# Run tests
-make test
-
-# Build for production
-make build
 ```
 
 ### Installation
