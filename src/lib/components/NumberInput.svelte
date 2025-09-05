@@ -139,6 +139,7 @@
 			{disabled}
 			class="number-input"
 			class:error
+			data-testid="{id}-input"
 			oninput={handleInput}
 			onblur={handleBlur}
 			onkeydown={handleKeyDown}

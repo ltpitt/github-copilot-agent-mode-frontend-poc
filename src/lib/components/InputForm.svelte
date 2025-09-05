@@ -105,6 +105,7 @@
 						bind:group={buyingAlone}
 						value={true}
 						name="buying-type"
+						data-testid="buying-alone-true"
 						oninput={handleInputInteraction}
 					/>
 					<span class="radio-icon">👤</span>
@@ -116,6 +117,7 @@
 						bind:group={buyingAlone}
 						value={false}
 						name="buying-type"
+						data-testid="buying-alone-false"
 						oninput={handleInputInteraction}
 					/>
 					<span class="radio-icon">👥</span>
