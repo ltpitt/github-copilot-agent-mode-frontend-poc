@@ -272,31 +272,31 @@ make build          # Build for production
 
 ## 📁 Project Structure
 
+
 ```
 Repository root:
-├── .github/
-│   ├── copilot.yml          # Legacy Copilot config
-│   └── copilot-instructions.md  # Comprehensive agent instructions
-├── docs/                    # Design references and documentation
+├── .github/                # Copilot instructions and GitHub config
+├── docs/                   # Design, accessibility, and UX documentation
+├── e2e/                    # Playwright end-to-end (E2E) tests
 ├── src/
 │   ├── lib/
-│   │   ├── assets/         # Static assets (favicon, images)
-│   │   ├── mortgageCalculator.ts  # Core calculation logic
+│   │   ├── assets/         # Static assets (e.g., favicon)
+│   │   ├── components/     # Svelte components and their tests
 │   │   └── index.ts        # Library exports
-│   ├── routes/
-│   │   ├── +layout.svelte  # App layout component
-│   │   └── +page.svelte    # Main mortgage calculator page
-│   ├── app.d.ts           # TypeScript app definitions
-│   └── app.html           # HTML template
-├── tests/                 # Test files
-├── static/                # Static files served at root
-├── Makefile              # Development task automation
-├── package.json           # Dependencies and scripts
-├── svelte.config.js       # SvelteKit configuration
-├── vite.config.ts         # Vite configuration with Vitest
-├── tsconfig.json          # TypeScript configuration
-└── README.md              # This file
+│   ├── routes/             # SvelteKit pages and layouts
+│   ├── app.d.ts            # TypeScript app definitions
+│   └── app.html            # HTML template
+├── static/                 # Public static files
+├── Makefile                # Development task automation
+├── package.json            # Dependencies and scripts
+├── playwright.config.ts    # Playwright E2E test config
+├── svelte.config.js        # SvelteKit configuration
+├── tsconfig.json           # TypeScript configuration
+├── vite.config.ts          # Vite/Vitest configuration
+└── README.md               # Project documentation (this file)
 ```
+
+> **Tip:** For a full breakdown of design, accessibility, and UX standards, see the `docs/` folder. For E2E/browser tests, see the `e2e/` folder and `playwright.config.ts`.
 
 ## About GitHub Copilot Agent Mode
 
