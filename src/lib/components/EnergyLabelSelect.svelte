@@ -67,6 +67,8 @@
 			{onblur}
 			class="energy-select"
 			data-testid="{id}-select"
+			aria-label={label}
+			aria-required={required ? 'true' : 'false'}
 			style:--selected-color={selectedLabelColor()}
 		>
 			<option value="">Select energy label</option>
