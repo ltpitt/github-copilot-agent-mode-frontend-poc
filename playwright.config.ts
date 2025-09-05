@@ -7,5 +7,22 @@ export default defineConfig({
 		reuseExistingServer: true, // Always reuse existing server
 		timeout: 120 * 1000
 	},
-	testDir: './e2e/tests'
+	testDir: './e2e/tests',
+	use: {
+		// Use system browser instead of downloaded Playwright browsers
+		channel: 'chrome', // Use system Chrome/Chromium
+		headless: true
+	},
+	projects: [
+		{
+			name: 'chromium',
+			use: { 
+				channel: 'chrome',
+				// Use system chrome executable if available
+				launchOptions: {
+					executablePath: '/usr/bin/google-chrome'
+				}
+			}
+		}
+	]
 });

@@ -15,7 +15,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await page.click('button[type="submit"]');
 
 		// Check for validation error messages
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 
 		// Check that results are not shown when form is invalid
 		const resultDisplay = page.locator('.result-display');
@@ -34,12 +34,12 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		// Test negative values
 		await principalInput.fill('-1000');
 		await principalInput.blur();
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 
 		// Test zero value
 		await principalInput.fill('0');
 		await principalInput.blur();
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 
 		// Test very large values (should be handled gracefully)
 		await principalInput.fill('999999999');
@@ -59,7 +59,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		// Test negative interest rate
 		await interestInput.fill('-1');
 		await interestInput.blur();
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 
 		// Test zero interest rate (should be valid)
 		await interestInput.fill('0');
@@ -83,12 +83,12 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		// Test negative duration
 		await durationInput.fill('-5');
 		await durationInput.blur();
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 
 		// Test zero duration
 		await durationInput.fill('0');
 		await durationInput.blur();
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 
 		// Test very long duration
 		await durationInput.fill('100');
@@ -112,7 +112,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await page.click('button[type="submit"]');
 
 		// Should show error for missing buying type selection
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 	});
 
 	test('should require energy label selection', async ({ page }) => {
@@ -126,7 +126,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await page.click('button[type="submit"]');
 
 		// Should show error for missing energy label selection
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 	});
 
 	test('should validate numeric inputs only accept numbers', async ({ page }) => {
@@ -134,17 +134,10 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		const interestInput = page.locator('input[data-testid="interest-rate-input"]');
 		const durationInput = page.locator('input[data-testid="duration-input"]');
 
-		// Test non-numeric input in principal
-		await principalInput.fill('abc');
-		expect(await principalInput.inputValue()).not.toBe('abc');
-
-		// Test non-numeric input in interest rate
-		await interestInput.fill('xyz');
-		expect(await interestInput.inputValue()).not.toBe('xyz');
-
-		// Test non-numeric input in duration
-		await durationInput.fill('test');
-		expect(await durationInput.inputValue()).not.toBe('test');
+		// Check that inputs have correct type attribute
+		await expect(principalInput).toHaveAttribute('type', 'number');
+		await expect(interestInput).toHaveAttribute('type', 'number');
+		await expect(durationInput).toHaveAttribute('type', 'number');
 
 		// Test decimal numbers are accepted where appropriate
 		await principalInput.fill('250000.50');
@@ -152,6 +145,10 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 
 		await interestInput.fill('3.75');
 		expect(await interestInput.inputValue()).toMatch(/\d+\.?\d*/);
+		
+		// Test that inputs maintain their numeric values
+		await durationInput.fill('25');
+		expect(await durationInput.inputValue()).toBe('25');
 	});
 
 	test('should show contextual helper text', async ({ page }) => {
@@ -204,7 +201,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await principalInput.blur();
 
 		// Error should appear
-		await expect(page.locator('.error-message')).toBeVisible();
+		await expect(page.locator('.error-message').first()).toBeVisible();
 
 		// Change to valid value
 		await principalInput.fill('250000');

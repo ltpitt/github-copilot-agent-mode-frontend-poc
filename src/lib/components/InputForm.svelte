@@ -27,6 +27,13 @@
 	// Validation state
 	let hasInteracted = $state(false); // Track if user has interacted with form
 	let showErrors = $state(false); // Control when to show error messages
+	let fieldInteractions = $state({
+		principal: false,
+		interestRate: false,
+		duration: false,
+		buyingType: false,
+		energyLabel: false
+	}); // Track individual field interactions
 
 	// Form validation derived state
 	let validationResults = $derived(() => {
@@ -46,6 +53,27 @@
 	// Show errors when user tries to submit invalid form or after interaction
 	let shouldShowErrors = $derived(() => {
 		return showErrors || (hasInteracted && !isFormValid());
+	});
+
+	// Individual field error display logic
+	let shouldShowPrincipalError = $derived(() => {
+		return (showErrors || fieldInteractions.principal) && !!validationResults()?.errors?.principal;
+	});
+
+	let shouldShowInterestRateError = $derived(() => {
+		return (showErrors || fieldInteractions.interestRate) && !!validationResults()?.errors?.interestRate;
+	});
+
+	let shouldShowDurationError = $derived(() => {
+		return (showErrors || fieldInteractions.duration) && !!validationResults()?.errors?.duration;
+	});
+
+	let shouldShowBuyingTypeError = $derived(() => {
+		return (showErrors || fieldInteractions.buyingType) && !!validationResults()?.errors?.buyingType;
+	});
+
+	let shouldShowEnergyLabelError = $derived(() => {
+		return (showErrors || fieldInteractions.energyLabel) && !!validationResults()?.errors?.energyLabel;
 	});
 
 	// Handle form submission
@@ -90,13 +118,39 @@
 			hasInteracted = true;
 		}
 	}
+
+	// Handle field-specific interactions
+	function handlePrincipalInteraction() {
+		handleInputInteraction();
+		fieldInteractions.principal = true;
+	}
+
+	function handleInterestRateInteraction() {
+		handleInputInteraction();
+		fieldInteractions.interestRate = true;
+	}
+
+	function handleDurationInteraction() {
+		handleInputInteraction();
+		fieldInteractions.duration = true;
+	}
+
+	function handleBuyingTypeInteraction() {
+		handleInputInteraction();
+		fieldInteractions.buyingType = true;
+	}
+
+	function handleEnergyLabelInteraction() {
+		handleInputInteraction();
+		fieldInteractions.energyLabel = true;
+	}
 </script>
 
 <form class="input-form" onsubmit={handleSubmit}>
 	<h2>What maximum amount can I borrow?</h2>
 
 	<div class="form-group">
-		<fieldset class:error={shouldShowErrors() && !!validationResults()?.errors?.buyingType}>
+		<fieldset class:error={shouldShowBuyingTypeError()}>
 			<legend class="question-label">Do you buy alone or together?</legend>
 			<div class="radio-group">
 				<label class="radio-option">
@@ -106,7 +160,8 @@
 						value={true}
 						name="buying-type"
 						data-testid="buying-alone-true"
-						oninput={handleInputInteraction}
+						aria-label="Buy alone"
+						oninput={handleBuyingTypeInteraction}
 					/>
 					<span class="radio-icon">👤</span>
 					Alone
@@ -118,13 +173,14 @@
 						value={false}
 						name="buying-type"
 						data-testid="buying-alone-false"
-						oninput={handleInputInteraction}
+						aria-label="Buy together with partner"
+						oninput={handleBuyingTypeInteraction}
 					/>
 					<span class="radio-icon">👥</span>
 					Together
 				</label>
 			</div>
-			{#if shouldShowErrors() && validationResults()?.errors?.buyingType}
+			{#if shouldShowBuyingTypeError()}
 				<div class="error-message" role="alert">
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="error-icon">
 						<path
@@ -146,11 +202,11 @@
 			max={10000000}
 			suffix="EUR"
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.principal}
+			error={shouldShowPrincipalError()}
 			errorMessage={validationResults()?.errors?.principal || ''}
 			helperText="Enter any amount between €1 and €10,000,000"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
+			oninput={handlePrincipalInteraction}
+			onblur={handlePrincipalInteraction}
 			onkeydown={handleKeyDown}
 		/>
 	</div>
@@ -164,11 +220,11 @@
 			max={50}
 			suffix="%"
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.interestRate}
+			error={shouldShowInterestRateError()}
 			errorMessage={validationResults()?.errors?.interestRate || ''}
 			helperText="Enter rate between 0% and 50% (e.g., 3.5, 4.25)"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
+			oninput={handleInterestRateInteraction}
+			onblur={handleInterestRateInteraction}
 			onkeydown={handleKeyDown}
 		/>
 	</div>
@@ -182,11 +238,11 @@
 			max={50}
 			suffix="years"
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.duration}
+			error={shouldShowDurationError()}
 			errorMessage={validationResults()?.errors?.duration || ''}
 			helperText="Enter a whole number between 1 and 50 years"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
+			oninput={handleDurationInteraction}
+			onblur={handleDurationInteraction}
 			onkeydown={handleKeyDown}
 		/>
 	</div>
@@ -197,16 +253,22 @@
 			label="Energy label"
 			bind:value={energyLabel}
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.energyLabel}
+			error={shouldShowEnergyLabelError()}
 			errorMessage={validationResults()?.errors?.energyLabel || ''}
 			helperText="Select the energy efficiency rating of the property"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
-			onchange={handleInputInteraction}
+			oninput={handleEnergyLabelInteraction}
+			onblur={handleEnergyLabelInteraction}
+			onchange={handleEnergyLabelInteraction}
 		/>
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()}>
+	<button 
+		type="submit" 
+		class="submit-button" 
+		class:invalid={!isFormValid()}
+		aria-label={isFormValid() ? "Calculate mortgage" : "Please fix errors above before calculating"}
+		data-testid="calculate-button"
+	>
 		{#if isFormValid()}
 			Calculate
 		{:else}
@@ -432,6 +494,16 @@
 		opacity: 0.7;
 		transform: none;
 		box-shadow: var(--shadow-sm);
+	}
+
+	.submit-button.invalid {
+		background: linear-gradient(135deg, #cc6600 0%, #aa5500 100%);
+		cursor: pointer;
+	}
+
+	.submit-button.invalid:hover {
+		background: linear-gradient(135deg, #aa5500 0%, #cc6600 100%);
+		transform: translateY(-1px);
 	}
 
 	.submit-button:disabled::before {
