@@ -266,14 +266,10 @@
 		type="submit" 
 		class="submit-button" 
 		class:invalid={!isFormValid()}
-		aria-label={isFormValid() ? "Calculate mortgage" : "Please fix errors above before calculating"}
+		aria-label={isFormValid() ? "Calculate mortgage" : "Calculate mortgage - form has errors"}
 		data-testid="calculate-button"
 	>
-		{#if isFormValid()}
-			Calculate
-		{:else}
-			Please fix errors above
-		{/if}
+		Calculate
 	</button>
 </form>
 
