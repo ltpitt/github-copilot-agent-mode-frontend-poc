@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { EnergyLabel } from './mortgageCalculator.js';
+	import type { EnergyLabel } from '../utils/mortgageCalculator.js';
 
 	// Props interface
 	interface Props {
@@ -66,7 +66,7 @@
 			{oninput}
 			{onblur}
 			class="energy-select"
-			style:--selected-color={selectedLabelColor}
+			style:--selected-color={selectedLabelColor()}
 		>
 			<option value="">Select energy label</option>
 			{#each energyLabels as energyLabel (energyLabel.value)}
@@ -78,7 +78,7 @@
 
 		<!-- Energy label visual indicator -->
 		{#if value}
-			<div class="energy-indicator" style:background-color={selectedLabelColor}>
+			<div class="energy-indicator" style:background-color={selectedLabelColor()}>
 				{value}
 			</div>
 		{/if}

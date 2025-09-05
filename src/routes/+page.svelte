@@ -2,10 +2,10 @@
 	import {
 		calculateMortgageWithEnergyLabel,
 		type EnergyLabel,
-		type MortgageCalculationResult
-	} from '$lib/mortgageCalculator.js';
-	import InputForm from '$lib/InputForm.svelte';
-	import ResultDisplay from '$lib/ResultDisplay.svelte';
+		type MortgageCalculationResult,
+		InputForm,
+		ResultDisplay
+	} from '$lib';
 
 	// State for storing the calculation result and form data
 	let calculationResult = $state<MortgageCalculationResult | null>(null);
