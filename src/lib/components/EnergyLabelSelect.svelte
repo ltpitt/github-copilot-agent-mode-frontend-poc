@@ -47,6 +47,16 @@
 	});
 
 	function handleSelectChange(event: Event) {
+		const target = event.target as HTMLSelectElement;
+		const selectedValue = target.value;
+		
+		// Update the value explicitly
+		if (selectedValue && selectedValue !== '') {
+			value = selectedValue as EnergyLabel;
+		} else {
+			value = null;
+		}
+		
 		oninput?.();
 		onchange?.();
 	}
@@ -59,9 +69,9 @@
 		<select
 			{id}
 			{required}
-			bind:value
+			value={value || ''}
 			onchange={handleSelectChange}
-			{oninput}
+			oninput={handleSelectChange}
 			{onblur}
 			class="energy-select"
 			data-testid="{id}-select"

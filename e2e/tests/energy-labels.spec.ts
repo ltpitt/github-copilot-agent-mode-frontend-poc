@@ -48,11 +48,19 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		};
 
 		for (const [label, expectedColor] of Object.entries(energyLabelColors)) {
-			// Select the energy label
-			await energySelect.selectOption(label);
+			// Select the energy label using keyboard navigation which should work better with Svelte
+			await energySelect.click();
+			await page.keyboard.press('ArrowDown'); // Move from default option to first option
 			
-			// Wait a moment for the energy indicator to appear
-			await page.waitForTimeout(100);
+			// Navigate to the desired option
+			const labelIndex = Object.keys(energyLabelColors).indexOf(label);
+			for (let i = 0; i < labelIndex; i++) {
+				await page.keyboard.press('ArrowDown');
+			}
+			await page.keyboard.press('Enter');
+			
+			// Wait for DOM updates
+			await page.waitForTimeout(200);
 
 			// Check that the visual indicator appears with the correct color
 			const energyIndicator = page.locator('[data-testid="energy-indicator"]');
