@@ -201,6 +201,19 @@ The mortgage calculator uses modern patterns:
 
 ## Common Development Tasks
 
+## Playwright MCP Server Requirement for E2E Tests
+
+**All E2E test runs, fixes, and validations must be performed using the Playwright MCP server.**
+
+- Do **not** use the local Playwright CLI or other runners for E2E test debugging or validation when working with Copilot or CI workflows.
+- The Playwright MCP server ensures consistent, reproducible results and enables remote debugging and reporting.
+- If you are creating an issue or PR for Copilot agent, explicitly state this requirement in the description or checklist.
+
+**Checklist for E2E Test Work:**
+- [ ] All E2E tests were run and validated using the Playwright MCP server.
+
+**Note:** This is mandatory for all Copilot agent-driven E2E test fixes and for CI compliance.
+
 ### Adding New Components
 
 1. Create component in `src/lib/` or `src/lib/components/`
