@@ -2,6 +2,8 @@
  * Validation utility functions for mortgage calculator input
  */
 
+import type { EnergyLabel } from './mortgageCalculator.js';
+
 export interface ValidationResult {
 	isValid: boolean;
 	message?: string;
@@ -69,13 +71,30 @@ export function validateBuyingType(value: boolean | null | undefined): Validatio
 }
 
 /**
+ * Validates energy label selection
+ */
+export function validateEnergyLabel(value: EnergyLabel | null | undefined): ValidationResult {
+	if (value === null || value === undefined) {
+		return { isValid: false, message: 'Energy label is required' };
+	}
+	
+	const validLabels: EnergyLabel[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+	if (!validLabels.includes(value)) {
+		return { isValid: false, message: 'Energy label must be A, B, C, D, E, F, or G' };
+	}
+	
+	return { isValid: true };
+}
+
+/**
  * Validates all form inputs at once
  */
 export function validateFormInputs(
 	principal: number,
 	interestRate: number,
 	duration: number,
-	buyingAlone?: boolean | null
+	buyingAlone?: boolean | null,
+	energyLabel?: EnergyLabel | null
 ): {
 	isValid: boolean;
 	errors: {
@@ -83,24 +102,28 @@ export function validateFormInputs(
 		interestRate?: string;
 		duration?: string;
 		buyingType?: string;
+		energyLabel?: string;
 	};
 } {
 	const principalResult = validatePrincipal(principal);
 	const interestResult = validateInterestRate(interestRate);
 	const durationResult = validateDuration(duration);
 	const buyingTypeResult = validateBuyingType(buyingAlone);
+	const energyLabelResult = validateEnergyLabel(energyLabel);
 
 	return {
 		isValid:
 			principalResult.isValid &&
 			interestResult.isValid &&
 			durationResult.isValid &&
-			buyingTypeResult.isValid,
+			buyingTypeResult.isValid &&
+			energyLabelResult.isValid,
 		errors: {
 			...(principalResult.message && { principal: principalResult.message }),
 			...(interestResult.message && { interestRate: interestResult.message }),
 			...(durationResult.message && { duration: durationResult.message }),
-			...(buyingTypeResult.message && { buyingType: buyingTypeResult.message })
+			...(buyingTypeResult.message && { buyingType: buyingTypeResult.message }),
+			...(energyLabelResult.message && { energyLabel: energyLabelResult.message })
 		}
 	};
 }
