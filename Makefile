@@ -1,3 +1,8 @@
+# E2E Testing
+test-e2e: ## Run Playwright end-to-end (E2E) tests
+	@echo "Running Playwright E2E tests..."
+	npx playwright test
+	@echo "✅ Playwright E2E tests completed"
 # GitHub Copilot Agent Mode Frontend POC - Makefile
 # This Makefile provides convenient shortcuts for common development tasks
 

@@ -1,3 +1,5 @@
+# Ignore Playwright test results
+test-results/
 node_modules
 
 # Output

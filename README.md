@@ -1,3 +1,24 @@
+### End-to-End (E2E) Testing with Playwright
+
+To run Playwright E2E tests (recommended for full browser automation and visual checks):
+
+```bash
+# Using Makefile (recommended)
+make test-e2e
+
+# Or using Playwright directly
+npx playwright test
+```
+
+This will automatically start the SvelteKit dev server and run all E2E tests in the `e2e/tests/` directory, as configured in `playwright.config.ts`.
+
+For interactive debugging, you can use:
+
+```bash
+npx playwright test --ui
+```
+
+**Note:** Playwright E2E tests are separate from Vitest unit/server tests and are the preferred way to visually verify your app in a real browser.
 # GitHub Copilot Agent Mode Frontend POC
 
 This repository is a **Proof of Concept (POC)** for testing techniques to use GitHub Copilot Agent Mode at its best. The goal is to build a **mortgage calculator** in a quick and solid way, leveraging the power of GitHub Copilot Agent Mode for rapid development.
