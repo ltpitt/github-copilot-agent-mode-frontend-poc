@@ -47,8 +47,6 @@
 	});
 
 	function handleSelectChange(event: Event) {
-		const target = event.target as HTMLSelectElement;
-		value = (target.value as EnergyLabel) || null;
 		oninput?.();
 		onchange?.();
 	}
@@ -81,7 +79,7 @@
 
 		<!-- Energy label visual indicator -->
 		{#if value}
-			<div class="energy-indicator" style:background-color={selectedLabelColor()}>
+			<div class="energy-indicator" style:background-color={selectedLabelColor()} data-testid="energy-indicator">
 				{value}
 			</div>
 		{/if}

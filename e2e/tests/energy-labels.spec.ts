@@ -50,9 +50,12 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		for (const [label, expectedColor] of Object.entries(energyLabelColors)) {
 			// Select the energy label
 			await energySelect.selectOption(label);
+			
+			// Wait a moment for the energy indicator to appear
+			await page.waitForTimeout(100);
 
 			// Check that the visual indicator appears with the correct color
-			const energyIndicator = page.locator('.energy-indicator');
+			const energyIndicator = page.locator('[data-testid="energy-indicator"]');
 			await expect(energyIndicator).toBeVisible();
 			await expect(energyIndicator).toHaveText(label);
 
