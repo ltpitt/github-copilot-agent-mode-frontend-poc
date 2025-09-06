@@ -52,11 +52,6 @@
 		return valid;
 	});
 
-	// Show errors when user tries to submit invalid form or after interaction
-	let shouldShowErrors = $derived(() => {
-		return showErrors || (hasInteracted && !isFormValid());
-	});
-
 	// Individual field error display logic - show errors when field has been interacted with
 	let shouldShowPrincipalError = $derived(() => {
 		const hasError = !!validationResults()?.errors?.principal;
@@ -65,7 +60,7 @@
 	});
 
 	let shouldShowInterestRateError = $derived(() => {
-		const hasError = !!validationResults()?.errors?.interestRate;  
+		const hasError = !!validationResults()?.errors?.interestRate;
 		const shouldShow = (showErrors || fieldInteractions.interestRate) && hasError;
 		return shouldShow;
 	});
@@ -290,11 +285,11 @@
 		/>
 	</div>
 
-	<button 
-		type="submit" 
-		class="submit-button" 
+	<button
+		type="submit"
+		class="submit-button"
 		class:invalid={!isFormValid()}
-		aria-label={isFormValid() ? "Calculate mortgage" : "Calculate mortgage - form has errors"}
+		aria-label={isFormValid() ? 'Calculate mortgage' : 'Calculate mortgage - form has errors'}
 		data-testid="calculate-button"
 	>
 		Calculate

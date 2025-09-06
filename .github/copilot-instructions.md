@@ -210,6 +210,7 @@ The mortgage calculator uses modern patterns:
 - If you are creating an issue or PR for Copilot agent, explicitly state this requirement in the description or checklist.
 
 **Checklist for E2E Test Work:**
+
 - [ ] All E2E tests were run and validated using the Playwright MCP server.
 
 **Note:** This is mandatory for all Copilot agent-driven E2E test fixes and for CI compliance.

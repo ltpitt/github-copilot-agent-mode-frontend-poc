@@ -1,29 +1,28 @@
 import { test, expect } from '@playwright/test';
 
 // Helper function to reliably select energy label with Svelte 5 reactivity
-async function selectEnergyLabel(page: any, labelValue: string) {
-const select = page.locator('[data-testid="energy-label-select"]');
+async function selectEnergyLabel(page: import('@playwright/test').Page, labelValue: string) {
+	const select = page.locator('[data-testid="energy-label-select"]');
 
-// Wait for the select to be fully loaded and visible
-await expect(select).toBeVisible();
-await expect(select).toBeEnabled();
+	// Wait for the select to be fully loaded and visible
+	await expect(select).toBeVisible();
+	await expect(select).toBeEnabled();
 
-// Wait for any initial animations or load states to complete
-await page.waitForLoadState('networkidle');
-await page.waitForTimeout(500);
+	// Wait for any initial animations or load states to complete
+	await page.waitForLoadState('networkidle');
+	await page.waitForTimeout(500);
 
-// Use Playwright's selectOption which should work consistently
-await select.selectOption(labelValue || '');
+	// Use Playwright's selectOption which should work consistently
+	await select.selectOption(labelValue || '');
 
-// Wait a moment for the selection to take effect
-await page.waitForTimeout(200);
+	// Wait a moment for the selection to take effect
+	await page.waitForTimeout(200);
 
-// Check if energy indicator exists (if a value was selected)
-if (labelValue) {
-await page.waitForTimeout(300);
+	// Check if energy indicator exists (if a value was selected)
+	if (labelValue) {
+		await page.waitForTimeout(300);
+	}
 }
-}
-
 
 test.describe('Mortgage Calculator - Accessibility', () => {
 	test.beforeEach(async ({ page }) => {
@@ -84,25 +83,25 @@ test.describe('Mortgage Calculator - Accessibility', () => {
 		await page.fill('input[data-testid="duration-input"]', '30');
 		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabel(page, 'A');
-		
+
 		// Test that form elements can be focused individually
 		await page.focus('input[data-testid="principal-input"]');
 		await expect(page.locator('input[data-testid="principal-input"]')).toBeFocused();
-		
+
 		await page.focus('input[data-testid="interest-rate-input"]');
 		await expect(page.locator('input[data-testid="interest-rate-input"]')).toBeFocused();
-		
+
 		await page.focus('input[data-testid="duration-input"]');
 		await expect(page.locator('input[data-testid="duration-input"]')).toBeFocused();
-		
+
 		// Test that submit button can be focused when enabled
 		await page.focus('button[type="submit"]');
 		await expect(page.locator('button[type="submit"]')).toBeFocused();
-		
+
 		// Test that radio buttons can be focused
 		await page.focus('input[data-testid="buying-alone-true"]');
 		await expect(page.locator('input[data-testid="buying-alone-true"]')).toBeFocused();
-		
+
 		// Test that select can be focused
 		await page.focus('select[data-testid="energy-label-select"]');
 		await expect(page.locator('select[data-testid="energy-label-select"]')).toBeFocused();
@@ -327,14 +326,14 @@ test.describe('Mortgage Calculator - Accessibility', () => {
 		await page.fill('input[data-testid="duration-input"]', '30');
 		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabel(page, 'A');
-		
+
 		// Submit once to establish a valid state
 		await page.click('button[type="submit"]');
 		await page.waitForTimeout(1000);
-		
+
 		// Now introduce an error in one field while keeping others valid
-		await page.fill('input[data-testid="principal-input"]', '0');  // Invalid but won't disable submit
-		
+		await page.fill('input[data-testid="principal-input"]', '0'); // Invalid but won't disable submit
+
 		// Wait for validation to trigger
 		await page.waitForTimeout(500);
 

@@ -146,7 +146,11 @@
 			data-testid="{id}-input"
 			aria-label={label}
 			aria-required={required ? 'true' : 'false'}
-			aria-describedby={error && errorMessage ? `${id}-error` : helperText ? `${id}-helper` : undefined}
+			aria-describedby={error && errorMessage
+				? `${id}-error`
+				: helperText
+					? `${id}-helper`
+					: undefined}
 			oninput={handleInput}
 			onblur={handleBlur}
 			onkeydown={handleKeyDown}

@@ -1,30 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { selectEnergyLabelRobust, waitForValidationState, submitFormWithWait } from '../test-helpers.js';
-
-// Helper function to reliably select energy label with Svelte 5 reactivity
-async function selectEnergyLabel(page: any, labelValue: string) {
-const select = page.locator('[data-testid="energy-label-select"]');
-
-// Wait for the select to be fully loaded and visible
-await expect(select).toBeVisible();
-await expect(select).toBeEnabled();
-
-// Wait for any initial animations or load states to complete
-await page.waitForLoadState('networkidle');
-await page.waitForTimeout(500);
-
-// Use Playwright's selectOption which should work consistently
-await select.selectOption(labelValue || '');
-
-// Wait a moment for the selection to take effect
-await page.waitForTimeout(200);
-
-// Check if energy indicator exists (if a value was selected)
-if (labelValue) {
-await page.waitForTimeout(300);
-}
-}
-
+import { selectEnergyLabelRobust } from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Main Functionality', () => {
 	test.beforeEach(async ({ page }) => {
@@ -131,10 +106,6 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		// Payment should be different (higher with higher principal)
 		expect(updatedPayment).not.toBe(initialPayment);
 	});
-
-
-
-
 
 	test('should handle edge case values', async ({ page }) => {
 		// Test minimum reasonable values

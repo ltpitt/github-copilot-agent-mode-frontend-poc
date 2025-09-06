@@ -49,14 +49,14 @@
 	function handleSelectChange(event: Event) {
 		const target = event.target as HTMLSelectElement;
 		const selectedValue = target.value;
-		
+
 		// Update the value explicitly
 		if (selectedValue && selectedValue !== '') {
 			value = selectedValue as EnergyLabel;
 		} else {
 			value = null;
 		}
-		
+
 		// Force a DOM update by triggering reactivity
 		// This helps with automated testing tools like Playwright
 		requestAnimationFrame(() => {
@@ -81,7 +81,11 @@
 			data-testid="{id}-select"
 			aria-label={label}
 			aria-required={required ? 'true' : 'false'}
-			aria-describedby={error && errorMessage ? `${id}-error` : helperText ? `${id}-helper` : undefined}
+			aria-describedby={error && errorMessage
+				? `${id}-error`
+				: helperText
+					? `${id}-helper`
+					: undefined}
 			style:--selected-color={selectedLabelColor()}
 		>
 			<option value="">Select energy label</option>
@@ -94,7 +98,11 @@
 
 		<!-- Energy label visual indicator -->
 		{#if value}
-			<div class="energy-indicator" style:background-color={selectedLabelColor()} data-testid="energy-indicator">
+			<div
+				class="energy-indicator"
+				style:background-color={selectedLabelColor()}
+				data-testid="energy-indicator"
+			>
 				{value}
 			</div>
 		{/if}

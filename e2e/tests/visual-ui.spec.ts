@@ -1,29 +1,28 @@
 import { test, expect } from '@playwright/test';
 
 // Helper function to reliably select energy label with Svelte 5 reactivity
-async function selectEnergyLabel(page: any, labelValue: string) {
-const select = page.locator('[data-testid="energy-label-select"]');
+async function selectEnergyLabel(page: import('@playwright/test').Page, labelValue: string) {
+	const select = page.locator('[data-testid="energy-label-select"]');
 
-// Wait for the select to be fully loaded and visible
-await expect(select).toBeVisible();
-await expect(select).toBeEnabled();
+	// Wait for the select to be fully loaded and visible
+	await expect(select).toBeVisible();
+	await expect(select).toBeEnabled();
 
-// Wait for any initial animations or load states to complete
-await page.waitForLoadState('networkidle');
-await page.waitForTimeout(500);
+	// Wait for any initial animations or load states to complete
+	await page.waitForLoadState('networkidle');
+	await page.waitForTimeout(500);
 
-// Use Playwright's selectOption which should work consistently
-await select.selectOption(labelValue || '');
+	// Use Playwright's selectOption which should work consistently
+	await select.selectOption(labelValue || '');
 
-// Wait a moment for the selection to take effect
-await page.waitForTimeout(200);
+	// Wait a moment for the selection to take effect
+	await page.waitForTimeout(200);
 
-// Check if energy indicator exists (if a value was selected)
-if (labelValue) {
-await page.waitForTimeout(300);
+	// Check if energy indicator exists (if a value was selected)
+	if (labelValue) {
+		await page.waitForTimeout(300);
+	}
 }
-}
-
 
 test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 	test.beforeEach(async ({ page }) => {
@@ -90,8 +89,6 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 	});
 
 	test('should display energy label colors correctly for all labels', async ({ page }) => {
-		const energySelect = page.locator('select[data-testid="energy-label-select"]');
-
 		// Test each energy label color
 		const expectedColors = {
 			A: 'rgb(0, 166, 81)', // Green
@@ -172,8 +169,6 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 		await expect(page.locator('[data-testid="maximum-mortgage"]')).not.toHaveText('€0');
 		await expect(page.locator('[data-testid="monthly-payment"]')).toBeVisible();
 	});
-
-
 
 	test('should maintain accessibility color contrast', async ({ page }) => {
 		// Check main text elements have sufficient contrast

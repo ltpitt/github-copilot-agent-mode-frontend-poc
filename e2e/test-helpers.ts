@@ -31,7 +31,9 @@ export async function selectEnergyLabelWithWait(
 	// Solution 2: Use waitForFunction() to wait for Svelte reactivity to settle
 	await page.waitForFunction(
 		(label) => {
-			const select = document.querySelector('select[data-testid="energy-label-select"]') as HTMLSelectElement;
+			const select = document.querySelector(
+				'select[data-testid="energy-label-select"]'
+			) as HTMLSelectElement;
 			return select?.value === label;
 		},
 		energyLabel,
@@ -79,11 +81,17 @@ export async function waitForValidationState(
 		await expect(page.locator('.error-message')).toBeVisible({ timeout });
 	} else {
 		// Wait for ALL errors to disappear - use count-based approach for better reliability
-		await page.waitForFunction(() => {
-			const errorElements = document.querySelectorAll('.error-message');
-			return errorElements.length === 0 || 
-				   Array.from(errorElements).every(el => getComputedStyle(el).display === 'none');
-		}, undefined, { timeout });
+		await page.waitForFunction(
+			() => {
+				const errorElements = document.querySelectorAll('.error-message');
+				return (
+					errorElements.length === 0 ||
+					Array.from(errorElements).every((el) => getComputedStyle(el).display === 'none')
+				);
+			},
+			undefined,
+			{ timeout }
+		);
 	}
 }
 
@@ -99,26 +107,26 @@ export async function fillFormFieldWithValidation(
 	timeout = 10000
 ): Promise<void> {
 	const field = page.locator(selector);
-	
+
 	// Solution 1: Ensure field is visible and enabled
 	await expect(field).toBeVisible({ timeout });
 	await expect(field).toBeEnabled({ timeout });
-	
+
 	// Clear and fill the field
 	await field.clear();
 	await field.fill(value);
-	
+
 	// Solution 5: Trigger blur event to activate validation
 	await field.blur();
-	
+
 	// Solution 7: Add a small delay for validation to process
 	await waitForValidationDelay(300);
-	
+
 	// Solution 2: Wait for validation state to settle
 	if (expectErrors) {
 		try {
 			await waitForValidationState(page, true, timeout);
-		} catch (error) {
+		} catch {
 			console.log(`Expected validation error for ${selector}=${value} but none appeared`);
 			// Don't throw - some fields may have different validation logic
 		}
@@ -137,15 +145,18 @@ export async function fillFormFieldWithValidation(
  * Solution 4: Enhanced form submission with tick() equivalent
  * Uses requestAnimationFrame to ensure state updates are flushed
  */
-export async function submitFormWithWait(page: Page, expectValidationErrors: boolean = true): Promise<void> {
+export async function submitFormWithWait(
+	page: Page,
+	expectValidationErrors: boolean = true
+): Promise<void> {
 	const submitButton = page.locator('button[type="submit"]');
-	
+
 	// Solution 1: Ensure button is visible and enabled
 	await expect(submitButton).toBeVisible();
-	
+
 	// Click submit
 	await submitButton.click();
-	
+
 	// Solution 3 & 4: Wait for form state updates (equivalent to tick() in Svelte)
 	await page.evaluate(() => {
 		return new Promise((resolve) => {
@@ -158,7 +169,7 @@ export async function submitFormWithWait(page: Page, expectValidationErrors: boo
 			});
 		});
 	});
-	
+
 	// If we expect validation errors, wait for them to appear
 	if (expectValidationErrors) {
 		await waitForValidationState(page, true, 10000);
@@ -178,7 +189,7 @@ export function getTestIdSelector(testId: string): string {
  * Adds configurable delay for validation timing issues
  */
 export async function waitForValidationDelay(delayMs: number = 100): Promise<void> {
-	await new Promise(resolve => setTimeout(resolve, delayMs));
+	await new Promise((resolve) => setTimeout(resolve, delayMs));
 }
 
 /**
@@ -190,32 +201,34 @@ export async function selectEnergyLabelRobust(
 	timeout = 10000
 ): Promise<void> {
 	const selector = 'select[data-testid="energy-label-select"]';
-	
+
 	// Try approach 1: Standard selectOption with proper waits
 	try {
 		await selectEnergyLabelWithWait(page, energyLabel, timeout);
 		return;
-	} catch (error) {
+	} catch {
 		console.log('Standard selection failed, trying alternative approach...');
 	}
-	
+
 	// Try approach 2: Solution 5 - Use click() on select element
 	try {
 		const select = page.locator(selector);
 		await select.click();
 		await page.locator(`option[value="${energyLabel}"]`).click();
 		await waitForValidationDelay(200);
-		
+
 		// Verify selection
 		await expect(select).toHaveValue(energyLabel, { timeout });
 		return;
-	} catch (error) {
+	} catch {
 		console.log('Click selection failed, trying manual event dispatch...');
 	}
-	
+
 	// Try approach 3: Solution 2 - Manual event dispatch using evaluate()
 	await page.evaluate((label) => {
-		const select = document.querySelector('select[data-testid="energy-label-select"]') as HTMLSelectElement;
+		const select = document.querySelector(
+			'select[data-testid="energy-label-select"]'
+		) as HTMLSelectElement;
 		if (select) {
 			select.value = label;
 			// Dispatch multiple events to ensure Svelte reactivity
@@ -223,7 +236,7 @@ export async function selectEnergyLabelRobust(
 			select.dispatchEvent(new Event('input', { bubbles: true }));
 		}
 	}, energyLabel);
-	
+
 	// Wait for state to settle
 	await waitForValidationDelay(300);
 	await expect(page.locator(selector)).toHaveValue(energyLabel, { timeout });
@@ -232,9 +245,12 @@ export async function selectEnergyLabelRobust(
 /**
  * Helper to wait for responsive layout changes
  */
-export async function waitForResponsiveLayout(page: Page, viewport: { width: number; height: number }): Promise<void> {
+export async function waitForResponsiveLayout(
+	page: Page,
+	viewport: { width: number; height: number }
+): Promise<void> {
 	await page.setViewportSize(viewport);
-	
+
 	// Wait for layout to settle
 	await page.evaluate(() => {
 		return new Promise((resolve) => {
@@ -253,17 +269,17 @@ export async function waitForResponsiveLayout(page: Page, viewport: { width: num
  * Specifically designed for testing validation on incomplete forms
  */
 export async function testFormSubmissionValidation(
-	page: Page, 
+	page: Page,
 	expectedErrorContent?: string,
 	timeout = 10000
 ): Promise<void> {
 	// Submit the form
 	await submitFormWithWait(page, true);
-	
+
 	// Wait for validation errors to appear
 	const errorLocator = page.locator('.error-message').first();
 	await expect(errorLocator).toBeVisible({ timeout });
-	
+
 	// If specific error content is expected, verify it
 	if (expectedErrorContent) {
 		const errorText = await errorLocator.textContent();

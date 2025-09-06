@@ -1,12 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { 
-	selectEnergyLabelWithWait, 
-	selectEnergyLabelRobust, 
-	waitForValidationState,
-	fillFormFieldWithValidation,
-	submitFormWithWait,
-	testFormSubmissionValidation 
-} from '../test-helpers.js';
+import { selectEnergyLabelRobust } from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Energy Labels', () => {
 	test.beforeEach(async ({ page }) => {
@@ -60,7 +53,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 
 		for (const [label, expectedColor] of Object.entries(energyLabelColors)) {
 			console.log(`Testing energy label: ${label}`);
-			
+
 			// Use the improved helper function for reliable selection
 			await selectEnergyLabelRobust(page, label);
 
@@ -87,8 +80,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 	});
 
 	test('should update select styling when energy label is chosen', async ({ page }) => {
-		const energySelect = page.locator('select[data-testid="energy-label-select"]');
-
 		// Initially no energy label selected
 		await expect(page.locator('.energy-indicator')).not.toBeVisible();
 
@@ -103,7 +94,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		const finalValue = await selectElement.inputValue();
 		if (finalValue === 'A') {
 			await expect(page.locator('.energy-indicator')).toBeVisible({ timeout: 10000 });
-			
+
 			// Select container should not have error styling
 			const selectContainer = page.locator('.select-container');
 			await expect(selectContainer).not.toHaveClass(/error/);
@@ -165,11 +156,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await expect(energyIndicator).toHaveText('B');
 	});
 
-
-
 	test('should allow changing energy label after selection', async ({ page }) => {
-		const energySelect = page.locator('select[data-testid="energy-label-select"]');
-
 		// Select first energy label
 		await selectEnergyLabelRobust(page, 'A');
 		await expect(page.locator('.energy-indicator')).toHaveText('A');
@@ -192,7 +179,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 	});
 
 	test('should show energy label color gradient from A to G', async ({ page }) => {
-		const energySelect = page.locator('select[data-testid="energy-label-select"]');
 		const energyIndicator = page.locator('.energy-indicator');
 
 		// Test that colors progress from green to red as efficiency decreases
@@ -232,6 +218,4 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await expect(page.locator('.energy-indicator')).toHaveText('C');
 		await expect(page.locator('select[data-testid="energy-label-select"]')).toHaveValue('C');
 	});
-
-
 });

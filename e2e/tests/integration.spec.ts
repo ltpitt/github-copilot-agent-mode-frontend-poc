@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { selectEnergyLabelRobust, waitForValidationState, submitFormWithWait } from '../test-helpers.js';
+import { selectEnergyLabelRobust } from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 	test.beforeEach(async ({ page }) => {
@@ -158,8 +158,6 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		const newAmount = parseInt(newResult!.replace(/[€,]/g, ''));
 		expect(newAmount).toBeGreaterThan(initialAmount);
 	});
-
-
 
 	test('should maintain data consistency across multiple calculations', async ({ page }) => {
 		const testScenarios = [

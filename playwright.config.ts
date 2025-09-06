@@ -16,7 +16,7 @@ export default defineConfig({
 	projects: [
 		{
 			name: 'chromium',
-			use: { 
+			use: {
 				channel: 'chrome',
 				// Use system chrome executable if available
 				launchOptions: {

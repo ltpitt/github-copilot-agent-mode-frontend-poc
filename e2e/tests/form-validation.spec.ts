@@ -1,11 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { 
-	selectEnergyLabelWithWait, 
-	selectEnergyLabelRobust, 
-	waitForValidationState,
+import {
+	selectEnergyLabelRobust,
 	fillFormFieldWithValidation,
-	submitFormWithWait,
-	waitForValidationDelay,
 	testFormSubmissionValidation
 } from '../test-helpers.js';
 
@@ -21,7 +17,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 
 		// Set invalid values that should trigger validation errors
 		await page.fill('input[data-testid="principal-input"]', '0'); // Invalid: must be > 0
-		await page.fill('input[data-testid="interest-rate-input"]', '-1'); // Invalid: must be >= 0  
+		await page.fill('input[data-testid="interest-rate-input"]', '-1'); // Invalid: must be >= 0
 		await page.fill('input[data-testid="duration-input"]', '0'); // Invalid: must be > 0
 
 		// Debug: Check button state and form details before submitting
@@ -40,16 +36,16 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		// Debug: Check what error messages exist
 		const errorMessages = await page.locator('.error-message').count();
 		console.log(`Found ${errorMessages} error messages`);
-		
+
 		// Also check for any validation-related elements
 		const allErrors = await page.locator('[role="alert"]').count();
 		console.log(`Found ${allErrors} alert elements`);
-		
+
 		if (errorMessages === 0) {
 			// If no error messages, check that results are still not calculated
 			const resultValue = await page.locator('[data-testid="maximum-mortgage"]').textContent();
 			console.log(`Result value with invalid input: ${resultValue}`);
-			
+
 			// With invalid inputs, result should be €0 or empty
 			expect(resultValue?.includes('€0') || resultValue === '' || !resultValue).toBeTruthy();
 		} else {
@@ -65,13 +61,13 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 			// If results are shown, they should indicate no calculation or error state
 			// Check if monthly payment element exists first
 			const monthlyPaymentElement = page.locator('[data-testid="monthly-payment"]');
-			const monthlyPaymentExists = await monthlyPaymentElement.count() > 0;
-			
+			const monthlyPaymentExists = (await monthlyPaymentElement.count()) > 0;
+
 			if (monthlyPaymentExists) {
 				const monthlyPayment = await monthlyPaymentElement.textContent();
 				expect(monthlyPayment).toMatch(/€0|€0\.00/); // Should show €0 or similar
 			}
-			
+
 			// Check that the maximum mortgage shows 0 or similar (this should always exist)
 			const maxMortgage = await page.locator('[data-testid="maximum-mortgage"]').textContent();
 			expect(maxMortgage).toMatch(/€0|€0\.00/); // Should show €0 or similar
@@ -86,10 +82,20 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '0', true);
 
 		// Test very large values (should be handled gracefully)
-		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '999999999', false);
+		await fillFormFieldWithValidation(
+			page,
+			'input[data-testid="principal-input"]',
+			'999999999',
+			false
+		);
 
 		// Test valid value - errors should disappear
-		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '250000', false);
+		await fillFormFieldWithValidation(
+			page,
+			'input[data-testid="principal-input"]',
+			'250000',
+			false
+		);
 	});
 
 	test('should validate interest rate constraints', async ({ page }) => {
@@ -100,10 +106,20 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '0', false);
 
 		// Test unreasonably high interest rate
-		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '50', false);
+		await fillFormFieldWithValidation(
+			page,
+			'input[data-testid="interest-rate-input"]',
+			'50',
+			false
+		);
 
 		// Test valid interest rate
-		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.5', false);
+		await fillFormFieldWithValidation(
+			page,
+			'input[data-testid="interest-rate-input"]',
+			'3.5',
+			false
+		);
 	});
 
 	test('should validate duration constraints', async ({ page }) => {
@@ -122,16 +138,24 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 
 	test('should require buying type selection', async ({ page }) => {
 		// Fill all other required fields
-		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '250000', false);
-		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.5', false);
+		await fillFormFieldWithValidation(
+			page,
+			'input[data-testid="principal-input"]',
+			'250000',
+			false
+		);
+		await fillFormFieldWithValidation(
+			page,
+			'input[data-testid="interest-rate-input"]',
+			'3.5',
+			false
+		);
 		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false);
 		await selectEnergyLabelRobust(page, 'B');
 
 		// Don't select buying type and test validation
 		await testFormSubmissionValidation(page, 'mandatory');
 	});
-
-
 
 	test('should validate numeric inputs only accept numbers', async ({ page }) => {
 		const principalInput = page.locator('input[data-testid="principal-input"]');
@@ -149,7 +173,7 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 
 		await interestInput.fill('3.75');
 		expect(await interestInput.inputValue()).toMatch(/\d+\.?\d*/);
-		
+
 		// Test that inputs maintain their numeric values
 		await durationInput.fill('25');
 		expect(await durationInput.inputValue()).toBe('25');
@@ -196,8 +220,6 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 			await expect(page.locator('select[data-testid="energy-label-select"]')).toHaveValue('');
 		}
 	});
-
-
 
 	test('should handle decimal input formatting', async ({ page }) => {
 		// Test various decimal formats
