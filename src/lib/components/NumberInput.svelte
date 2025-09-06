@@ -83,24 +83,28 @@
 		const target = event.target as HTMLInputElement;
 		const newValue = parseFloat(target.value);
 
+		// Always update the value to allow validation to work properly
+		// Don't clamp on input, only on blur to allow validation of invalid values
 		if (!isNaN(newValue)) {
-			// Apply bounds checking
-			if (newValue >= min && newValue <= max) {
-				value = newValue;
-			} else if (newValue < min) {
-				value = min;
-				target.value = min.toString();
-			} else if (newValue > max) {
-				value = max;
-				target.value = max.toString();
-			}
+			value = newValue;
+		} else if (target.value === '' || target.value === '-') {
+			// Allow empty or just negative sign for user input
+			value = 0;
 		}
 
-		oninput?.(event);
+		// Trigger callback for validation in parent components
+		requestAnimationFrame(() => {
+			oninput?.(event);
+		});
 	}
 
 	function handleBlur(event: Event) {
-		onblur?.(event);
+		// Don't clamp on blur - let validation handle invalid values
+		// This ensures error messages can be displayed properly
+		// Trigger callback for validation in parent components
+		requestAnimationFrame(() => {
+			onblur?.(event);
+		});
 	}
 </script>
 
@@ -142,6 +146,11 @@
 			data-testid="{id}-input"
 			aria-label={label}
 			aria-required={required ? 'true' : 'false'}
+			aria-describedby={error && errorMessage
+				? `${id}-error`
+				: helperText
+					? `${id}-helper`
+					: undefined}
 			oninput={handleInput}
 			onblur={handleBlur}
 			onkeydown={handleKeyDown}
@@ -168,7 +177,7 @@
 	</div>
 
 	{#if error && errorMessage}
-		<div class="error-message" role="alert">
+		<div class="error-message" role="alert" id="{id}-error">
 			<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="error-icon">
 				<path
 					d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11.5c-.4 0-.8-.3-.8-.8s.3-.8.8-.8.8.3.8.8-.4.8-.8.8zm.8-3.2h-1.6V5.2h1.6v4.6z"
@@ -177,10 +186,10 @@
 			{errorMessage}
 		</div>
 	{:else if helperText}
-		<div class="helper-text">
+		<div class="helper-text" id="{id}-helper">
 			<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="info-icon">
 				<path
-					d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3.9c0 .2-.1.4-.3.5-.2.1-.4.2-.7.2s-.5-.1-.7-.2c-.2-.1-.3-.3-.3-.5V6.5c0-.2.1-.4.3-.5.2-.1.4-.2.7-.2s.5.1.7.2c.2.1.3.3.3.5v1.6z"
+					d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11c-.6 0-1-.4-1 1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm1-3.9c0 .2-.1.4-.3.5-.2.1-.4.2-.7.2s-.5-.1-.7-.2c-.2-.1-.3-.3-.3-.5V6.5c0-.2.1-.4.3-.5.2-.1.4-.2.7-.2s.5.1.7.2c.2.1.3.3.3.5v1.6z"
 				/>
 			</svg>
 			{helperText}

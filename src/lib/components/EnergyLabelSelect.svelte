@@ -48,9 +48,21 @@
 
 	function handleSelectChange(event: Event) {
 		const target = event.target as HTMLSelectElement;
-		value = (target.value as EnergyLabel) || null;
-		oninput?.();
-		onchange?.();
+		const selectedValue = target.value;
+
+		// Update the value explicitly
+		if (selectedValue && selectedValue !== '') {
+			value = selectedValue as EnergyLabel;
+		} else {
+			value = null;
+		}
+
+		// Force a DOM update by triggering reactivity
+		// This helps with automated testing tools like Playwright
+		requestAnimationFrame(() => {
+			oninput?.();
+			onchange?.();
+		});
 	}
 </script>
 
@@ -61,14 +73,19 @@
 		<select
 			{id}
 			{required}
-			bind:value
+			value={value || ''}
 			onchange={handleSelectChange}
-			{oninput}
+			oninput={handleSelectChange}
 			{onblur}
 			class="energy-select"
 			data-testid="{id}-select"
 			aria-label={label}
 			aria-required={required ? 'true' : 'false'}
+			aria-describedby={error && errorMessage
+				? `${id}-error`
+				: helperText
+					? `${id}-helper`
+					: undefined}
 			style:--selected-color={selectedLabelColor()}
 		>
 			<option value="">Select energy label</option>
@@ -81,14 +98,18 @@
 
 		<!-- Energy label visual indicator -->
 		{#if value}
-			<div class="energy-indicator" style:background-color={selectedLabelColor()}>
+			<div
+				class="energy-indicator"
+				style:background-color={selectedLabelColor()}
+				data-testid="energy-indicator"
+			>
 				{value}
 			</div>
 		{/if}
 	</div>
 
 	{#if error && errorMessage}
-		<div class="error-message" role="alert">
+		<div class="error-message" role="alert" id="{id}-error">
 			<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="error-icon">
 				<path
 					d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11.5c-.4 0-.8-.3-.8-.8s.3-.8.8-.8.8.3.8.8-.4.8-.8.8zm.8-3.2h-1.6V5.2h1.6v4.6z"
@@ -97,7 +118,7 @@
 			{errorMessage}
 		</div>
 	{:else if helperText}
-		<div class="helper-text">{helperText}</div>
+		<div class="helper-text" id="{id}-helper">{helperText}</div>
 	{/if}
 </div>
 

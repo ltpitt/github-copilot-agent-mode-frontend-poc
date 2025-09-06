@@ -27,25 +27,60 @@
 	// Validation state
 	let hasInteracted = $state(false); // Track if user has interacted with form
 	let showErrors = $state(false); // Control when to show error messages
+	let fieldInteractions = $state({
+		principal: false,
+		interestRate: false,
+		duration: false,
+		buyingType: false,
+		energyLabel: false
+	}); // Track individual field interactions
 
-	// Form validation derived state
+	// Form validation derived state - ensure proper reactivity
 	let validationResults = $derived(() => {
-		return validateFormInputs(
+		const results = validateFormInputs(
 			principal,
 			annualInterestRate,
 			durationYears,
 			buyingAlone,
 			energyLabel
 		);
+		return results;
 	});
 
 	let isFormValid = $derived(() => {
-		return validationResults().isValid;
+		const valid = validationResults().isValid;
+		return valid;
 	});
 
-	// Show errors when user tries to submit invalid form or after interaction
-	let shouldShowErrors = $derived(() => {
-		return showErrors || (hasInteracted && !isFormValid());
+	// Individual field error display logic - show errors when field has been interacted with
+	let shouldShowPrincipalError = $derived(() => {
+		const hasError = !!validationResults()?.errors?.principal;
+		const shouldShow = (showErrors || fieldInteractions.principal) && hasError;
+		return shouldShow;
+	});
+
+	let shouldShowInterestRateError = $derived(() => {
+		const hasError = !!validationResults()?.errors?.interestRate;
+		const shouldShow = (showErrors || fieldInteractions.interestRate) && hasError;
+		return shouldShow;
+	});
+
+	let shouldShowDurationError = $derived(() => {
+		const hasError = !!validationResults()?.errors?.duration;
+		const shouldShow = (showErrors || fieldInteractions.duration) && hasError;
+		return shouldShow;
+	});
+
+	let shouldShowBuyingTypeError = $derived(() => {
+		const hasError = !!validationResults()?.errors?.buyingType;
+		const shouldShow = (showErrors || fieldInteractions.buyingType) && hasError;
+		return shouldShow;
+	});
+
+	let shouldShowEnergyLabelError = $derived(() => {
+		const hasError = !!validationResults()?.errors?.energyLabel;
+		const shouldShow = (showErrors || fieldInteractions.energyLabel) && hasError;
+		return shouldShow;
 	});
 
 	// Handle form submission
@@ -90,13 +125,55 @@
 			hasInteracted = true;
 		}
 	}
+
+	// Handle field-specific interactions - enhanced for E2E testing
+	function handlePrincipalInteraction() {
+		handleInputInteraction();
+		fieldInteractions.principal = true;
+		// Force immediate validation state update for E2E tests
+		requestAnimationFrame(() => {
+			fieldInteractions.principal = true;
+		});
+	}
+
+	function handleInterestRateInteraction() {
+		handleInputInteraction();
+		fieldInteractions.interestRate = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.interestRate = true;
+		});
+	}
+
+	function handleDurationInteraction() {
+		handleInputInteraction();
+		fieldInteractions.duration = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.duration = true;
+		});
+	}
+
+	function handleBuyingTypeInteraction() {
+		handleInputInteraction();
+		fieldInteractions.buyingType = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.buyingType = true;
+		});
+	}
+
+	function handleEnergyLabelInteraction() {
+		handleInputInteraction();
+		fieldInteractions.energyLabel = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.energyLabel = true;
+		});
+	}
 </script>
 
 <form class="input-form" onsubmit={handleSubmit}>
 	<h2>What maximum amount can I borrow?</h2>
 
 	<div class="form-group">
-		<fieldset class:error={shouldShowErrors() && !!validationResults()?.errors?.buyingType}>
+		<fieldset class:error={shouldShowBuyingTypeError()}>
 			<legend class="question-label">Do you buy alone or together?</legend>
 			<div class="radio-group">
 				<label class="radio-option">
@@ -106,7 +183,8 @@
 						value={true}
 						name="buying-type"
 						data-testid="buying-alone-true"
-						oninput={handleInputInteraction}
+						aria-label="Buy alone"
+						oninput={handleBuyingTypeInteraction}
 					/>
 					<span class="radio-icon">👤</span>
 					Alone
@@ -118,13 +196,14 @@
 						value={false}
 						name="buying-type"
 						data-testid="buying-alone-false"
-						oninput={handleInputInteraction}
+						aria-label="Buy together with partner"
+						oninput={handleBuyingTypeInteraction}
 					/>
 					<span class="radio-icon">👥</span>
 					Together
 				</label>
 			</div>
-			{#if shouldShowErrors() && validationResults()?.errors?.buyingType}
+			{#if shouldShowBuyingTypeError()}
 				<div class="error-message" role="alert">
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="error-icon">
 						<path
@@ -146,11 +225,11 @@
 			max={10000000}
 			suffix="EUR"
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.principal}
+			error={shouldShowPrincipalError()}
 			errorMessage={validationResults()?.errors?.principal || ''}
 			helperText="Enter any amount between €1 and €10,000,000"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
+			oninput={handlePrincipalInteraction}
+			onblur={handlePrincipalInteraction}
 			onkeydown={handleKeyDown}
 		/>
 	</div>
@@ -164,11 +243,11 @@
 			max={50}
 			suffix="%"
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.interestRate}
+			error={shouldShowInterestRateError()}
 			errorMessage={validationResults()?.errors?.interestRate || ''}
 			helperText="Enter rate between 0% and 50% (e.g., 3.5, 4.25)"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
+			oninput={handleInterestRateInteraction}
+			onblur={handleInterestRateInteraction}
 			onkeydown={handleKeyDown}
 		/>
 	</div>
@@ -182,11 +261,11 @@
 			max={50}
 			suffix="years"
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.duration}
+			error={shouldShowDurationError()}
 			errorMessage={validationResults()?.errors?.duration || ''}
 			helperText="Enter a whole number between 1 and 50 years"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
+			oninput={handleDurationInteraction}
+			onblur={handleDurationInteraction}
 			onkeydown={handleKeyDown}
 		/>
 	</div>
@@ -197,21 +276,23 @@
 			label="Energy label"
 			bind:value={energyLabel}
 			required
-			error={shouldShowErrors() && !!validationResults()?.errors?.energyLabel}
+			error={shouldShowEnergyLabelError()}
 			errorMessage={validationResults()?.errors?.energyLabel || ''}
 			helperText="Select the energy efficiency rating of the property"
-			oninput={handleInputInteraction}
-			onblur={handleInputInteraction}
-			onchange={handleInputInteraction}
+			oninput={handleEnergyLabelInteraction}
+			onblur={handleEnergyLabelInteraction}
+			onchange={handleEnergyLabelInteraction}
 		/>
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()}>
-		{#if isFormValid()}
-			Calculate
-		{:else}
-			Please fix errors above
-		{/if}
+	<button
+		type="submit"
+		class="submit-button"
+		class:invalid={!isFormValid()}
+		aria-label={isFormValid() ? 'Calculate mortgage' : 'Calculate mortgage - form has errors'}
+		data-testid="calculate-button"
+	>
+		Calculate
 	</button>
 </form>
 
@@ -327,8 +408,10 @@
 		font-weight: var(--font-weight-medium);
 		position: relative;
 		overflow: hidden;
-		min-height: 56px;
+		min-height: 56px; /* Ensure minimum 44px touch target + padding */
 		font-size: var(--font-size-body);
+		/* Ensure proper touch target for mobile */
+		touch-action: manipulation;
 	}
 
 	.radio-option::before {
@@ -355,10 +438,12 @@
 
 	.radio-option input[type='radio'] {
 		margin: 0;
-		width: auto;
-		min-height: auto;
+		width: 24px; /* Ensure minimum 20px for touch targets */
+		height: 24px;
+		min-height: 24px;
 		position: relative;
 		z-index: 2;
+		flex-shrink: 0;
 	}
 
 	.radio-option:has(input:checked) {
@@ -382,7 +467,7 @@
 	.submit-button {
 		width: 100%;
 		padding: var(--spacing-lg) var(--spacing-2xl);
-		background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+		background: var(--color-primary); /* Use direct ING orange color */
 		color: var(--color-background);
 		border: none;
 		border-radius: var(--border-radius-md);
@@ -416,7 +501,7 @@
 	}
 
 	.submit-button:hover:not(:disabled) {
-		background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+		background: var(--color-primary-dark);
 		transform: translateY(-2px);
 		box-shadow: var(--shadow-xl);
 	}
@@ -427,11 +512,20 @@
 	}
 
 	.submit-button:disabled {
-		background: linear-gradient(135deg, var(--color-text-light) 0%, #aaa 100%);
+		background: var(--color-text-light);
 		cursor: not-allowed;
 		opacity: 0.7;
 		transform: none;
 		box-shadow: var(--shadow-sm);
+	}
+
+	.submit-button.invalid {
+		background: var(--color-primary); /* Keep ING orange even when invalid */
+		cursor: pointer;
+	}
+
+	.submit-button.invalid:hover {
+		background: var(--color-primary-dark);
 	}
 
 	.submit-button:disabled::before {

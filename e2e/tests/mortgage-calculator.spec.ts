@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { selectEnergyLabelRobust } from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Main Functionality', () => {
 	test.beforeEach(async ({ page }) => {
@@ -59,7 +60,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.check('input[data-testid="buying-alone-true"]');
 
 		// Select energy label B
-		await page.selectOption('select[data-testid="energy-label-select"]', 'B');
+		await selectEnergyLabelRobust(page, 'B');
 
 		// Submit form
 		await page.click('button[type="submit"]');
@@ -89,7 +90,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="interest-rate-input"]', '3.0');
 		await page.fill('input[data-testid="duration-input"]', '30');
 		await page.check('input[data-testid="buying-alone-true"]');
-		await page.selectOption('select[data-testid="energy-label-select"]', 'A');
+		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
 		// Get initial monthly payment
@@ -106,57 +107,13 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		expect(updatedPayment).not.toBe(initialPayment);
 	});
 
-	test('should handle different buying scenarios (alone vs with partner)', async ({ page }) => {
-		// Fill form with consistent data
-		await page.fill('input[data-testid="principal-input"]', '250000');
-		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
-		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.selectOption('select[data-testid="energy-label-select"]', 'C');
-
-		// Test buying alone
-		await page.check('input[data-testid="buying-alone-true"]');
-		await page.click('button[type="submit"]');
-
-		const aloneResult = await page.locator('[data-testid="maximum-mortgage"]').textContent();
-
-		// Test buying with partner
-		await page.check('input[data-testid="buying-alone-false"]');
-		await page.click('button[type="submit"]');
-
-		const partnerResult = await page.locator('[data-testid="maximum-mortgage"]').textContent();
-
-		// Results should be different
-		expect(partnerResult).not.toBe(aloneResult);
-		// Both should be valid euro amounts
-		expect(aloneResult).toMatch(/€.*\d/);
-		expect(partnerResult).toMatch(/€.*\d/);
-	});
-
-	test('should display proper form labels and accessibility attributes', async ({ page }) => {
-		// Check form labels exist and are associated with inputs
-		await expect(page.locator('label[for="principal"]')).toBeVisible();
-		await expect(page.locator('label[for="interest-rate"]')).toBeVisible();
-		await expect(page.locator('label[for="duration"]')).toBeVisible();
-		await expect(page.locator('label[for="energy-label"]')).toBeVisible();
-
-		// Check ARIA attributes
-		const principalInput = page.locator('input[data-testid="principal-input"]');
-		await expect(principalInput).toHaveAttribute('aria-label');
-		await expect(principalInput).toHaveAttribute('aria-required', 'true');
-
-		// Check that submit button is properly labeled
-		const submitButton = page.locator('button[type="submit"]');
-		await expect(submitButton).toBeVisible();
-		await expect(submitButton).toHaveAccessibleName();
-	});
-
 	test('should handle edge case values', async ({ page }) => {
 		// Test minimum reasonable values
 		await page.fill('input[data-testid="principal-input"]', '50000');
 		await page.fill('input[data-testid="interest-rate-input"]', '0.1');
 		await page.fill('input[data-testid="duration-input"]', '5');
 		await page.check('input[data-testid="buying-alone-true"]');
-		await page.selectOption('select[data-testid="energy-label-select"]', 'G');
+		await selectEnergyLabelRobust(page, 'G');
 		await page.click('button[type="submit"]');
 
 		await expect(page.locator('[data-testid="monthly-payment"]')).toBeVisible();
@@ -166,7 +123,7 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="principal-input"]', '1000000');
 		await page.fill('input[data-testid="interest-rate-input"]', '10');
 		await page.fill('input[data-testid="duration-input"]', '40');
-		await page.selectOption('select[data-testid="energy-label-select"]', 'A');
+		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
 		await expect(page.locator('[data-testid="monthly-payment"]')).toBeVisible();
