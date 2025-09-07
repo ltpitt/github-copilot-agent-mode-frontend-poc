@@ -54,13 +54,6 @@
 		hasInteracted = true;
 		showErrors = true;
 
-		console.log('Form submitted, validation state:', {
-			isFormValid: isFormValid(),
-			buyingAlone,
-			energyLabel,
-			validationResults: validationResults()
-		});
-
 		if (isFormValid()) {
 			onsubmit?.({
 				principal,
@@ -69,8 +62,6 @@
 				buyingAlone,
 				energyLabel
 			});
-		} else {
-			console.log('Form validation failed');
 		}
 	}
 

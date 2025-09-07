@@ -14,9 +14,6 @@ export async function selectEnergyLabelWithWait(
 	energyLabel: string,
 	timeout = 10000
 ): Promise<void> {
-	console.log(`Testing energy label: ${energyLabel}`);
-	console.log(`Attempting to select: ${energyLabel}`);
-
 	// Ensure page is fully loaded
 	await page.waitForLoadState('networkidle');
 
@@ -49,10 +46,6 @@ export async function selectEnergyLabelWithWait(
 		await expect(energyIndicator).toBeVisible({ timeout });
 		await expect(energyIndicator).toHaveText(energyLabel, { timeout });
 	}
-
-	console.log(`Final value: "${await energySelect.inputValue()}"`);
-	const indicatorCount = await energyIndicator.count();
-	console.log(`Energy indicators found: ${indicatorCount}`);
 }
 
 /**
@@ -127,7 +120,6 @@ export async function fillFormFieldWithValidation(
 		try {
 			await waitForValidationState(page, true, timeout);
 		} catch {
-			console.log(`Expected validation error for ${selector}=${value} but none appeared`);
 			// Don't throw - some fields may have different validation logic
 		}
 	} else {
@@ -136,7 +128,6 @@ export async function fillFormFieldWithValidation(
 		const errorCount = await page.locator('.error-message').count();
 		if (errorCount > 0) {
 			// If there are still errors, they might be from other fields
-			console.log(`Field ${selector}=${value} set, ${errorCount} total errors remain`);
 		}
 	}
 }
@@ -207,7 +198,6 @@ export async function selectEnergyLabelRobust(
 		await selectEnergyLabelWithWait(page, energyLabel, timeout);
 		return;
 	} catch {
-		console.log('Standard selection failed, trying alternative approach...');
 	}
 
 	// Try approach 2: Solution 5 - Use click() on select element
@@ -221,7 +211,6 @@ export async function selectEnergyLabelRobust(
 		await expect(select).toHaveValue(energyLabel, { timeout });
 		return;
 	} catch {
-		console.log('Click selection failed, trying manual event dispatch...');
 	}
 
 	// Try approach 3: Solution 2 - Manual event dispatch using evaluate()

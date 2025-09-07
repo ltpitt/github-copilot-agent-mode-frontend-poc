@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { selectEnergyLabelRobust } from '../test-helpers.js';
+import { selectEnergyLabelRobust, fillFormFieldWithValidation } from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 	test.beforeEach(async ({ page }) => {
@@ -10,9 +10,9 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		page
 	}) => {
 		// Scenario: Young professional, first-time buyer, efficient home
-		await page.fill('input[data-testid="principal-input"]', '85000'); // €85k income
-		await page.fill('input[data-testid="interest-rate-input"]', '4.2'); // Current rates
-		await page.fill('input[data-testid="duration-input"]', '30'); // 30-year mortgage
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '85000', false); // €85k income
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '4.2', false); // Current rates
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false); // 30-year mortgage
 		await selectEnergyLabelRobust(page, 'A'); // Energy efficient
 
 		await page.click('button[type="submit"]');
@@ -35,9 +35,9 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		page
 	}) => {
 		// Scenario: Professional with high income, larger home needed
-		await page.fill('input[data-testid="principal-input"]', '180000'); // €180k combined
-		await page.fill('input[data-testid="interest-rate-input"]', '3.8');
-		await page.fill('input[data-testid="duration-input"]', '25'); // Shorter term
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '180000', false); // €180k combined
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.8', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '25', false); // Shorter term
 		await selectEnergyLabelRobust(page, 'C'); // Average efficiency
 
 		await page.click('button[type="submit"]');
@@ -57,9 +57,9 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 
 	test('should handle edge case - minimal income scenario', async ({ page }) => {
 		// Scenario: Low income, need to see realistic limitations
-		await page.fill('input[data-testid="principal-input"]', '25000'); // €25k income
-		await page.fill('input[data-testid="interest-rate-input"]', '5.0'); // Higher rate
-		await page.fill('input[data-testid="duration-input"]', '30');
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '25000', false); // €25k income
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '5.0', false); // Higher rate
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '30', false);
 		await selectEnergyLabelRobust(page, 'F'); // Poor efficiency
 
 		await page.click('button[type="submit"]');
@@ -129,17 +129,17 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 
 	test('should handle form reset and recalculation workflow', async ({ page }) => {
 		// Fill initial form
-		await page.fill('input[data-testid="principal-input"]', '120000');
-		await page.fill('input[data-testid="interest-rate-input"]', '4.0');
-		await page.fill('input[data-testid="duration-input"]', '25');
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '120000', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '4.0', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="duration-input"]', '25', false);
 		await selectEnergyLabelRobust(page, 'B');
 		await page.click('button[type="submit"]');
 
 		const initialResult = await page.locator('[data-testid="maximum-mortgage"]').textContent();
 
 		// Modify inputs for different calculation
-		await page.fill('input[data-testid="principal-input"]', '200000');
-		await page.fill('input[data-testid="interest-rate-input"]', '3.2');
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '200000', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.2', false);
 		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
@@ -156,13 +156,13 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 
 	test('should handle rapid form interactions gracefully', async ({ page }) => {
 		// Rapid interaction test - change multiple fields quickly
-		await page.fill('input[data-testid="principal-input"]', '50000');
-		await page.fill('input[data-testid="principal-input"]', '100000');
-		await page.fill('input[data-testid="principal-input"]', '150000');
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '50000', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '100000', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="principal-input"]', '150000', false);
 
-		await page.fill('input[data-testid="interest-rate-input"]', '2.5');
-		await page.fill('input[data-testid="interest-rate-input"]', '4.5');
-		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '2.5', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '4.5', false);
+		await fillFormFieldWithValidation(page, 'input[data-testid="interest-rate-input"]', '3.5', false);
 
 		await selectEnergyLabelRobust(page, 'A');
 		await selectEnergyLabelRobust(page, 'G');

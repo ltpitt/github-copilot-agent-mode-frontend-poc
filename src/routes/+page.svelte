@@ -24,7 +24,6 @@
 		buyingAlone: boolean | null;
 		energyLabel: EnergyLabel | null;
 	}) {
-		console.log('Form submitted with data:', data);
 		try {
 			const { principal, annualInterestRate, durationYears, buyingAlone, energyLabel } = data;
 
@@ -38,14 +37,6 @@
 				console.error('Energy label not selected');
 				return;
 			}
-
-			console.log('Processing calculation with:', {
-				principal,
-				annualInterestRate,
-				durationYears,
-				buyingAlone,
-				energyLabel
-			});
 
 			const annualRate = annualInterestRate / 100; // Convert percentage to decimal
 
@@ -63,8 +54,6 @@
 			);
 
 			calculationData = { principal, annualInterestRate, durationYears, energyLabel };
-
-			console.log('Calculation results:', calculationResult);
 		} catch (error) {
 			console.error('Error in calculation:', error);
 			calculationResult = null;

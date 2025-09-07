@@ -52,8 +52,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		};
 
 		for (const [label, expectedColor] of Object.entries(energyLabelColors)) {
-			console.log(`Testing energy label: ${label}`);
-
 			// Use the improved helper function for reliable selection
 			await selectEnergyLabelRobust(page, label);
 
@@ -98,8 +96,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 			// Select container should not have error styling
 			const selectContainer = page.locator('.select-container');
 			await expect(selectContainer).not.toHaveClass(/error/);
-		} else {
-			console.log(`Test skipped - selection failed. Expected 'A', got '${finalValue}'`);
 		}
 	});
 
