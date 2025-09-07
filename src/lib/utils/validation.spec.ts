@@ -5,7 +5,8 @@ import {
 	validateInterestRate,
 	validateDuration,
 	validateBuyingType,
-	validateEnergyLabel
+	validateEnergyLabel,
+	validatePartnerIncome
 } from './validation';
 
 describe('Validation Functions', () => {
@@ -137,6 +138,44 @@ describe('Validation Functions', () => {
 		});
 	});
 
+	describe('validatePartnerIncome', () => {
+		it('should be valid when buying alone (partner income not required)', () => {
+			const result = validatePartnerIncome(0, false);
+			expect(result.isValid).toBe(true);
+			expect(result.message).toBeUndefined();
+		});
+
+		it('should be valid with positive partner income when buying together', () => {
+			const result = validatePartnerIncome(200000, true);
+			expect(result.isValid).toBe(true);
+			expect(result.message).toBeUndefined();
+		});
+
+		it('should reject partner income of 0 when buying together', () => {
+			const result = validatePartnerIncome(0, true);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('Partner income must be greater than 0');
+		});
+
+		it('should reject negative partner income when buying together', () => {
+			const result = validatePartnerIncome(-1000, true);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('Partner income must be greater than 0');
+		});
+
+		it('should reject excessively high partner income when buying together', () => {
+			const result = validatePartnerIncome(15000000, true);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('Partner income amount seems unreasonably high');
+		});
+
+		it('should reject invalid partner income (NaN) when buying together', () => {
+			const result = validatePartnerIncome(NaN, true);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toBe('Partner income is required when buying together');
+		});
+	});
+
 	describe('validateFormInputs', () => {
 		it('should validate all valid inputs including buying type and energy label', () => {
 			const result = validateFormInputs(300000, 3.5, 30, true, 'C');
@@ -145,7 +184,7 @@ describe('Validation Functions', () => {
 		});
 
 		it('should validate with buying alone false and energy label', () => {
-			const result = validateFormInputs(300000, 3.5, 30, false, 'B');
+			const result = validateFormInputs(300000, 3.5, 30, false, 'B', 200000);
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
 		});
@@ -189,6 +228,30 @@ describe('Validation Functions', () => {
 
 		it('should handle edge case values with valid buying type and energy label', () => {
 			const result = validateFormInputs(1, 0, 1, true, 'G');
+			expect(result.isValid).toBe(true);
+			expect(result.errors).toEqual({});
+		});
+
+		it('should fail validation when partner income is missing for buying together', () => {
+			const result = validateFormInputs(300000, 3.5, 30, false, 'B');
+			expect(result.isValid).toBe(false);
+			expect(result.errors.partnerIncome).toBe('Partner income must be greater than 0');
+		});
+
+		it('should fail validation when partner income is 0 for buying together', () => {
+			const result = validateFormInputs(300000, 3.5, 30, false, 'B', 0);
+			expect(result.isValid).toBe(false);
+			expect(result.errors.partnerIncome).toBe('Partner income must be greater than 0');
+		});
+
+		it('should validate successfully when buying alone without partner income', () => {
+			const result = validateFormInputs(300000, 3.5, 30, true, 'B');
+			expect(result.isValid).toBe(true);
+			expect(result.errors).toEqual({});
+		});
+
+		it('should validate successfully when buying together with valid partner income', () => {
+			const result = validateFormInputs(300000, 3.5, 30, false, 'B', 250000);
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
 		});

@@ -19,6 +19,7 @@
 
 	// Reactive state using Svelte 5 runes
 	let principal = $state(300000); // Default loan amount in Euros
+	let partnerIncome = $state(0); // Partner's gross annual income
 	let annualInterestRate = $state(3.5); // Default annual interest rate in percentage
 	let durationYears = $state(30); // Default duration in years
 	let buyingAlone = $state<boolean | null>(null); // Whether buying alone or with partner - starts as null to require selection
@@ -29,6 +30,7 @@
 	let showErrors = $state(false); // Control when to show error messages
 	let fieldInteractions = $state({
 		principal: false,
+		partnerIncome: false,
 		interestRate: false,
 		duration: false,
 		buyingType: false,
@@ -42,7 +44,8 @@
 			annualInterestRate,
 			durationYears,
 			buyingAlone,
-			energyLabel
+			energyLabel,
+			partnerIncome
 		);
 		return results;
 	});
@@ -56,6 +59,12 @@
 	let shouldShowPrincipalError = $derived(() => {
 		const hasError = !!validationResults()?.errors?.principal;
 		const shouldShow = (showErrors || fieldInteractions.principal) && hasError;
+		return shouldShow;
+	});
+
+	let shouldShowPartnerIncomeError = $derived(() => {
+		const hasError = !!validationResults()?.errors?.partnerIncome;
+		const shouldShow = (showErrors || fieldInteractions.partnerIncome) && hasError;
 		return shouldShow;
 	});
 
@@ -97,8 +106,11 @@
 		});
 
 		if (isFormValid()) {
+			// Calculate total income for the calculation
+			const totalIncome = buyingAlone ? principal : principal + partnerIncome;
+
 			onsubmit?.({
-				principal,
+				principal: totalIncome, // Pass combined income as principal for calculation
 				annualInterestRate,
 				durationYears,
 				buyingAlone,
@@ -133,6 +145,14 @@
 		// Force immediate validation state update for E2E tests
 		requestAnimationFrame(() => {
 			fieldInteractions.principal = true;
+		});
+	}
+
+	function handlePartnerIncomeInteraction() {
+		handleInputInteraction();
+		fieldInteractions.partnerIncome = true;
+		requestAnimationFrame(() => {
+			fieldInteractions.partnerIncome = true;
 		});
 	}
 
@@ -233,6 +253,26 @@
 			onkeydown={handleKeyDown}
 		/>
 	</div>
+
+	{#if buyingAlone === false}
+		<div class="form-group">
+			<NumberInput
+				id="partner-income"
+				label="Partner's gross annual income"
+				bind:value={partnerIncome}
+				min={1}
+				max={10000000}
+				suffix="EUR"
+				required
+				error={shouldShowPartnerIncomeError()}
+				errorMessage={validationResults()?.errors?.partnerIncome || ''}
+				helperText="Enter any amount between €1 and €10,000,000"
+				oninput={handlePartnerIncomeInteraction}
+				onblur={handlePartnerIncomeInteraction}
+				onkeydown={handleKeyDown}
+			/>
+		</div>
+	{/if}
 
 	<div class="form-group">
 		<NumberInput
