@@ -14,9 +14,9 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		const options = energySelect.locator('option');
 		const optionTexts = await options.allTextContents();
 
-		// Should have placeholder plus 7 energy labels (A-G)
-		expect(optionTexts).toHaveLength(8);
-		expect(optionTexts[0]).toContain('Select energy label');
+		// Should have 7 energy labels (A-G)
+		expect(optionTexts).toHaveLength(7);
+		expect(optionTexts[0]).toContain('A - Most efficient');
 
 		// Check each energy label is present
 		const energyLabels = [
@@ -108,7 +108,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
 
 		// Test with most efficient energy label (A)
 		await selectEnergyLabelRobust(page, 'A');
@@ -135,7 +134,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
+		await page.locator('label:has(input[data-testid="buying-alone-true"])').click();
 		await selectEnergyLabelRobust(page, 'B');
 
 		await page.click('button[type="submit"]');
@@ -186,7 +185,7 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		// Change other form fields
 		await page.fill('input[data-testid="principal-input"]', '300000');
 		await page.fill('input[data-testid="interest-rate-input"]', '4.0');
-		await page.check('input[data-testid="buying-alone-false"]');
+		await page.locator('label:has(input[data-testid="buying-alone-false"])').click();
 
 		// Energy label selection should persist
 		await expect(page.locator('.energy-indicator')).toHaveText('C');

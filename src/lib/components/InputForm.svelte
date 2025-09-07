@@ -107,6 +107,7 @@
 						name="buying-type"
 						dataTestId="buying-alone-true"
 						oninput={handleInputInteraction}
+						aria-label="Buying alone"
 					/>
 					<span class="radio-icon">👤</span>
 					Alone
@@ -119,6 +120,7 @@
 						name="buying-type"
 						dataTestId="buying-alone-false"
 						oninput={handleInputInteraction}
+						aria-label="Buying together"
 					/>
 					<span class="radio-icon">👥</span>
 					Together
