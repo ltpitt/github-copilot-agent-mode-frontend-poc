@@ -132,7 +132,7 @@ export function validateFormInputs(
 	const durationResult = validateDuration(duration);
 	const buyingTypeResult = validateBuyingType(buyingAlone);
 	const energyLabelResult = validateEnergyLabel(energyLabel);
-	const partnerIncomeResult = validatePartnerIncome(partnerIncome || 0, buyingAlone);
+	const partnerIncomeResult = validatePartnerIncome(partnerIncome || 0, buyingAlone ?? null);
 
 	return {
 		isValid:

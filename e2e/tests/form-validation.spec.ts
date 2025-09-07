@@ -1,9 +1,5 @@
 import { test, expect } from '@playwright/test';
-import {
-	selectEnergyLabelRobust,
-	fillFormFieldWithValidation,
-	testFormSubmissionValidation
-} from '../test-helpers.js';
+import { fillFormFieldWithValidation } from '../test-helpers.js';
 
 test.describe('Mortgage Calculator - Form Validation', () => {
 	test.beforeEach(async ({ page }) => {

@@ -13,6 +13,7 @@
 		oninput?: () => void;
 		onblur?: () => void;
 		onchange?: () => void;
+		dataTestId?: string; // Add data-testid as a prop
 	}
 
 	let {
@@ -25,7 +26,8 @@
 		helperText = '',
 		oninput,
 		onblur,
-		onchange
+		onchange,
+		dataTestId = '' // Default to empty string
 	}: Props = $props();
 
 	// Energy labels with their display info
@@ -78,7 +80,7 @@
 			oninput={handleSelectChange}
 			{onblur}
 			class="energy-select"
-			data-testid="energy-label-select"
+			data-testid={dataTestId}
 			aria-label={label}
 			aria-required={required ? 'true' : 'false'}
 			aria-describedby={error && errorMessage
