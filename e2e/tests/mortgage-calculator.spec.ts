@@ -39,12 +39,6 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await expect(durationInput).toBeVisible();
 		await expect(durationInput).toHaveValue('30');
 
-		// Check Buying Alone radio buttons
-		const buyingAloneRadio = page.locator('input[data-testid="buying-alone-true"]');
-		const buyingWithPartnerRadio = page.locator('input[data-testid="buying-alone-false"]');
-		await expect(buyingAloneRadio).toBeVisible();
-		await expect(buyingWithPartnerRadio).toBeVisible();
-
 		// Check Energy Label select
 		const energySelect = page.locator('select[data-testid="energy-label-select"]');
 		await expect(energySelect).toBeVisible();
@@ -55,9 +49,6 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '4.0');
 		await page.fill('input[data-testid="duration-input"]', '25');
-
-		// Select buying alone
-		await page.check('input[data-testid="buying-alone-true"]');
 
 		// Select energy label B
 		await selectEnergyLabelRobust(page, 'B');
@@ -89,7 +80,6 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="principal-input"]', '200000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.0');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
@@ -112,7 +102,6 @@ test.describe('Mortgage Calculator - Main Functionality', () => {
 		await page.fill('input[data-testid="principal-input"]', '50000');
 		await page.fill('input[data-testid="interest-rate-input"]', '0.1');
 		await page.fill('input[data-testid="duration-input"]', '5');
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabelRobust(page, 'G');
 		await page.click('button[type="submit"]');
 

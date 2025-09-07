@@ -79,7 +79,6 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 		expect(hasVisibleFocus).toBeTruthy();
 
 		// Check radio button selection visual feedback
-		await page.check('input[data-testid="buying-alone-true"]');
 		const checkedRadio = page.locator('input[data-testid="buying-alone-true"]');
 		await expect(checkedRadio).toBeChecked();
 
@@ -159,7 +158,6 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 		expect(initialValue).toBe('€0');
 
 		// Fill form
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabel(page, 'C');
 
 		// Submit and check for immediate update

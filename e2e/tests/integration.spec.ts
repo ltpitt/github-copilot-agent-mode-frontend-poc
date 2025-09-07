@@ -13,7 +13,6 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		await page.fill('input[data-testid="principal-input"]', '85000'); // €85k income
 		await page.fill('input[data-testid="interest-rate-input"]', '4.2'); // Current rates
 		await page.fill('input[data-testid="duration-input"]', '30'); // 30-year mortgage
-		await page.check('input[data-testid="buying-alone-true"]'); // Buying alone
 		await selectEnergyLabelRobust(page, 'A'); // Energy efficient
 
 		await page.click('button[type="submit"]');
@@ -62,7 +61,6 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		await page.fill('input[data-testid="principal-input"]', '25000'); // €25k income
 		await page.fill('input[data-testid="interest-rate-input"]', '5.0'); // Higher rate
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabelRobust(page, 'F'); // Poor efficiency
 
 		await page.click('button[type="submit"]');
@@ -94,7 +92,6 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		await page.fill('input[data-testid="principal-input"]', baseData.income);
 		await page.fill('input[data-testid="interest-rate-input"]', baseData.rate);
 		await page.fill('input[data-testid="duration-input"]', baseData.duration);
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabelRobust(page, 'A');
 		await page.click('button[type="submit"]');
 
@@ -136,7 +133,6 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		await page.fill('input[data-testid="principal-input"]', '120000');
 		await page.fill('input[data-testid="interest-rate-input"]', '4.0');
 		await page.fill('input[data-testid="duration-input"]', '25');
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabelRobust(page, 'B');
 		await page.click('button[type="submit"]');
 
@@ -196,12 +192,6 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 				await page.fill('input[data-testid="interest-rate-input"]', scenario.rate);
 				await page.fill('input[data-testid="duration-input"]', scenario.duration);
 
-				if (scenario.buying === 'true') {
-					await page.check('input[data-testid="buying-alone-true"]');
-				} else {
-					await page.check('input[data-testid="buying-alone-false"]');
-				}
-
 				await page.selectOption('select[data-testid="energy-label-select"]', scenario.energy);
 				await page.click('button[type="submit"]');
 
@@ -231,10 +221,6 @@ test.describe('Mortgage Calculator - Integration & User Workflows', () => {
 		await selectEnergyLabelRobust(page, 'A');
 		await selectEnergyLabelRobust(page, 'G');
 		await selectEnergyLabelRobust(page, 'C');
-
-		await page.check('input[data-testid="buying-alone-true"]');
-		await page.check('input[data-testid="buying-alone-false"]');
-		await page.check('input[data-testid="buying-alone-true"]');
 
 		// Final submit should work with last valid values
 		await page.click('button[type="submit"]');

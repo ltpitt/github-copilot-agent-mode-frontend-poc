@@ -134,7 +134,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.locator('label:has(input[data-testid="buying-alone-true"])').click();
 		await selectEnergyLabelRobust(page, 'B');
 
 		await page.click('button[type="submit"]');

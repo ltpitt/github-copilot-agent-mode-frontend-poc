@@ -84,7 +84,6 @@ test.describe('Mortgage Calculator - Responsive Design', () => {
 			await page.fill('input[data-testid="principal-input"]', '300000');
 			await page.fill('input[data-testid="interest-rate-input"]', '4.0');
 			await page.fill('input[data-testid="duration-input"]', '25');
-			await page.check('input[data-testid="buying-alone-true"]');
 			await selectEnergyLabel(page, 'C');
 
 			await page.click('button[type="submit"]');
