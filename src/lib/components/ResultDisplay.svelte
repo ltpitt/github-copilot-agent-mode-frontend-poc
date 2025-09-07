@@ -200,15 +200,7 @@
 		{/if}
 	</div>
 
-	{#if isValidCalculation()}
-		<div class="action-section">
-			<button class="action-button"> Further calculations </button>
-
-			<div class="disclaimer">
-				This is an estimation. Make further calculations for more certainty.
-			</div>
-		</div>
-	{:else}
+	{#if !isValidCalculation()}
 		<div class="placeholder-info">
 			<div class="placeholder-icon">💡</div>
 			<p>Enter your details on the left to see your maximum mortgage amount.</p>
@@ -436,61 +428,6 @@
 		font-style: italic;
 	}
 
-	.action-section {
-		text-align: center;
-	}
-
-	.action-button {
-		background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-		color: var(--color-background);
-		border: none;
-		border-radius: var(--border-radius-md);
-		padding: var(--spacing-md) var(--spacing-2xl);
-		font-size: var(--font-size-body);
-		font-weight: var(--font-weight-semibold);
-		font-family: var(--font-family);
-		cursor: pointer;
-		transition: all var(--transition-normal);
-		margin-bottom: var(--spacing-lg);
-		position: relative;
-		overflow: hidden;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		box-shadow: var(--shadow-md);
-	}
-
-	.action-button::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-		transition: left var(--transition-slow);
-	}
-
-	.action-button:hover::before {
-		left: 100%;
-	}
-
-	.action-button:hover {
-		background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-		transform: translateY(-2px);
-		box-shadow: var(--shadow-xl);
-	}
-
-	.action-button:focus {
-		outline: none;
-		box-shadow: var(--shadow-xl), var(--focus-ring);
-	}
-
-	.disclaimer {
-		color: var(--color-text-secondary);
-		font-size: var(--font-size-small);
-		line-height: var(--line-height-relaxed);
-	}
-
 	.placeholder-info {
 		text-align: center;
 		padding: var(--spacing-3xl);
@@ -535,13 +472,8 @@
 	/* Accessibility improvements */
 	@media (prefers-reduced-motion: reduce) {
 		.result-display,
-		.result-value,
-		.action-button {
+		.result-value {
 			transition: none;
-		}
-
-		.action-button:hover {
-			transform: none;
 		}
 	}
 
@@ -553,10 +485,6 @@
 
 		.result-value.valid {
 			color: var(--color-text-primary);
-		}
-
-		.action-button {
-			border: 2px solid var(--color-text-primary);
 		}
 	}
 
@@ -613,10 +541,6 @@
 
 		.result-value.valid {
 			color: #333 !important;
-		}
-
-		.action-button {
-			display: none;
 		}
 	}
 </style>

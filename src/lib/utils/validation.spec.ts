@@ -5,7 +5,8 @@ import {
 	validateInterestRate,
 	validateDuration,
 	validateBuyingType,
-	validateEnergyLabel
+	validateEnergyLabel,
+	validatePartnerIncome
 } from './validation';
 
 describe('Validation Functions', () => {
@@ -137,6 +138,38 @@ describe('Validation Functions', () => {
 		});
 	});
 
+	describe('validatePartnerIncome', () => {
+		it('should validate partner income when buying together', () => {
+			const result = validatePartnerIncome(50000, false);
+			expect(result.isValid).toBe(true);
+			expect(result.message).toBeUndefined();
+		});
+
+		it('should not require partner income when buying alone', () => {
+			const result = validatePartnerIncome(0, true);
+			expect(result.isValid).toBe(true);
+			expect(result.message).toBeUndefined();
+		});
+
+		it('should reject invalid partner income when buying together', () => {
+			const result = validatePartnerIncome(0, false);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toContain('Partner income must be greater than 0');
+		});
+
+		it('should reject excessively high partner income', () => {
+			const result = validatePartnerIncome(20000000, false);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toContain('Partner income amount seems unreasonably high');
+		});
+
+		it('should require partner income when buying together and none provided', () => {
+			const result = validatePartnerIncome(NaN, false);
+			expect(result.isValid).toBe(false);
+			expect(result.message).toContain('Partner income is required when buying together');
+		});
+	});
+
 	describe('validateFormInputs', () => {
 		it('should validate all valid inputs including buying type and energy label', () => {
 			const result = validateFormInputs(300000, 3.5, 30, true, 'C');
@@ -145,7 +178,20 @@ describe('Validation Functions', () => {
 		});
 
 		it('should validate with buying alone false and energy label', () => {
+			const result = validateFormInputs(300000, 3.5, 30, false, 'B', 50000);
+			expect(result.isValid).toBe(true);
+			expect(result.errors).toEqual({});
+		});
+
+		it('should fail validation when partner income is missing and buying together', () => {
 			const result = validateFormInputs(300000, 3.5, 30, false, 'B');
+			expect(result.isValid).toBe(false);
+			expect(result.errors).toHaveProperty('partnerIncome');
+			expect(result.errors.partnerIncome).toContain('Partner income must be greater than 0');
+		});
+
+		it('should validate when buying alone and no partner income provided', () => {
+			const result = validateFormInputs(300000, 3.5, 30, true, 'B');
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toEqual({});
 		});

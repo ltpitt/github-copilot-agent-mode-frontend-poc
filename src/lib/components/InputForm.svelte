@@ -8,6 +8,7 @@
 	interface Props {
 		onsubmit?: (data: {
 			principal: number;
+			partnerIncome: number;
 			annualInterestRate: number;
 			durationYears: number;
 			buyingAlone: boolean | null;
@@ -19,6 +20,7 @@
 
 	// Reactive state using Svelte 5 runes
 	let principal = $state(300000); // Default loan amount in Euros
+	let partnerIncome = $state(0); // Partner's income (when buying together)
 	let annualInterestRate = $state(3.5); // Default annual interest rate in percentage
 	let durationYears = $state(30); // Default duration in years
 	let buyingAlone = $state<boolean | null>(true); // Default to 'Alone' preselected
@@ -35,7 +37,8 @@
 			annualInterestRate,
 			durationYears,
 			buyingAlone,
-			energyLabel
+			energyLabel,
+			partnerIncome
 		);
 	});
 
@@ -57,6 +60,7 @@
 		if (isFormValid()) {
 			onsubmit?.({
 				principal,
+				partnerIncome,
 				annualInterestRate,
 				durationYears,
 				buyingAlone,
@@ -96,7 +100,7 @@
 						bind:group={buyingAlone}
 						value={true}
 						name="buying-type"
-						dataTestId="buying-alone-true"
+						data-testid="buying-alone-true"
 						oninput={handleInputInteraction}
 						aria-label="Buying alone"
 					/>
@@ -109,7 +113,7 @@
 						bind:group={buyingAlone}
 						value={false}
 						name="buying-type"
-						dataTestId="buying-alone-false"
+						data-testid="buying-alone-false"
 						oninput={handleInputInteraction}
 						aria-label="Buying together"
 					/>
@@ -118,7 +122,7 @@
 				</label>
 			</div>
 			{#if shouldShowErrors() && validationResults()?.errors?.buyingType}
-				<div class="error-message" role="alert" dataTestId="buying-alone-error-message">
+				<div class="error-message" role="alert" data-testid="buying-alone-error-message">
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="error-icon">
 						<path
 							d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11.5c-.4 0-.8-.3-.8-.8s.3-.8.8-.8.8.3.8.8-.4.8-.8.8zm.8-3.2h-1.6V5.2h1.6v4.6z"
@@ -148,6 +152,27 @@
 			dataTestId="principal-input"
 		/>
 	</div>
+
+	{#if buyingAlone === false}
+		<div class="form-group">
+			<NumberInput
+				id="partner-income"
+				label="Partner's gross annual income"
+				bind:value={partnerIncome}
+				min={1}
+				max={10000000}
+				suffix="EUR"
+				required
+				error={shouldShowErrors() && !!validationResults()?.errors?.partnerIncome}
+				errorMessage={validationResults()?.errors?.partnerIncome || ''}
+				helperText="Enter any amount between €1 and €10,000,000"
+				oninput={handleInputInteraction}
+				onblur={handleInputInteraction}
+				onkeydown={handleKeyDown}
+				dataTestId="partner-income-input"
+			/>
+		</div>
+	{/if}
 
 	<div class="form-group">
 		<NumberInput
@@ -203,7 +228,12 @@
 		/>
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()} data-testid="calculate-button">
+	<button
+		type="submit"
+		class="submit-button"
+		disabled={!isFormValid()}
+		data-testid="calculate-button"
+	>
 		{#if isFormValid()}
 			Calculate
 		{:else}

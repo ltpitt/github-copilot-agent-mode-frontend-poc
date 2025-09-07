@@ -71,8 +71,28 @@ export function validateBuyingType(value: boolean | null | undefined): Validatio
 }
 
 /**
- * Validates energy label selection
+ * Validates partner income when buying together
  */
+export function validatePartnerIncome(
+	value: number,
+	buyingAlone: boolean | null
+): ValidationResult {
+	// Only validate if buying together
+	if (buyingAlone !== false) {
+		return { isValid: true }; // Not required when buying alone
+	}
+
+	if (isNaN(value) || value === null || value === undefined) {
+		return { isValid: false, message: 'Partner income is required when buying together' };
+	}
+	if (value <= 0) {
+		return { isValid: false, message: 'Partner income must be greater than 0' };
+	}
+	if (value > 10000000) {
+		return { isValid: false, message: 'Partner income amount seems unreasonably high' };
+	}
+	return { isValid: true };
+}
 export function validateEnergyLabel(value: EnergyLabel | null | undefined): ValidationResult {
 	if (value === null || value === undefined) {
 		return { isValid: false, message: 'Energy label is required' };
@@ -94,7 +114,8 @@ export function validateFormInputs(
 	interestRate: number,
 	duration: number,
 	buyingAlone?: boolean | null,
-	energyLabel?: EnergyLabel | null
+	energyLabel?: EnergyLabel | null,
+	partnerIncome?: number
 ): {
 	isValid: boolean;
 	errors: {
@@ -103,6 +124,7 @@ export function validateFormInputs(
 		duration?: string;
 		buyingType?: string;
 		energyLabel?: string;
+		partnerIncome?: string;
 	};
 } {
 	const principalResult = validatePrincipal(principal);
@@ -110,6 +132,7 @@ export function validateFormInputs(
 	const durationResult = validateDuration(duration);
 	const buyingTypeResult = validateBuyingType(buyingAlone);
 	const energyLabelResult = validateEnergyLabel(energyLabel);
+	const partnerIncomeResult = validatePartnerIncome(partnerIncome || 0, buyingAlone ?? null);
 
 	return {
 		isValid:
@@ -117,13 +140,15 @@ export function validateFormInputs(
 			interestResult.isValid &&
 			durationResult.isValid &&
 			buyingTypeResult.isValid &&
-			energyLabelResult.isValid,
+			energyLabelResult.isValid &&
+			partnerIncomeResult.isValid,
 		errors: {
 			...(principalResult.message && { principal: principalResult.message }),
 			...(interestResult.message && { interestRate: interestResult.message }),
 			...(durationResult.message && { duration: durationResult.message }),
 			...(buyingTypeResult.message && { buyingType: buyingTypeResult.message }),
-			...(energyLabelResult.message && { energyLabel: energyLabelResult.message })
+			...(energyLabelResult.message && { energyLabel: energyLabelResult.message }),
+			...(partnerIncomeResult.message && { partnerIncome: partnerIncomeResult.message })
 		}
 	};
 }

@@ -198,6 +198,7 @@ export async function selectEnergyLabelRobust(
 		await selectEnergyLabelWithWait(page, energyLabel, timeout);
 		return;
 	} catch {
+		// Fallback to next approach
 	}
 
 	// Try approach 2: Solution 5 - Use click() on select element
@@ -211,6 +212,7 @@ export async function selectEnergyLabelRobust(
 		await expect(select).toHaveValue(energyLabel, { timeout });
 		return;
 	} catch {
+		// Fallback to next approach
 	}
 
 	// Try approach 3: Solution 2 - Manual event dispatch using evaluate()
