@@ -17,6 +17,7 @@
 		oninput?: (event: Event) => void;
 		onblur?: (event: Event) => void;
 		onkeydown?: (event: KeyboardEvent) => void;
+		dataTestId?: string; // Add data-testid as a prop
 	}
 
 	let {
@@ -35,7 +36,8 @@
 		helperText = '',
 		oninput,
 		onblur,
-		onkeydown
+		onkeydown,
+		dataTestId = '' // Default to an empty string
 	}: Props = $props();
 
 	// Handle increment/decrement with proper bounds checking
@@ -143,7 +145,7 @@
 			{disabled}
 			class="number-input"
 			class:error
-			data-testid="{id}-input"
+			data-testid={dataTestId}
 			aria-label={label}
 			aria-required={required ? 'true' : 'false'}
 			aria-describedby={error && errorMessage
@@ -177,7 +179,7 @@
 	</div>
 
 	{#if error && errorMessage}
-		<div class="error-message" role="alert" id="{id}-error">
+		<div class="error-message" role="alert" id="{id}-error" data-testid={dataTestId ? `${dataTestId}-error-message` : undefined}>
 			<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="error-icon">
 				<path
 					d="M8 1.5C4.4 1.5 1.5 4.4 1.5 8S4.4 14.5 8 14.5 14.5 11.6 14.5 8 11.6 1.5 8 1.5zm0 11.5c-.4 0-.8-.3-.8-.8s.3-.8.8-.8.8.3.8.8-.4.8-.8.8zm.8-3.2h-1.6V5.2h1.6v4.6z"

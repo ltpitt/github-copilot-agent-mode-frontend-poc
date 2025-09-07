@@ -157,6 +157,53 @@ test.describe('Mortgage Calculator - Form Validation', () => {
 		await testFormSubmissionValidation(page, 'mandatory');
 	});
 
+	test('should validate form with invalid and valid data', async ({ page }) => {
+		await page.goto('http://localhost:5173');
+
+		// Step 1: Populate fields with invalid data
+		console.log('Filling gross annual income with invalid value (0)...');
+		await page.fill('[data-testid="principal-input"]', '0');
+
+		console.log('Filling annual interest rate with invalid value (60)...');
+		await page.fill('[data-testid="interest-rate-input"]', '60');
+
+		console.log('Filling duration in years with invalid value (0)...');
+		await page.fill('[data-testid="duration-input"]', '0');
+
+		console.log('Leaving energy label unselected...');
+
+		// Step 2: Verify errors are shown
+		console.log('Verifying error messages for all fields...');
+		await expect(page.locator('[data-testid="principal-input-error-message"]')).toBeVisible();
+		await expect(page.locator('[data-testid="interest-rate-input-error-message"]')).toBeVisible();
+		await expect(page.locator('[data-testid="duration-input-error-message"]')).toBeVisible();
+		await expect(page.locator('[id="energy-label-error"]')).toBeVisible();
+
+		// Step 3: Populate fields with valid data
+		console.log('Filling gross annual income with valid value (40000)...');
+		await page.fill('[data-testid="principal-input"]', '40000');
+
+		console.log('Filling annual interest rate with valid value (3.5)...');
+		await page.fill('[data-testid="interest-rate-input"]', '3.5');
+
+		console.log('Filling duration in years with valid value (30)...');
+		await page.fill('[data-testid="duration-input"]', '30');
+
+		console.log('Selecting energy label (A)...');
+		await page.selectOption('[data-testid="energy-label-select"]', 'A');
+
+		// Step 4: Click calculate
+		console.log('Clicking the calculate button with valid data...');
+		await page.click('[data-testid="calculate-button"]');
+
+		// Step 5: Verify no errors are shown
+		console.log('Verifying no error messages are visible...');
+		await expect(page.locator('[data-testid="principal-input-error-message"]')).not.toBeVisible();
+		await expect(page.locator('[data-testid="interest-rate-input-error-message"]')).not.toBeVisible();
+		await expect(page.locator('[data-testid="duration-input-error-message"]')).not.toBeVisible();
+		await expect(page.locator('[data-testid="energy-label-error-message"]')).not.toBeVisible();
+	});
+
 	test('should validate numeric inputs only accept numbers', async ({ page }) => {
 		const principalInput = page.locator('input[data-testid="principal-input"]');
 		const interestInput = page.locator('input[data-testid="interest-rate-input"]');

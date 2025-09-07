@@ -120,7 +120,7 @@
 					<div
 						class="energy-label"
 						style:background-color={energyLabelColor()}
-						data-testid="energy-label-display"
+						data-testid="energy-label-select-error"
 					>
 						{calculationResult.energyLabel}
 					</div>

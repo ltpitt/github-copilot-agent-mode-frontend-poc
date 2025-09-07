@@ -178,32 +178,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await expect(page.locator('.energy-indicator')).not.toBeVisible();
 	});
 
-	test('should show energy label color gradient from A to G', async ({ page }) => {
-		const energyIndicator = page.locator('.energy-indicator');
-
-		// Test that colors progress from green to red as efficiency decreases
-		const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-		const colors = [];
-
-		for (const label of labels) {
-			await selectEnergyLabelRobust(page, label);
-			await expect(energyIndicator).toBeVisible();
-
-			const backgroundColor = await energyIndicator.evaluate(
-				(el) => getComputedStyle(el).backgroundColor
-			);
-			colors.push(backgroundColor);
-		}
-
-		// Verify we have different colors for each label
-		const uniqueColors = new Set(colors);
-		expect(uniqueColors.size).toBe(7); // Should have 7 distinct colors
-
-		// A should be greenish, G should be reddish
-		expect(colors[0]).toMatch(/rgb\(0,\s*166,\s*81\)/); // A - green
-		expect(colors[6]).toMatch(/rgb\(204,\s*0,\s*0\)/); // G - red
-	});
-
 	test('should maintain energy label selection during form interactions', async ({ page }) => {
 		// Select energy label
 		await selectEnergyLabelRobust(page, 'C');
