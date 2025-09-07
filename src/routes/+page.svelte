@@ -19,13 +19,21 @@
 	// Handle form submission from InputForm component
 	function handleFormSubmit(data: {
 		principal: number;
+		partnerIncome: number;
 		annualInterestRate: number;
 		durationYears: number;
 		buyingAlone: boolean | null;
 		energyLabel: EnergyLabel | null;
 	}) {
 		try {
-			const { principal, annualInterestRate, durationYears, buyingAlone, energyLabel } = data;
+			const {
+				principal,
+				partnerIncome,
+				annualInterestRate,
+				durationYears,
+				buyingAlone,
+				energyLabel
+			} = data;
 
 			// Ensure we have valid data
 			if (buyingAlone === null) {
@@ -40,20 +48,28 @@
 
 			const annualRate = annualInterestRate / 100; // Convert percentage to decimal
 
+			// Calculate combined income based on buying type
+			const combinedIncome = buyingAlone === true ? principal : principal + partnerIncome;
+
 			// For demonstration, we'll use the income as home value * 1.2 (typical scenario)
 			// In a real application, this would come from property appraisal
-			const homeValue = principal * 6; // Rough estimate: 6x annual income for home value
+			const homeValue = combinedIncome * 6; // Rough estimate: 6x annual income for home value
 
 			// Calculate mortgage with energy label considerations
 			calculationResult = calculateMortgageWithEnergyLabel(
-				principal, // income
+				combinedIncome, // Use combined income for calculation
 				homeValue, // home value
 				energyLabel,
 				annualRate,
 				durationYears
 			);
 
-			calculationData = { principal, annualInterestRate, durationYears, energyLabel };
+			calculationData = {
+				principal: combinedIncome,
+				annualInterestRate,
+				durationYears,
+				energyLabel
+			};
 		} catch (error) {
 			console.error('Error in calculation:', error);
 			calculationResult = null;

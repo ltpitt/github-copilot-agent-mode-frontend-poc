@@ -8,6 +8,7 @@
 	interface Props {
 		onsubmit?: (data: {
 			principal: number;
+			partnerIncome: number;
 			annualInterestRate: number;
 			durationYears: number;
 			buyingAlone: boolean | null;
@@ -19,6 +20,7 @@
 
 	// Reactive state using Svelte 5 runes
 	let principal = $state(300000); // Default loan amount in Euros
+	let partnerIncome = $state(0); // Partner's income (when buying together)
 	let annualInterestRate = $state(3.5); // Default annual interest rate in percentage
 	let durationYears = $state(30); // Default duration in years
 	let buyingAlone = $state<boolean | null>(true); // Default to 'Alone' preselected
@@ -35,7 +37,8 @@
 			annualInterestRate,
 			durationYears,
 			buyingAlone,
-			energyLabel
+			energyLabel,
+			partnerIncome
 		);
 	});
 
@@ -57,6 +60,7 @@
 		if (isFormValid()) {
 			onsubmit?.({
 				principal,
+				partnerIncome,
 				annualInterestRate,
 				durationYears,
 				buyingAlone,
@@ -149,6 +153,27 @@
 		/>
 	</div>
 
+	{#if buyingAlone === false}
+		<div class="form-group">
+			<NumberInput
+				id="partner-income"
+				label="Partner's gross annual income"
+				bind:value={partnerIncome}
+				min={1}
+				max={10000000}
+				suffix="EUR"
+				required
+				error={shouldShowErrors() && !!validationResults()?.errors?.partnerIncome}
+				errorMessage={validationResults()?.errors?.partnerIncome || ''}
+				helperText="Enter any amount between €1 and €10,000,000"
+				oninput={handleInputInteraction}
+				onblur={handleInputInteraction}
+				onkeydown={handleKeyDown}
+				dataTestId="partner-income-input"
+			/>
+		</div>
+	{/if}
+
 	<div class="form-group">
 		<NumberInput
 			id="interest-rate"
@@ -203,7 +228,12 @@
 		/>
 	</div>
 
-	<button type="submit" class="submit-button" disabled={!isFormValid()} data-testid="calculate-button">
+	<button
+		type="submit"
+		class="submit-button"
+		disabled={!isFormValid()}
+		data-testid="calculate-button"
+	>
 		{#if isFormValid()}
 			Calculate
 		{:else}

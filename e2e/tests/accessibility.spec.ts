@@ -98,7 +98,6 @@ test.describe('Mortgage Calculator - Accessibility', () => {
 		await page.focus('button[type="submit"]');
 		await expect(page.locator('button[type="submit"]')).toBeFocused();
 
-
 		// Test that select can be focused
 		await page.focus('select[data-testid="energy-label-select"]');
 		await expect(page.locator('select[data-testid="energy-label-select"]')).toBeFocused();
