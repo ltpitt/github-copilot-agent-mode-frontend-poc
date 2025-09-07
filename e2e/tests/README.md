@@ -155,6 +155,22 @@ npx playwright test --project=webkit
 
 **Note**: Playwright browser installation may fail in restricted environments. The test suite is designed to run when browsers are available but is documented for future use when browser access is restored.
 
+## 🛠️ Running Tests with Makefile
+
+For convenience, you can use the following `make` commands to run tests:
+
+- `make test` - Run all tests (unit and E2E).
+- `make test-e2e` - Run only the Playwright E2E tests.
+- `make test-unit` - Run only the unit tests.
+
+## 🖥️ Alternative Commands for Windows Users
+
+If you cannot use `make`, you can run the tests directly with npm and Playwright:
+
+- `npm run test` - Run all unit tests.
+- `npx playwright test` - Run all E2E tests.
+- `npm run test:unit` - Run only the unit tests.
+
 ## 📊 Test Data & Scenarios
 
 ### Mortgage Calculation Test Cases

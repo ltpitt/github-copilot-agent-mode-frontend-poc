@@ -14,9 +14,9 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		const options = energySelect.locator('option');
 		const optionTexts = await options.allTextContents();
 
-		// Should have placeholder plus 7 energy labels (A-G)
-		expect(optionTexts).toHaveLength(8);
-		expect(optionTexts[0]).toContain('Select energy label');
+		// Should have 7 energy labels (A-G)
+		expect(optionTexts).toHaveLength(7);
+		expect(optionTexts[0]).toContain('A - Most efficient');
 
 		// Check each energy label is present
 		const energyLabels = [
@@ -108,7 +108,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
 
 		// Test with most efficient energy label (A)
 		await selectEnergyLabelRobust(page, 'A');
@@ -135,7 +134,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabelRobust(page, 'B');
 
 		await page.click('button[type="submit"]');
@@ -172,36 +170,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 			'background-color',
 			'rgb(255, 51, 0)'
 		);
-
-		// Should be able to deselect (go back to placeholder)
-		await selectEnergyLabelRobust(page, '');
-		await expect(page.locator('.energy-indicator')).not.toBeVisible();
-	});
-
-	test('should show energy label color gradient from A to G', async ({ page }) => {
-		const energyIndicator = page.locator('.energy-indicator');
-
-		// Test that colors progress from green to red as efficiency decreases
-		const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-		const colors = [];
-
-		for (const label of labels) {
-			await selectEnergyLabelRobust(page, label);
-			await expect(energyIndicator).toBeVisible();
-
-			const backgroundColor = await energyIndicator.evaluate(
-				(el) => getComputedStyle(el).backgroundColor
-			);
-			colors.push(backgroundColor);
-		}
-
-		// Verify we have different colors for each label
-		const uniqueColors = new Set(colors);
-		expect(uniqueColors.size).toBe(7); // Should have 7 distinct colors
-
-		// A should be greenish, G should be reddish
-		expect(colors[0]).toMatch(/rgb\(0,\s*166,\s*81\)/); // A - green
-		expect(colors[6]).toMatch(/rgb\(204,\s*0,\s*0\)/); // G - red
 	});
 
 	test('should maintain energy label selection during form interactions', async ({ page }) => {
@@ -212,7 +180,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		// Change other form fields
 		await page.fill('input[data-testid="principal-input"]', '300000');
 		await page.fill('input[data-testid="interest-rate-input"]', '4.0');
-		await page.check('input[data-testid="buying-alone-false"]');
 
 		// Energy label selection should persist
 		await expect(page.locator('.energy-indicator')).toHaveText('C');

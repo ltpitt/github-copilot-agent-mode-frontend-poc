@@ -60,7 +60,8 @@ preview: ## Preview production build locally
 # Testing
 test: ## Run all tests (requires Playwright browsers for full suite)
 	@echo "Running all tests..."
-	npm run test
+	npm run test:unit -- --run
+	make test-e2e
 
 test-server: ## Run server-side tests only (no browser required)
 	@echo "Running server-side tests..."
@@ -69,6 +70,10 @@ test-server: ## Run server-side tests only (no browser required)
 test-browser: ## Run browser tests only (requires Playwright browsers)
 	@echo "Running browser tests..."
 	npm run test:browser
+
+test-unit: ## Run unit tests only
+	@echo "Running unit tests..."
+	npm run test:unit -- --run
 
 # Code Quality
 lint: ## Check code style and run linting

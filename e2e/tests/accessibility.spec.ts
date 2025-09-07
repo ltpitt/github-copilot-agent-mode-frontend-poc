@@ -81,7 +81,7 @@ test.describe('Mortgage Calculator - Accessibility', () => {
 		await page.fill('input[data-testid="principal-input"]', '300000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
+
 		await selectEnergyLabel(page, 'A');
 
 		// Test that form elements can be focused individually
@@ -98,9 +98,6 @@ test.describe('Mortgage Calculator - Accessibility', () => {
 		await page.focus('button[type="submit"]');
 		await expect(page.locator('button[type="submit"]')).toBeFocused();
 
-		// Test that radio buttons can be focused
-		await page.focus('input[data-testid="buying-alone-true"]');
-		await expect(page.locator('input[data-testid="buying-alone-true"]')).toBeFocused();
 
 		// Test that select can be focused
 		await page.focus('select[data-testid="energy-label-select"]');
@@ -285,7 +282,7 @@ test.describe('Mortgage Calculator - Accessibility', () => {
 		await page.fill('input[data-testid="principal-input"]', '250000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
+
 		await selectEnergyLabel(page, 'B');
 		await page.click('button[type="submit"]');
 
@@ -324,7 +321,7 @@ test.describe('Mortgage Calculator - Accessibility', () => {
 		await page.fill('input[data-testid="principal-input"]', '300000');
 		await page.fill('input[data-testid="interest-rate-input"]', '3.5');
 		await page.fill('input[data-testid="duration-input"]', '30');
-		await page.check('input[data-testid="buying-alone-true"]');
+
 		await selectEnergyLabel(page, 'A');
 
 		// Submit once to establish a valid state

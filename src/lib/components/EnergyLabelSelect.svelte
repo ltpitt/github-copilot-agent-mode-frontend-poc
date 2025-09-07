@@ -78,7 +78,7 @@
 			oninput={handleSelectChange}
 			{onblur}
 			class="energy-select"
-			data-testid="{id}-select"
+			data-testid="energy-label-select"
 			aria-label={label}
 			aria-required={required ? 'true' : 'false'}
 			aria-describedby={error && errorMessage
@@ -88,7 +88,6 @@
 					: undefined}
 			style:--selected-color={selectedLabelColor()}
 		>
-			<option value="">Select energy label</option>
 			{#each energyLabels as energyLabel (energyLabel.value)}
 				<option value={energyLabel.value} style:color={energyLabel.color}>
 					{energyLabel.description}

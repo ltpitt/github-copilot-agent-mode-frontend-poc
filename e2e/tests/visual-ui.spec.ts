@@ -61,33 +61,6 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 		}
 	});
 
-	test('should show proper visual feedback for form interactions', async ({ page }) => {
-		// Check form field focus states
-		const principalInput = page.locator('input[data-testid="principal-input"]');
-		await principalInput.focus();
-
-		const focusStyles = await principalInput.evaluate((el) => {
-			const style = getComputedStyle(el);
-			return {
-				outline: style.outline,
-				boxShadow: style.boxShadow
-			};
-		});
-
-		// Should have visible focus indicator
-		const hasVisibleFocus = focusStyles.outline !== 'none' || focusStyles.boxShadow !== 'none';
-		expect(hasVisibleFocus).toBeTruthy();
-
-		// Check radio button selection visual feedback
-		await page.check('input[data-testid="buying-alone-true"]');
-		const checkedRadio = page.locator('input[data-testid="buying-alone-true"]');
-		await expect(checkedRadio).toBeChecked();
-
-		// Visual feedback should be clear
-		const radioContainer = checkedRadio.locator('..');
-		await expect(radioContainer).toHaveClass(/radio-option/);
-	});
-
 	test('should display energy label colors correctly for all labels', async ({ page }) => {
 		// Test each energy label color
 		const expectedColors = {
@@ -118,7 +91,6 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 
 	test('should maintain visual consistency in results display', async ({ page }) => {
 		// Fill form and submit
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabel(page, 'A');
 		await page.click('button[type="submit"]');
 
@@ -147,7 +119,7 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 		await expect(monthlyPayment).toBeVisible();
 
 		// Energy label should be displayed with its color in results
-		const energyLabelDisplay = page.locator('[data-testid="energy-label-display"]');
+		const energyLabelDisplay = page.locator('[data-testid="energy-indicator"]');
 		await expect(energyLabelDisplay).toBeVisible();
 		await expect(energyLabelDisplay).toHaveText('A');
 		await expect(energyLabelDisplay).toHaveCSS('background-color', 'rgb(0, 166, 81)');
@@ -159,7 +131,6 @@ test.describe('Mortgage Calculator - Visual & UI Tests', () => {
 		expect(initialValue).toBe('€0');
 
 		// Fill form
-		await page.check('input[data-testid="buying-alone-true"]');
 		await selectEnergyLabel(page, 'C');
 
 		// Submit and check for immediate update

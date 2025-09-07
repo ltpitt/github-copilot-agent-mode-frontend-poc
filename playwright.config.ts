@@ -18,10 +18,6 @@ export default defineConfig({
 			name: 'chromium',
 			use: {
 				channel: 'chrome',
-				// Use system chrome executable if available
-				launchOptions: {
-					executablePath: '/usr/bin/google-chrome'
-				}
 			}
 		}
 	]
