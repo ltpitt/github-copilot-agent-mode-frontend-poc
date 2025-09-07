@@ -184,10 +184,11 @@ This project follows a comprehensive testing approach:
 make test           # Run all tests (automatically detects browser availability)
 make test-server    # Run server-side tests only (no browser required)
 make test-browser   # Run browser tests only (requires Playwright browsers)
+make test-unit      # Run unit tests only
 
 # Or using npm directly
 npm run test        # Run all tests (automatically detects browser availability)
-npm run test:unit   # Run unit tests in watch mode
+npm run test:unit   # Run unit tests only
 npm run test:server # Run server-side tests only (no browser required)
 npm run test:browser # Run browser tests only (requires Playwright browsers)
 ```
@@ -234,6 +235,7 @@ make build          # Build for production
   - `make test` - Run all tests (requires Playwright browsers for full suite)
   - `make test-server` - Run server-side tests only (no browser required)
   - `make test-browser` - Run browser tests only (requires Playwright browsers)
+  - `make test-unit` - Run unit tests only
 
 - **Code Quality:**
   - `make lint` - Check code style and run linting

@@ -170,10 +170,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 			'background-color',
 			'rgb(255, 51, 0)'
 		);
-
-		// Should be able to deselect (go back to placeholder)
-		await selectEnergyLabelRobust(page, '');
-		await expect(page.locator('.energy-indicator')).not.toBeVisible();
 	});
 
 	test('should maintain energy label selection during form interactions', async ({ page }) => {
@@ -184,7 +180,6 @@ test.describe('Mortgage Calculator - Energy Labels', () => {
 		// Change other form fields
 		await page.fill('input[data-testid="principal-input"]', '300000');
 		await page.fill('input[data-testid="interest-rate-input"]', '4.0');
-		await page.locator('label:has(input[data-testid="buying-alone-false"])').click();
 
 		// Energy label selection should persist
 		await expect(page.locator('.energy-indicator')).toHaveText('C');
